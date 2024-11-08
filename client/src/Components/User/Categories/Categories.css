@@ -1,0 +1,17 @@
+.categories__container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-around;
+  }
+  
+  .category__item {
+    width: 150px;
+    text-align: center;
+  }
+  
+  .category__img {
+    width: 100%;
+    height: auto;
+  }
+  

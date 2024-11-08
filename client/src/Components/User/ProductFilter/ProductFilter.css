@@ -1,0 +1,106 @@
+.filter-container {
+    background-color: #f9fafb;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .trending-button {
+    padding: 6px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .trending-button:hover {
+    background: #f3f4f6;
+  }
+
+  .top-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .chip {
+    padding: 6px 16px;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .chip:hover {
+    background: #d1d5db;
+  }
+
+  .filters-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  .filter-section {
+    min-width: 200px;
+  }
+
+  .filter-section h3 {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .option-item:hover {
+    color: #374151;
+  }
+
+  .option-item input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  @media (max-width: 1024px) {
+    .filters-row {
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .filter-section {
+      min-width: 150px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .top-filters {
+      flex-wrap: wrap;
+    }
+    
+    .filter-section {
+      width: 100%;
+    }
+  }

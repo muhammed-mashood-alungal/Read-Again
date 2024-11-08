@@ -1,0 +1,17 @@
+
+.register-container {
+    background-color: #f0f2f5;
+  }
+  
+  .register {
+    max-width: 100%;
+  }
+  .form__input {
+    font-size: 1rem;
+  }
+  @media (max-width: 600px) {
+    .form__input {
+      font-size: 0.875rem;
+    }
+  }
+  
