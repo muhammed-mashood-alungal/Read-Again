@@ -1,0 +1,111 @@
+/* AdminPage.css */
+
+/* Global Styles for Admin Layout */
+.admin-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure full height */
+    background-color: #2d2d2d;
+  }
+  
+  /* Admin Navbar Styles */
+  .navbar {
+    z-index: 100;
+    background-color:rgb(29, 29, 29);
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .navbar .navbar-toggler {
+    background: none;
+    border: none;
+  }
+  
+  .navbar .navbar-nav {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar .navbar-nav-right {
+    display: flex;
+  }
+  
+  .navbar .nav-link {
+    color: white;
+    font-size: 16px;
+    margin-right: 10px;
+    text-decoration: none;
+  }
+  
+  .navbar .nav-link:hover {
+    color: #ffab00; /* Hover color */
+  }
+  
+  /* Sidebar Styles */
+ 
+  .right-sidebar{
+    padding: 18px;
+    background-color: rgb(29, 29, 29);
+    box-shadow: 4px 5px 16px #0006;
+    border-radius: 20px;
+    color: #ececec;
+  }
+  
+  
+  .form-control{
+    background-color: #fffc;
+    border: 0;
+  }
+  
+  
+  /* Main Content Styles */
+  .admin-main {
+    color: #ececec;
+    margin-top:70px;
+  }
+  
+  .admin-main h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  .admin-content{
+    color: #ececec;
+    margin-top: 70px;
+  }
+  .content {
+    color: #ececec;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .admin-container {
+      flex-direction: column;
+    }
+  
+    .navbar {
+      padding: 10px;
+     
+    }
+    .admin-navbar{
+        background-color: #2d2d2d;
+    }
+  
+    #sidebar {
+
+      width: 100%;
+      position: relative;
+      margin-top: 30px;
+      padding: 10px;
+    }
+  
+    .admin-main {
+      margin-left: 0;
+      padding: 10px;
+    }
+  }
+  

@@ -10,6 +10,12 @@ import WishlistPage from './Pages/Userpages/WishlistPage';
 import AccountPage from './Pages/Userpages/AccountPage';
 import CheckOutPage from './Pages/Userpages/CheckOutPage';
 import DetailsPage from './Pages/Userpages/DetailsPage';
+import EmailVerifyPage from './Pages/Userpages/EmailVerifyPage';
+import ChangePassword from './Components/User/ChangePassword/ChangePassword';
+import { ForgetPassProvider } from './contexts/forgetPassword';
+import AdminPage from './Pages/AdminPages/AdminPage';
+import CategoryManagement from './Components/Admin/CategoryManagment/ListCategories/ListCategories';
+import ListUsers from './Components/Admin/UsersManagment/ListUsers/ListUsers';
 
 
 function App() {
@@ -20,12 +26,27 @@ function App() {
         <Route  path='/' element={<HomePage/>}/>
         <Route  path='/login' element={<LoginPage/>}/>
         <Route  path='/register' element={<RegisterPage/>}/>
+       
         <Route  path='/library' element={<LibraryPage/>}/>
         <Route  path='/cart' element={<CartPage/>}/>
         <Route  path='/wishlist' element={<WishlistPage/>}/>
         <Route  path='/account' element={<AccountPage/>}/>
         <Route  path='/checkout' element={<CheckOutPage/>}/>
         <Route  path='/details' element={<DetailsPage/>}/>
+      </Routes>
+      <ForgetPassProvider>
+      <Routes>
+      <Route  path='/register/verify' element={<EmailVerifyPage type="registration"/>}/>
+      <Route  path='/forgotten-password/verify' element={<EmailVerifyPage/>}/>
+      <Route  path='/forgotten-password/change-password' element={<ChangePassword/>}/>
+      </Routes>
+      </ForgetPassProvider>
+      <Routes>
+      <Route path='/admin' element={<AdminPage />}>
+        <Route path='books' element={<CategoryManagement />} />
+        <Route path='users' element={<ListUsers />} />
+        <Route path='category' element={<CategoryManagement />} />
+      </Route>
       </Routes>
     </div>
     </BrowserRouter>

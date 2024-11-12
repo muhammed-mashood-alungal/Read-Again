@@ -1,0 +1,14 @@
+.google-btn{
+    height: 35px;
+    border-radius: 10px;
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.google-btn:hover{
+    color: rgb(0, 72, 206);
+}
+.google-btn svg{
+    height: 25px;
+}
