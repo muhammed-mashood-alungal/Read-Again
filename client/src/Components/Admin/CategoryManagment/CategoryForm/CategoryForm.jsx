@@ -1,30 +1,113 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { axiosAdminInstance, axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
+import { categoryImages } from '../../../../redux/Constants/imagesDir';
 
-const RightSidebar = () => {
-  const [newCategory, setNewCategory] = useState({ name: '', image: '' });
-  const handleCreateCategory = (e) => {
-    e.preventDefault();
-    // Add API call for creating a new category here
-    console.log('Creating category:', newCategory);
-    // Reset form
-    setNewCategory({ name: '', image: '' });
+const CategoryForm = ({categoryData ,onChildUpdate}) => {
+  const [name, setName] = useState("")
+  const [image, setImage] = useState(null)
+  const [imageUrl , setImageUrl] = useState("")
+  const [isCreateForm , setIsCreateForm] = useState(true)
+  const [err , setErr] = useState("")
+  const [success , setSuccess] = useState(false)
+
+  useEffect(()=>{
+    if(categoryData.name){
+      setIsCreateForm(false)
+      setName(categoryData.name)
+      setImageUrl(categoryImages+categoryData.image)
+    }
+  },[categoryData])
+
+
+  useEffect(()=>{
+   if(success){
+   onChildUpdate(true)
+   setName("")
+   setImage(null)
+   setImageUrl("")
+    setTimeout(()=>{
+     setSuccess(false)
+
+    },3000)
+   }
+  },[success])
+  const handleCreateCategory = async(e) => {
+    try{
+      e.preventDefault()
+      if(name.trim() ==""){
+        setErr("Enter a Category Name")
+        return
+      }
+      const formData =new FormData()
+      formData.append("type", "category")
+      formData.append("name",name)
+      formData.append("image" ,image )
+      
+      console.log(formData)
+      const response = await axiosAdminInstance.post('/categories/create',formData)
+      console.log(response.data)
+      if(response.status ==200){
+        setSuccess(true)
+      }
+    }catch(err){
+      console.log(err)
+      setErr(err?.respons?.data?.message)
+    }
   };
+  
+
+  const handleUpdateCategory =async (e) => {
+    try{
+      e.preventDefault()
+      if(name.trim() ==""){
+        setErr("Enter a Category Name")
+        return
+      }
+      const formData =new FormData()
+      formData.append("type", "category")
+      formData.append("name",name)
+      if (image) {
+        formData.append('image', image)
+      }
+      
+      console.log(categoryData._id)
+      const response = await axiosAdminInstance.put(`/categories/${categoryData._id}/edit`,formData)
+      console.log(response.data)
+      if(response.status ==200){
+        setSuccess(true)
+      }
+    }catch(err){
+      console.log(err)
+      setErr(err?.respons?.data?.message)
+    }
+  };
+ 
+
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCategory(prev => ({ ...prev, [name]: value }));
+    setName(e.target.value)
   };
+
+  const handlePhoto = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0])
+      setImageUrl(URL.createObjectURL(e.target.files[0]))
+    } 
+  };
+  
 
   return (
     <div className="category-form ">
-        <h4 className="card-title">Create New Category</h4>
-        <form onSubmit={handleCreateCategory}>
+        <h4 className="card-title">{isCreateForm ? "Create New " : "Update "}Category</h4>
+        {success && <p>Success .....!</p>}
+        {err && <p>{err}</p>}
+        <form onSubmit={isCreateForm ?handleCreateCategory : handleUpdateCategory}  encType='multipart/form-data'>
           <div className="form-group">
             <label>Name</label>
             <input
               type="text"
               name="name"
-              value={newCategory.name}
+              value={name}
               onChange={handleInputChange}
               className="form-control"
               placeholder="Category name"
@@ -33,20 +116,24 @@ const RightSidebar = () => {
           <div className="form-group">
             <label>Image URL</label>
             <input
-              type="text"
+              type="file"
+              accept='.png, .jpg, .jpeg'
               name="image"
-              value={newCategory.image}
-              onChange={handleInputChange}
+              onChange={handlePhoto}
               className="form-control"
               placeholder="Image URL"
             />
           </div>
+          <div>
+             <img src={imageUrl} alt="" />
+           
+          </div>
           <button type="submit" className="primary-btn">
-            Create
+            {isCreateForm ? "Create" : "Update"}
           </button>
         </form>
       </div>
   );
 };
 
-export default RightSidebar;
+export default CategoryForm;

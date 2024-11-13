@@ -2,6 +2,9 @@ import React from 'react';
 import './Categories.css'; 
 
 const CategoriesSection = () => {
+  useEffect(()=>{
+    
+  },[])
   return (
     <section className="categories container section">
       <h3 className="section__title">

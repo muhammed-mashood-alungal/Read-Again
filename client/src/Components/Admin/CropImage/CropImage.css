@@ -1,0 +1,84 @@
+/* Overlay to dim the background */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal box styling */
+.modal {
+    position:fixed;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Header styling */
+.modal h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Image crop area */
+.react-crop-container {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.modal button {
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+    background-color: #0056b3;
+}
+
+/* Cancel button styling */
+.modal .cancel-btn {
+    background-color: #6c757d;
+}
+
+.modal .cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Styling for product image list */
+.image-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.product-image:hover {
+    transform: scale(1.05);
+}

@@ -16,7 +16,7 @@ import { ForgetPassProvider } from './contexts/forgetPassword';
 import AdminPage from './Pages/AdminPages/AdminPage';
 import CategoryManagement from './Components/Admin/CategoryManagment/ListCategories/ListCategories';
 import ListUsers from './Components/Admin/UsersManagment/ListUsers/ListUsers';
-
+import ListBooks from './Components/Admin/BookManagement/ListBooks.jsx/ListBooks';
 
 function App() {
   return (
@@ -43,7 +43,7 @@ function App() {
       </ForgetPassProvider>
       <Routes>
       <Route path='/admin' element={<AdminPage />}>
-        <Route path='books' element={<CategoryManagement />} />
+        <Route path='books' element={<ListBooks />} />
         <Route path='users' element={<ListUsers />} />
         <Route path='category' element={<CategoryManagement />} />
       </Route>

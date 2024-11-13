@@ -1,43 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import './ListCategories.css';
 import { Col, Container, Row } from 'reactstrap';
-import AddCategories from '../CategoryForm/CategoryForm'
+import {axiosAdminInstance, axiosUserInstance} from '../../../../redux/Constants/axiosConstants'
+import CategoryForm from '../CategoryForm/CategoryForm';
+import { categoryImages } from '../../../../redux/Constants/imagesDir';
+
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
+  const [categoryData , setCategoryData] =useState({})
+  const [err, setErr] = useState("")
+  const [isChildUpdated, setIsChildUpdated] = useState(false);
+  useEffect(()=>{
+    async function fetchCategories(){
+      try{
+        const response = await axiosAdminInstance.get('/categories')
+        if(response.status == 200){
+          setCategories(response.data.categories)
+        }
+       }catch(err){
+          setErr(err.response.data.message)
+       }
+    }
+    fetchCategories()
    
+  },[isChildUpdated])
 
-  useEffect(() => {
-    // Fetch categories on component mount (replace URL with your API endpoint)
-    fetch('/api/categories')
-      .then(response => response.json())
-      .then(data => setCategories(data))
-      .catch(error => console.error('Error fetching categories:', error));
-  }, []);
-
-
- 
-
-  const handleUpdateCategory = (id) => {
-    // Update category API call
-    console.log('Updating category:', id);
+  const handleChildUpdate = (updated) => {
+    setIsChildUpdated(!isChildUpdated);
   };
 
-  const handleDeleteCategory = (id) => {
-    // Delete category API call
-    console.log('Deleting category:', id);
+  const handleCategoryListing =async (id) => {
+    try{
+      console.log(id)
+      await axiosAdminInstance.put(`/categories/${id}/list-or-unlist`)
+      setCategories(categories=>{
+        return categories.map((category)=>{
+         return  category._id == id ? {...category,listed:!category.listed} : category
+        })
+      })
+    }catch(err){
+      setErr(err?.response?.data?.message)
+    }
   };
+  const showUpdateForm = async(id) =>{
+    try{
+      console.log(id) 
+    const response = await  axiosAdminInstance.get(`categories/${id}`)
+    console.log(response.data.categoryData)
+    setCategoryData(response.data.categoryData)
+    }catch(err){
+      setErr("Something went Wrong")
+    }
+    
+  }  
+  
 
   return (
     <Container className='content'>
     <Row className="category-management">
       <Col md={8}>
       <h4 className="title">Category Management</h4>
-
+      {err && <p>{err}</p> }
       <div className="row p-3">
         <div className="col-12 grid-margin">
           <div className="card category-table">
             <div className="card-body">
-              <h4 className="table-title">Order Status</h4>
+              <h4 className="table-title">All Categories</h4>
               <form className="nav-link mt-2 mt-md-0 d-lg-flex search">
                   <input
                     type="text"
@@ -56,8 +84,8 @@ const CategoryManagement = () => {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Products Count</th>
+                      <th>Image</th>
+                      <th>Category Name</th>
                       <th>Created Date</th>
                       <th>Updated Date</th>
                       <th>Update</th>
@@ -66,28 +94,28 @@ const CategoryManagement = () => {
                   </thead>
                   <tbody>
                     {categories.map(category => (
-                      <tr key={category.id}>
+                      <tr key={category._id}>
                         <td>
-                          <img src={category.image} alt="Category" className="category-image" />
-                          <span>{category.name}</span>
+                          <img src={categoryImages+category.image} alt="Category" className="category-image" />
+                          
                         </td>
-                        <td>{category.productCount}</td>
-                        <td>{category.createdDate}</td>
-                        <td>{category.updatedDate}</td>
+                        <td>{category.name}</td>
+                        <td>{category.createdAt}</td>
+                        <td>{category.updatedAt}</td>
                         <td>
                           <div
-                            className="badge badge-outline-success"
-                            onClick={() => handleUpdateCategory(category.id)}
+                            className="badge badge-outline-success action-btn"
+                            onClick={() => showUpdateForm(category._id)}
                           >
                             Update
                           </div>
                         </td>
                         <td>
                           <div
-                            className="badge badge-outline-danger"
-                            onClick={() => handleDeleteCategory(category.id)}
+                            className="badge badge-outline-danger action-btn"
+                            onClick={() => handleCategoryListing(category._id)}
                           >
-                            Delete
+                            {category.listed ?  "Unlist" : "list"} 
                           </div>
                         </td>
                       </tr>
@@ -100,8 +128,11 @@ const CategoryManagement = () => {
         </div>
       </div>
       </Col>
-    <Col md={4} className='right-sidebar'>
-      <AddCategories/>
+    <Col md={4} >
+    <div className='right-sidebar'>
+   {categoryData ? <CategoryForm categoryData={categoryData} onChildUpdate={handleChildUpdate}/> : 
+   <CategoryForm onChildUpdate={handleChildUpdate}/>}
+   </div>
     </Col>
     </Row>
     </Container>

@@ -5,7 +5,8 @@ const User = require("../models/Users");
 const { hashPassword, verifyPassword } = require("../utils/bcrypt");
 const { generateToken, verifyToken } = require("../utils/jwt");
 const  transporter = require("../utils/nodemailer");
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const Category = require("../models/Category");
 module.exports={
     async sendOTP(req,res){
         try{
@@ -226,8 +227,24 @@ module.exports={
         })
         res.status(200).json({success: true })
       }catch(err){
-        res.status(400)
+        res.status(500)
         throw new Error("Something Went Wrong While Blocking")
+      }
+    },
+    async listOrUnlistCategory(req,res){
+      try{
+        console.log("lsitng")
+       const {categoryId} = req.params
+       const category = await Category.findOne({_id:categoryId})
+       if(!category){
+         return res.status(404).json({message:"No such Category Found"})
+       }
+       console.log(category.listed)
+       category.listed = !category.listed
+       await category.save()
+       res.status(200).json({success:true}) 
+      }catch(err){
+        res.status(500).json({message:"Someething Went Wrong"})
       }
     }
 }

@@ -2,14 +2,19 @@ const mongoose = require('mongoose')
 
 const CategorySchema = mongoose.Schema({
    name: {
-    type: Number,
+    type: String,
     required: true
    },
    image: {
       type: String, 
       required: true
    },
-   createdAt: { type: Date, default: Date.now }
+   listed:{
+      type:Boolean,
+      default:true
+   }
+},{
+   timestamps:true
 });
 
 

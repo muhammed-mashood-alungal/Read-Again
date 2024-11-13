@@ -1,3 +1,4 @@
+const Category = require("../models/Category")
 const User = require("../models/Users")
 
 module.exports={
@@ -22,10 +23,58 @@ module.exports={
     },
     async addCategory(req,res){
       try{
-         const {name} = req.body
+         const data ={
+            name: req.body.name,
+            image:req.file.filename
+         }
+         const response = await Category.create(data)
+
+         res.status(200).json({success:true})
 
       }catch(err){
+      
+        res.status(400).json({ success: false, message: "Error while Creating category" });
+      }
+    },
+    async getAllCategories(req,res){
+        try{
+           const categories =await Category.find({})
+           console.log(categories)
+           res.status(200).json({categories:categories})
+        }catch(err){
+          res.status(400).json({messsage:err})
+        }
+    },
+    async getCategoryData(req,res){
+      try{
+        console.log(req.params.categortId)
+        const categoryData =await Category.findOne({_id:req.params.categoryId})
+        console.log(categoryData)
+        res.status(200).json({categoryData:categoryData})
+     }catch(err){
+       res.status(400).json({messsage:err})
+     }
+    },
+    async updateCategory(req,res){ 
+      try {
+        console.log("helasdfasdfksdf")
+        const {categoryId}=req.params
+        let updatedData={...req.body}
+        console.log(categoryId, updatedData)
+        if (req.file) {
+          updatedData.image = req.file.filename
+        }
+    
+        const updatedCategory = await Category.findByIdAndUpdate(
+          categoryId,
+          { $set: updatedData },
+          { new: true }
+        );
 
+        res.status(200).json({ success: true, updatedCategory });
+      } catch (err) {
+        res.status(400).json({ success: false, message: "Error while updating category" })
       }
     }
+    
 }

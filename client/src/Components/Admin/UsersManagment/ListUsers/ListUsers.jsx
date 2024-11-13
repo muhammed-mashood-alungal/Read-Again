@@ -18,7 +18,7 @@ const ListUsers = () => {
 
   useEffect(() => {
    const fetchUsers =async()=>{
-     const response = await axiosUserInstance.get(`/?page=${currentPage}$limit=${limit}`)
+     const response = await axiosUserInstance.get(`/?page=${currentPage}&limit=${limit}`)
      console.log(response.data)
      let pages= Math.ceil(response?.data?.totalUsers/limit)
      setTotalPages(pages)
@@ -38,9 +38,8 @@ const ListUsers = () => {
    
   }
   const viewUser =async (userId)=>{
-    
     try{
-      const response = await  axiosUserInstance(`/${userId}`)
+      const response = await  axiosUserInstance.get(`/${userId}`)
       console.log(response.data.userData)
       setUserDetails(response.data.userData)
       setRightSide("details")
