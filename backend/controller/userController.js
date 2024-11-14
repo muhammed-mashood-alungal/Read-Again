@@ -82,10 +82,7 @@ module.exports={
         }
          response =  await User.create(userData)
         }
-        console.log("user data")
-        console.log(userData)
         
-        console.log(response)
         if(response){
            delete userData.password
            const token = await generateToken({id:response._id,role:userData.role})
@@ -133,6 +130,9 @@ module.exports={
        const {email, password} = req.body.userData
        const doc = await User.findOne({email})
        console.log(doc)
+       if(doc.isBlocked){
+        return res.status(401).json({success :false  ,message : "You are temporarily Banned "})
+       }
        if(doc){
         const isMatched = await bcrypt.compare(password,doc.password)
        console.log(isMatched)
@@ -193,11 +193,14 @@ module.exports={
     },
     async getUserData(req,res){
       try{
-         const {userId} = req.params
+        if(req.user){
+          res.status(200).json({success:true, userData : req.user})
+        }
+         const {userId} = req.params 
          const data = await User.findOne({_id:userId},{password:0})
          console.log(data)
          res.status(200).json({success:true, userData : data})
-      }catch(err){
+      }catch(err){ 
          res.status(400).json({success:false , error : err.message ? err.message : "Something went Wrong"})
       }
     },
@@ -246,5 +249,22 @@ module.exports={
       }catch(err){
         res.status(500).json({message:"Someething Went Wrong"})
       }
+    },
+    async verifyToken(){
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+    
+      if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+      }
+    
+      jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+          return res.status(403).json({ message: 'Token is invalid' });
+        }
+    
+        // If the token is valid, respond with a success status
+        res.status(200).json({ message: 'Token is valid' });
+      });
     }
 }

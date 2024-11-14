@@ -51,7 +51,12 @@ const ListBooks = () => {
   }
   const handleBookDelete=async(bookId)=>{
     try{
-       await axiosBookInstance.put(`/${bookId}/toggle-delete`)
+      const token = localStorage.getItem("token")
+       await axiosBookInstance.put(`/${bookId}/toggle-delete`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
        console.log(bookId)
        setAllbooks(books=>{
         return books.map((book)=>{

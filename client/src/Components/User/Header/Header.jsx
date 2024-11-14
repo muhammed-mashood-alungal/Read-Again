@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {Link} from 'react-router-dom'
+import { getUserData } from '../../../redux/Actions/userActions';
+import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 const Header = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuOpen(!isMenuOpen);
-  };
-
-  return (
+  const [isLoggedIn,setIsLoggedIn] = useState(false)
+ 
+  
+ return (
     <header className="header">
       <div className="header__top">
         <div className="header__container container">
@@ -18,9 +19,9 @@ const Header = () => {
           <p className="header__alert-news">
             Super Values Deals - Save more coupons
           </p>
-          <a href="login-register.html" className="header__top-action">
+          <Link to='/login' className="header__top-action">
             Log In / Sign Up
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -37,36 +38,44 @@ const Header = () => {
             <a href="index.html" className="nav__menu-logo">
               <img src="./assets/img/logo.svg" alt="Logo" />
             </a>
-            <div className="nav__close" id="nav-close" onClick={toggleMenu}>
+            <div className="nav__close" id="nav-close" >
               <i className="fi fi-rs-cross-small"></i>
             </div>
           </div>
           <ul className="nav__list">
             <li className="nav__item">
-              <a href="index.html" className="nav__link active-link">
+              <Link to={'/'} className="nav__link active-link">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav__item">
-              <a href="shop.html" className="nav__link">
-                Shop
-              </a>
+              <Link to={'/library'} className="nav__link">
+                Library
+              </Link>
             </li>
             <li className="nav__item">
-              <a href="accounts.html" className="nav__link">
+              <Link to="#" className="nav__link">
                 My Account
-              </a>
-            </li>
-            <li className="nav__item">
-              <a href="compare.html" className="nav__link">
-                Compare
-              </a>
-            </li>
-            <li className="nav__item">
-              <a href="login-register.html" className="nav__link">
-                Login
-              </a>
-            </li>
+              </Link>
+              </li>
+              { !isLoggedIn && <li className="nav__item">
+                <Link to='/register' className="nav__link no-underline">
+                Sign up
+                </Link>
+                </li>}
+                {!isLoggedIn && <li className="nav__item">
+                <Link to='/login' className="nav__link no-underline">
+                Log In 
+                </Link>
+                </li>}
+              {
+                isLoggedIn && <li className="nav__item">
+                <Link to='/login' className="nav__link no-underline">
+                Log Out
+                </Link>
+                </li>
+              }
+              
           </ul>
           <div className="header__search">
             <input
@@ -88,7 +97,7 @@ const Header = () => {
             <img src="assets/img/icon-cart.svg" alt="Cart" />
             <span className="count">3</span>
           </a>
-          <div className="header__action-btn nav__toggle" id="nav-toggle" onClick={toggleMenu}>
+          <div className="header__action-btn nav__toggle" id="nav-toggle" >
             <img src="./assets/img/menu-burger.svg" alt="Menu" />
           </div>
         </div>

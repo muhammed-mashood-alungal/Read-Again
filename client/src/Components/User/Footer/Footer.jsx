@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="footer container">
+    <footer className=" container">
       <div className="footer__container grid">
         
         {/* Logo and Contact Section */}

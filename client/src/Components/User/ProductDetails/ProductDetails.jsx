@@ -1,102 +1,128 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { bookImages } from "../../../redux/Constants/imagesDir";
+import { Controlled as ControlledZoom } from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css';
 
-const ProductDetails = () => {
+const ProductDetails = ({bookData}) => {
   const [activeTab, setActiveTab] = useState("info");
+  const [selected,setSelectedImage] = useState(0)
+  const [images,setImages] =useState([])
+   const [isZoomed, setIsZoomed] = useState(false)
 
+  const handleZoomChange = useCallback(shouldZoom => {
+    setIsZoomed(shouldZoom)
+  }, [])
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+  useEffect(()=>{
+    if(bookData.images){
+      console.log(bookData.images)
+      setImages([...bookData.images])
+    }
+  },[bookData])
+ 
+  const handleImageClick=(index)=>{
+     let newArr = [...images]
+     console.log(newArr)
+     let temp = newArr[0]
+     newArr[0] = newArr[index]
+     newArr[index]=temp
+
+     setImages(newArr)
+  }
+  
 
   return (
     <>
-      {/* Product Details Section */}
       <section className="details section--lg">
         <div className="details__container container grid">
           {/* Product Image Gallery */}
           <div className="details__group">
-            <img
-              src="./assets/img/product-8-1.jpg"
+          <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
+             <img
+              src={bookImages+bookData._id+"/"+images[0]}
               alt="Product"
               className="details__img"
             />
+            </ControlledZoom>
             <div className="details__small-images grid">
-              <img
-                src="./assets/img/product-8-2.jpg"
-                alt="Product Thumbnail"
+              {images.length != 0  && images.map((image,i)=>{
+                return images[i+1] && <img
+                src={bookImages+bookData._id+"/"+images[i+1]}
                 className="details__small-img"
+                onClick={()=>{handleImageClick(i+1)}}
               />
-              <img
-                src="./assets/img/product-8-1.jpg"
-                alt="Product Thumbnail"
-                className="details__small-img"
-              />
-              <img
-                src="./assets/img/product-8-2.jpg"
-                alt="Product Thumbnail"
-                className="details__small-img"
-              />
+              })}
+              
             </div>
           </div>
 
           {/* Product Details */}
           <div className="details__group">
-            <h3 className="details__title">Henley Shirt</h3>
+            <h3 className="details__title">{bookData.title}</h3>
             <p className="details__brand">
-              Brand: <span>adidas</span>
+              Author: <span>{bookData.author}</span>
             </p>
-            <div className="details__price flex">
-              <span className="new__price">$116</span>
-              <span className="old__price">$200.00</span>
+            <div className="details__price ">
+              <div className="flex">
+              <span className="new__price">{bookData?.physical?.price || 300}</span>
+              <span className="old__price">{bookData?.physical?.price || 499}</span>
               <span className="save__price">25% Off</span>
+              </div>
+              <div>
+              <div className="product__rating">
+                    <i className="fi fi-rs-star"></i>
+                    <i className="fi fi-rs-star"></i>
+                    <i className="fi fi-rs-star"></i>
+                    <i className="fi fi-rs-star"></i>
+                    <i className="fi fi-rs-star"></i>
+                  </div>
+              </div>
+             
             </div>
             <p className="short__description">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate, fuga.
+             {bookData.description}
             </p>
+            <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p>
             <ul className="products__list">
               <li className="list__item flex">
-                <i className="fi-rs-crown"></i> 1 Year Al Jazeera Brand Warranty
+                <i className="fi-rs-crown"></i>Gift Wrapping Available
               </li>
               <li className="list__item flex">
-                <i className="fi-rs-refresh"></i> 30 Days Return Policy
+                <i className="fi-rs-refresh"></i> Borrowing Available for you
               </li>
               <li className="list__item flex">
-                <i className="fi-rs-credit-card"></i> Cash on Delivery available
+                <i className="fi-rs-credit-card"></i> {"Cash on Delivery available"}
               </li>
+              
             </ul>
 
-            {/* Color Options */}
-            <div className="details__color flex">
-              <span className="details__color-title">Color</span>
-              <ul className="color__list">
-                <li>
-                  <a href="#" className="color__link" style={{ backgroundColor: "hsl(37, 100%, 65%)" }}></a>
-                </li>
-                {/* Add more color options as needed */}
-              </ul>
-            </div>
+            
 
             {/* Size Options */}
             <div className="details__size flex">
-              <span className="details__size-title">Size</span>
+              <span className="details__size-title">Available Formats</span>
               <ul className="size__list">
-                <li><a href="#" className="size__link size-active">M</a></li>
-                {/* Add more size options as needed */}
+                <li  className="size__link size-active mt-2">Physical Book</li>
+                <li  className="size__link size-active mt-2">e-Book</li>
+                <li  className="size__link size-active mt-2">Audio Book</li>
               </ul>
             </div>
 
             {/* Quantity and Actions */}
             <div className="details__action">
               <input type="number" className="quantity" defaultValue="3" />
-              <a href="#" className="btn btn--sm">Add To Cart</a>
               <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
+              <button  className="primary-btn">Add To Cart</button>
+              <button  className="primary-btn">Buy Now</button>
+              <button  className="primary-btn">Borrow</button>
+              
+              
             </div>
 
             {/* Meta Information */}
-            <ul className="details__meta">
-              <li className="meta__list flex"><span>SKU:</span>FWM15VKT</li>
-              <li className="meta__list flex"><span>Tags:</span>Clothes, Women, Dress</li>
-              <li className="meta__list flex"><span>Availability:</span>8 Items in Stock</li>
-            </ul>
+            
           </div>
         </div>
       </section>
@@ -112,11 +138,11 @@ const ProductDetails = () => {
           {/* Additional Info Tab */}
           {activeTab === "info" && (
             <div className={`details__tab-content ${activeTab == 'info' && "active-tab"}`} id="info">
-              <table className="info__table">
+              <table className="info__table mb-4">
                 <tbody>
-                  <tr><th>Stand Up</th><td>35" L x 24"W x 37-45"H</td></tr>
-                  <tr><th>Stand Up</th><td>35" L x 24"W x 37-45"H</td></tr>
-                  <tr><th>Stand Up</th><td>35" L x 24"W x 37-45"H</td></tr>
+                  <tr><th>Author</th><td> {bookData.author}</td></tr>
+                  <tr><th>Published Date</th><td>{bookData.publicationDate}</td></tr>
+                  <tr><th>Page Count</th><td>348</td></tr>
                   {/* Add more rows as needed */}
                 </tbody>
               </table>
@@ -127,13 +153,24 @@ const ProductDetails = () => {
           {activeTab === "reviews" && (
             <div className={`details__tab-content ${activeTab == 'reviews' && "active-tab"}`} id="reviews">
               <div className="reviews__container grid">
-                <div className="review__single">
+                <div className="review__single flex-column-left ">
                   <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
-                {/* Add more review items as needed */}
+                <div className="review__single flex-column-left ">
+                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+                  <h4 className="review__title">Jacky Chan</h4>
+                  <p className="review__description">Fast shipping from Poland.</p>
+                  <span className="review__date">December 4, 2022 at 3:12 pm</span>
+                </div>
+                <div className="review__single flex-column-left ">
+                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+                  <h4 className="review__title">Jacky Chan</h4>
+                  <p className="review__description">Fast shipping from Poland.</p>
+                  <span className="review__date">December 4, 2022 at 3:12 pm</span>
+                </div>
               </div>
 
               {/* Review Form */}

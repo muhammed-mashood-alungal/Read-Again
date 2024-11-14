@@ -25,26 +25,39 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
    setName("")
    setImage(null)
    setImageUrl("")
+   setErr("")
     setTimeout(()=>{
      setSuccess(false)
-
+   
     },3000)
    }
   },[success])
   const handleCreateCategory = async(e) => {
     try{
       e.preventDefault()
-      if(name.trim() ==""){
+      setErr('')
+      if(name.trim() == ""){
         setErr("Enter a Category Name")
         return
       }
+      if(!image && !imageUrl){
+        setErr("Select  category Image")
+        return 
+      }
       const formData =new FormData()
       formData.append("type", "category")
-      formData.append("name",name)
       formData.append("image" ,image )
+      formData.append("name",name)
+      
       
       console.log(formData)
-      const response = await axiosAdminInstance.post('/categories/create',formData)
+      const token=localStorage.getItem("token")
+      const response = await axiosAdminInstance.post('/categories/create',formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log(response.data)
       if(response.status ==200){
         setSuccess(true)
@@ -59,6 +72,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const handleUpdateCategory =async (e) => {
     try{
       e.preventDefault()
+      setErr('')
       if(name.trim() ==""){
         setErr("Enter a Category Name")
         return
@@ -71,7 +85,12 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       }
       
       console.log(categoryData._id)
-      const response = await axiosAdminInstance.put(`/categories/${categoryData._id}/edit`,formData)
+      const token= localStorage.getItem("token")
+      const response = await axiosAdminInstance.put(`/categories/${categoryData._id}/edit`,formData,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       console.log(response.data)
       if(response.status ==200){
         setSuccess(true)
@@ -91,6 +110,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const handlePhoto = (e) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0])
+      console.log(e.target.files[0])
       setImageUrl(URL.createObjectURL(e.target.files[0]))
     } 
   };
@@ -100,7 +120,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
     <div className="category-form ">
         <h4 className="card-title">{isCreateForm ? "Create New " : "Update "}Category</h4>
         {success && <p>Success .....!</p>}
-        {err && <p>{err}</p>}
+        {err && <p className='err-msg'>{err}</p>}
         <form onSubmit={isCreateForm ?handleCreateCategory : handleUpdateCategory}  encType='multipart/form-data'>
           <div className="form-group">
             <label>Name</label>

@@ -1,8 +1,11 @@
 const express= require('express')
 const upload = require('../utils/multer')
-const { createBook, getAllBooks, getBookData, editBook, handleBookDelete } = require('../controller/BookConroller')
+const { createBook, getAllBooks, getBookData, editBook, handleBookDelete, getJustPublishedBooks, getRelatedBooks } = require('../controller/BookConroller')
+const { isAdmin, protect } = require('../middlewares/auth')
 const router = express.Router()
 
+
+router.get('/:bookId',getBookData)
 router.post('/create',upload.fields([
   {name:'image-1'},
   {name:'image-2'},
@@ -14,5 +17,7 @@ router.post('/create',upload.fields([
 router.put('/:bookId/edit',editBook)  
 router.get('/',getAllBooks) 
 router.put('/:bookId/toggle-delete',handleBookDelete)
-router.get('/:bookId',getBookData) 
+
+router.get('/list/just-published',getJustPublishedBooks) 
+router.post('/list/related-books/:bookId',getRelatedBooks)
 module.exports=router 

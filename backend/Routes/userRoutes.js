@@ -10,10 +10,12 @@ const { sendOTP,
         deleteUser, 
         recoverUser,
         blockUser, 
-        unBlockUser 
+        unBlockUser,
+        verifyToken 
         }  = require('../controller/userController')
 const passport = require('passport')
 const { getAllUsers } = require('../controller/adminController')
+const { isAdmin, protect ,isLoggedIn} = require('../middlewares/auth')
 const router = express.Router()
 
 router.get('/',getAllUsers)
@@ -36,4 +38,6 @@ router.get('/auth/google/callback',
         res.redirect('http://localhost:3000/');
     }
 );
+router.get('/verify-token', verifyToken);
+
 module.exports=router 

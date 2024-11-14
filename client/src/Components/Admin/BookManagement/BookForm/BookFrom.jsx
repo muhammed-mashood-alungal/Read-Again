@@ -3,6 +3,7 @@ import { bookFormValidate } from './BookFormValidate';
 import { axiosAdminInstance, axiosBookInstance } from '../../../../redux/Constants/axiosConstants';
 import CropImage from '../../CropImage/CropImage'
 import { bookImages } from '../../../../redux/Constants/imagesDir';
+import { ThermometerSnowflakeIcon } from 'lucide-react';
 
 const BookForm = ({ bookDetails }) => {
   const [title, setTitle] = useState('');
@@ -108,10 +109,15 @@ const handleImageClick = (image, index) => {
             setErr(result.message)
             return
         }
+        const token=localStorage.getItem("token")
         if(!isCreateForm){
          
-         console.log(bookData,bookDetails._id)
-          await axiosBookInstance.put(`/${bookDetails._id}/edit`,bookData)
+         console.log(token)
+          await axiosBookInstance.put(`/${bookDetails._id}/edit`,bookData,{
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          })
           setSuccess(true)
           console.log("success")
         }else{
@@ -135,7 +141,11 @@ const handleImageClick = (image, index) => {
                 })
             }
             
-            await axiosBookInstance.post("/create",formData)
+            await axiosBookInstance.post("/create",formData,{
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            })
             setSuccess(true)
             console.log("success")
         }
