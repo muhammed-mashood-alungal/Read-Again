@@ -18,11 +18,31 @@ import CategoryManagement from './Components/Admin/CategoryManagment/ListCategor
 import ListUsers from './Components/Admin/UsersManagment/ListUsers/ListUsers';
 import ListBooks from './Components/Admin/BookManagement/ListBooks.jsx/ListBooks';
 import AdminLogin from './Components/Admin/AdminLogin/AdminLogin';
-import { axiosUserInstance } from './redux/Constants/axiosConstants';
+import { axiosAdminInstance, axiosUserInstance } from './redux/Constants/axiosConstants';
 import { useEffect } from 'react';
+import { setAuth } from './redux/Actions/userActions';
 
 function App() {
-  
+  useEffect(() => {
+    const verifyToken = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            dispatch(setAuth({isLoggedIn : false , role : null}));
+            return;
+        }
+        try {
+            const response = await axiosAdminInstance.post('/verify-token', { token });
+            dispatch(setAuth({isLoggedIn : response.data.isLoggedIn , role : response.data.role}));
+        } catch (error) {
+            console.error('Token verification failed:', error);
+            dispatch({isLoggedIn : false , role : null});
+        }
+    };
+
+    verifyToken();
+}, [dispatch]);
+
+
   return (
     <BrowserRouter>
     <div className="App">

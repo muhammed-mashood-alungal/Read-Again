@@ -9,3 +9,6 @@ export const axiosAdminInstance = axios.create({
 export const axiosBookInstance = axios.create({
       baseURL:"http://localhost:5000/api/books"
 })
+export const axiosCategoryInstance = axios.create({
+    baseURL:"http://localhost:5000/api/categories"
+})

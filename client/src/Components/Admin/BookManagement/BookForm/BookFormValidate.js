@@ -1,13 +1,13 @@
 export function bookFormValidate(bookData,updating) {
     const {
-        title, author, category, genre, description, images, publicationDate, ISBN, formats
+        title, author, category, genre, description, imageUrls, publicationDate, ISBN, formats
     } = bookData;
 
     if (title.trim() === "") {
         return { success: false, message: "Please enter a title" };
     }
-
-    if (images.length < 3 && !updating) {
+    
+    if (imageUrls.length < 3) {
         return { success: false, message: "Please upload at least 3 images" };
     }
 

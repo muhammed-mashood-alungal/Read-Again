@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './ListCategories.css';
 import { Col, Container, Row } from 'reactstrap';
-import {axiosAdminInstance, axiosUserInstance} from '../../../../redux/Constants/axiosConstants'
+import {axiosAdminInstance, axiosCategoryInstance, axiosUserInstance} from '../../../../redux/Constants/axiosConstants'
 import CategoryForm from '../CategoryForm/CategoryForm';
 import { categoryImages } from '../../../../redux/Constants/imagesDir';
+import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [categoryData , setCategoryData] =useState({})
   const [err, setErr] = useState("")
   const [isChildUpdated, setIsChildUpdated] = useState(false);
+  const [selectedCategoryId,setSelectedCategoryId] = useState(null)
+
   useEffect(()=>{
     async function fetchCategories(){
       try{
-        const response = await axiosAdminInstance.get('/categories')
+        const response = await axiosCategoryInstance.get('/')
         if(response.status == 200){
           setCategories(response.data.categories)
         }
@@ -29,36 +32,61 @@ const CategoryManagement = () => {
     setIsChildUpdated(!isChildUpdated);
   };
 
-  const handleCategoryListing =async (id) => {
+  const handleCategoryListing =async () => {
     try{
-      console.log(id)
-      await axiosAdminInstance.put(`/categories/${id}/list-or-unlist`)
+      await axiosCategoryInstance.put(`/${selectedCategoryId}/list-or-unlist`)
       setCategories(categories=>{
         return categories.map((category)=>{
-         return  category._id == id ? {...category,listed:!category.listed} : category
+         return  category._id == selectedCategoryId ? {...category,listed:!category.listed} : category
         })
       })
     }catch(err){
       setErr(err?.response?.data?.message)
+    }finally{
+      setSelectedCategoryId(null)
     }
   };
   const showUpdateForm = async(id) =>{
     try{
       console.log(id) 
-    const response = await  axiosAdminInstance.get(`categories/${id}`)
+    const response = await  axiosCategoryInstance.get(`/${id}`)
     console.log(response.data.categoryData)
     setCategoryData(response.data.categoryData)
     }catch(err){
       setErr("Something went Wrong")
     }
-    
   }  
+  const handleSearch =async (e)=>{
+    try{
+    const query = e.target.value
+    const response = await axiosCategoryInstance.get(`/?name=${query}`)
+    if(response.status == 200){
+      setCategories(response.data.categories)
+    }
+   }catch(err){
+      setErr(err.response.data.message)
+   }
+  }
+  const confirmAction = (categoryId)=>{
+    setSelectedCategoryId(categoryId)
+  }
+  
+
+  const onCancel = ()=>{
+    setSelectedCategoryId(null)
+  }
   
 
   return (
     <Container className='content'>
     <Row className="category-management">
       <Col md={8}>
+      {selectedCategoryId && 
+       <ConfirmationModal 
+       title={`Are You Sure to Proceed ?`}
+       onConfirm={handleCategoryListing} 
+       onCancel={onCancel}/>
+      }
       <h4 className="title">Category Management</h4>
       {err && <p>{err}</p> }
       <div className="row p-3">
@@ -71,6 +99,7 @@ const CategoryManagement = () => {
                     type="text"
                     className="form-control mt-1"
                     placeholder="Search categories"
+                    onChange={handleSearch}
                   />
                   <button
                     className="primary-btn"
@@ -113,7 +142,7 @@ const CategoryManagement = () => {
                         <td>
                           <div
                             className="badge badge-outline-danger action-btn"
-                            onClick={() => handleCategoryListing(category._id)}
+                            onClick={() => confirmAction(category._id)}
                           >
                             {category.listed ?  "Unlist" : "list"} 
                           </div>

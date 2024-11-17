@@ -1,22 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import './CropImage.css'
+import './CropImage.css';
 
 const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
-    const [crop, setCrop] = useState({
-        unit: '%',
-        width: 90,
-        height: 90,
-        x: 5,
-        y: 5
-    });
+    const [crop, setCrop] = useState(null);
     const [completedCrop, setCompletedCrop] = useState(null);
     const imgRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
-        // Cleanup function for URLs
         return () => {
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
@@ -24,14 +18,14 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
         };
     }, [previewUrl]);
 
-   // if (!isOpen) return null;
-
     const generateCroppedImage = (crop, imgRef) => {
         if (!crop || !imgRef.current) return null;
 
         const canvas = document.createElement('canvas');
-        const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
-        const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
+        const image = imgRef.current;
+        
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
 
         const pixelCrop = {
             x: crop.x * scaleX,
@@ -40,21 +34,25 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
             height: crop.height * scaleY,
         };
 
-        canvas.width = pixelCrop.width;
-        canvas.height = pixelCrop.height;
+        // Set output size to match the crop size while maintaining square shape
+        const outputSize = 300; // Fixed output size
+        canvas.width = outputSize;
+        canvas.height = outputSize;
 
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
         ctx.drawImage(
-            imgRef.current,
+            image,
             pixelCrop.x,
             pixelCrop.y,
             pixelCrop.width,
             pixelCrop.height,
             0,
             0,
-            pixelCrop.width,
-            pixelCrop.height
+            outputSize,
+            outputSize
         );
 
         return canvas;
@@ -62,12 +60,48 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
 
     const handleImageLoad = (image) => {
         imgRef.current = image;
-        return false;
+        
+        if (!isInitialized) {
+            const { width, height } = image;
+            
+            // Calculate initial size (1/3 of the smaller dimension)
+            const initialSize = Math.min(width, height) / 3;
+            
+            // Calculate center position
+            const x = (width - initialSize) / 2;
+            const y = (height - initialSize) / 2;
+            
+            const initialCrop = {
+                unit: 'px',
+                width: initialSize,
+                height: initialSize,
+                x: x,
+                y: y,
+                aspect: 1
+            };
+            
+            setCrop(initialCrop);
+            setCompletedCrop(initialCrop);
+            setIsInitialized(true);
+        }
+    };
+
+    const resetStates = () => {
+        setCrop(null);
+        setCompletedCrop(null);
+        setPreviewUrl(null);
+        setIsInitialized(false);
+        imgRef.current = null;
+    };
+    
+    const handleClose = () => {
+        resetStates();
+        onClose();
     };
 
     const handlePreviewClick = () => {
-        if (!completedCrop) return;
-
+        if (!completedCrop || !imgRef.current) return;
+        
         const canvas = generateCroppedImage(completedCrop, imgRef);
         if (!canvas) return;
 
@@ -75,7 +109,6 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
             (blob) => {
                 if (!blob) return;
                 
-                // Cleanup old preview
                 if (previewUrl) {
                     URL.revokeObjectURL(previewUrl);
                 }
@@ -89,16 +122,14 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
     };
 
     const handleSaveClick = () => {
-        if (!completedCrop) return;
+        if (!completedCrop || !imgRef.current) return;
 
         const canvas = generateCroppedImage(completedCrop, imgRef);
         if (!canvas) return;
 
         canvas.toBlob(
             (blob) => {
-
                 if (!blob) return;
-                // Convert blob to File object to match your parent component's expectations
                 const file = new File([blob], imageSrc.name, { type: imageSrc.type });
                 onCropComplete(file);
             },
@@ -107,50 +138,93 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
         );
     };
 
-    return (
-        isOpen && (<div className="modal-overlay">
-            <div className="">
-                <h3>Crop Image</h3>
-                <div className="react-crop-container">
-                    <ReactCrop
-                        crop={crop}
-                        onChange={newCrop => setCrop(newCrop)}
-                        onComplete={c => setCompletedCrop(c)}
-                    >
-                        <img
-                            ref={imgRef}
-                            src={URL.createObjectURL(imageSrc)}
-                            alt="Crop me"
-                            onLoad={e => handleImageLoad(e.target)}
-                        />
-                    </ReactCrop>
-                </div>
-                
-                {previewUrl && (
-                    <div className="preview-container">
-                        <h4>Preview:</h4>
-                        <img 
-                            src={previewUrl} 
-                            alt="Preview" 
-                            style={{ maxWidth: '100%', maxHeight: '200px' }}
-                        />
-                    </div>
-                )}
+    const handleCropChange = (newCrop) => {
+        // Ensure the crop remains within the image bounds
+        if (imgRef.current) {
+            const { width: imgWidth, height: imgHeight } = imgRef.current;
+            
+            // Adjust crop if it exceeds image boundaries
+            let adjustedCrop = { ...newCrop };
+            
+            if (adjustedCrop.x < 0) adjustedCrop.x = 0;
+            if (adjustedCrop.y < 0) adjustedCrop.y = 0;
+            
+            // Ensure crop doesn't exceed image dimensions
+            if (adjustedCrop.x + adjustedCrop.width > imgWidth) {
+                adjustedCrop.width = imgWidth - adjustedCrop.x;
+                adjustedCrop.height = adjustedCrop.width; // Maintain square
+            }
+            if (adjustedCrop.y + adjustedCrop.height > imgHeight) {
+                adjustedCrop.height = imgHeight - adjustedCrop.y;
+                adjustedCrop.width = adjustedCrop.height; // Maintain square
+            }
+            
+            // Set minimum size
+            const minSize = 50; // Minimum size in pixels
+            if (adjustedCrop.width < minSize) {
+                adjustedCrop.width = minSize;
+                adjustedCrop.height = minSize;
+            }
+            
+            setCrop(adjustedCrop);
+        } else {
+            setCrop(newCrop);
+        }
+    };
 
-                <div className="button-container">
-                    <button onClick={handlePreviewClick}>
-                        Preview
-                    </button>
-                    <button onClick={handleSaveClick}>
-                        Save
-                    </button>
-                    <button className="cancel-btn" onClick={onClose}>
-                        Cancel
-                    </button>
+    return (
+        isOpen && (
+            <div className="modal-overlay">
+                <div className="">
+                    <div className="react-crop-container">
+                        <div>
+                            <div>
+                            <h3>Crop Image</h3>
+                            <button onClick={handleSaveClick} className='crop-btn'>
+                            Save
+                        </button>
+                            </div>
+                           
+                            <ReactCrop
+                                crop={crop}
+                                onChange={handleCropChange}
+                                onComplete={(c) => {
+                                    setCompletedCrop(c);
+                                }}
+                                aspect={1}
+                                minWidth={50}     // Minimum size allowed
+                                ruleOfThirds     // Adds rule of thirds grid
+                            >
+                                <img
+                                    ref={imgRef}
+                                    src={URL.createObjectURL(imageSrc)}
+                                    alt="Crop me"
+                                    className='cropping-img'
+                                    onLoad={e => handleImageLoad(e.target)}
+                                />
+                            </ReactCrop>
+                        </div>
+                        
+                        {previewUrl && (
+                            <div className="preview-container">
+                                <h4>Preview:</h4>
+                                <img 
+                                    src={previewUrl} 
+                                    alt="Preview" 
+                                    className='preview-img'
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="button-container crop-btn-container">
+                        
+                        
+                    </div>
                 </div>
             </div>
-        </div>
-    ));
+        )
+    );
 };
 
 export default CropImage;

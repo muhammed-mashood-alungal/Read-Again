@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -16,6 +16,10 @@ import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
 
 const Register = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const errorMessage = searchParams.get("error");
+
   const data = useSelector(state=>state.registrationData)
   const [formData, setFormData] = useState({
     username: data ? data.username :'',
@@ -23,11 +27,15 @@ const Register = () => {
     password: data ? data.password :'',
     confirmPassword: data ? data.confirmPassword :''
   });
-  
-  
   const [err,setErr]=useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(errorMessage){
+      setErr(errorMessage)
+    }
+  },[])
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });

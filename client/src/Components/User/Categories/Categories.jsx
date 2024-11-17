@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Categories.css'; 
-import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosAdminInstance, axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { Link } from 'react-router-dom';
 import { categoryImages } from '../../../redux/Constants/imagesDir';
 
@@ -10,10 +10,8 @@ const CategoriesSection = () => {
   useEffect(()=>{
     async function fetchCategories(){
       try{
-        const response = await axiosAdminInstance.get('/categories')
-        if(response.status == 200){
-          setCategories(response.data.categories.filter((c)=>c.listed))
-        }
+        const response = await axiosCategoryInstance.get('/listed')
+        setCategories(response.data.categories)
        }catch(err){
           setErr(err.response?.data?.message)
        }

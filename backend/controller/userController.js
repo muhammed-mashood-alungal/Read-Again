@@ -165,32 +165,38 @@ module.exports={
             res.status(400).json({success:false ,message :"Something Went Wrong !" })
         }
     },
-    async findOrCreateGoogleUser(profile){
+    async  findOrCreateGoogleUser(profile) {
       try {
-          let user = await User.findOne({ googleId: profile.id });
-          
-          if (!user) {
-            let emailExist = await User.findOne({email : profile.emails[0].value})
-             if(!emailExist){
-              user = new User({
-                googleId: profile.id,
-                email: profile.emails[0].value,
-                username: profile.displayName,
-                role:"USER"
-             });
-             await user.save();
-            }else{
-             await User.updateOne({email:profile.emails[0].value},{$set:{googleId:profile.id}})
-            }
-             
-              
+        let user = await User.findOne({ googleId: profile.id });
+        if (user && user.isBlocked) {
+          return { success: false, message: "Your account is banned." };
+        }
+    
+        if (!user) {
+          const emailExist = await User.findOne({ email: profile.emails[0].value });
+          if (!emailExist) {
+            user = new User({
+              googleId: profile.id,
+              email: profile.emails[0].value,
+              username: profile.displayName,
+              role: "USER",
+            });
+            await user.save();
+          } else {
+            user = await User.findOneAndUpdate(
+              { email: profile.emails[0].value },
+              { googleId: profile.id },
+              { new: true }
+            );
           }
-  
-          return user;
+        }
+    
+        return { success: true, user };
       } catch (error) {
-          throw new Error("Error finding or creating user: " + error.message);
+        return { success: false, message: error.message };
       }
-    },
+    }
+    ,
     async getUserData(req,res){
       try{
         if(req.user){

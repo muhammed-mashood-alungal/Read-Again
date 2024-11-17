@@ -5,6 +5,7 @@ const {connectDB} = require('./config/db')
 const userRoutes = require('./Routes/userRoutes')
 const adminRoutes = require('./Routes/adminRoutes')
 const bookRoutes = require('./Routes/booksRoutes')
+const categoryRoutes = require('./Routes/categoryRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -30,6 +31,7 @@ require('./utils/passport.js');
 app.use('/api/users',userRoutes)
 app.use('/api/admin',adminRoutes)
 app.use('/api/books',bookRoutes)
+app.use('/api/categories',categoryRoutes)
 app.use((err,req,res,next)=>{
     console.log(req.body)
  

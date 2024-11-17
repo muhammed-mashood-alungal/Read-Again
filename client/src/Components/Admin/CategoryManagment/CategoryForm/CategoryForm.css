@@ -1,0 +1,8 @@
+.crop-btn{
+    color:#fff;
+    border-radius: 10px;
+    font-size: 18px;
+}
+.crop-btn:hover{
+    color:#088179;
+}

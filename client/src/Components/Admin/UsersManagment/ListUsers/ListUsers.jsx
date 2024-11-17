@@ -5,10 +5,13 @@ import UserForm from '../UserForm/UserForm';
 import { axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
 import UserDetails from '../UserDetails/UserDetails';
 import {useDispatch} from 'react-redux'
+import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
   const [userDetails,setUserDetails] = useState({})
-  const [rightSide , setRightSide] = useState("create")
+  const [selectedUserId, setSelectedUserId] = useState(null)
+  const [showUserData , setShowUserData] = useState(false)
+  const [action,setAction] =  useState("")
   const [listingError,setListingError]= useState("")
   const [currentPage,setCurrentPage]=useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -39,21 +42,13 @@ const ListUsers = () => {
    fetchUsers()
   }, [currentPage]);
   
-  const rightSideBar=()=>{
-    if(rightSide === "create"){
-      return <UserForm/>
-    }
-    if(rightSide === "details"){
-      return <UserDetails user={userDetails}/>
-    }
-   
-  }
+
   const viewUser =async (userId)=>{
     try{
       const response = await  axiosUserInstance.get(`/${userId}`)
       console.log(response.data.userData)
       setUserDetails(response.data.userData)
-      setRightSide("details")
+      setShowUserData(true)
     }catch(err){
       console.log(err)
     }
@@ -97,12 +92,52 @@ const ListUsers = () => {
      setListingError("Something Went Wrong While deleteing .Please try again")
     }
    };
-  
+  const handleUserSearch=async(e)=>{
+    try{
+      const name = e.target.value
+      const response = await axiosUserInstance.get(`/?page=${currentPage}&limit=${limit}&name=${name}`)
+      console.log(response.data)
+      let pages= Math.ceil(response?.data?.totalUsers/limit)
+      setTotalPages(pages)
+      setUsers(response?.data?.users)
+      console.log(response?.data?.users)
+    }catch(err){
+      console.log(err)
+    }
+  }
 
+  const confirmAction = (userId,action)=>{
+    setSelectedUserId(userId)
+    setAction(action)
+  }
+  const onConfirm=()=>{
+    if(action=="BLOCK"){
+      handleBlockUser(selectedUserId)
+      setSelectedUserId(null)
+    setAction("")
+    }else{
+      handleUnBlockUser(selectedUserId)
+       setSelectedUserId(null)
+      setAction("")
+    }
+  }
+  const onCancel = ()=>{
+    setSelectedUserId(null)
+    setAction("")
+  }
   return (
     <Container className='content'>
+      {selectedUserId && 
+       <ConfirmationModal 
+       title={`Confirm ${action == "BLOCK" ? "Blocking" : "Un Blocking"} this User`}
+       message="Are You Sure to Proceed ?" 
+       onConfirm={onConfirm} 
+       onCancel={onCancel}/>
+      }
+     
     <Row className="category-management">
       <Col md={8}>
+      
       <h4 className="title">User Management</h4>
 
       <div className="row p-3">
@@ -115,12 +150,13 @@ const ListUsers = () => {
                     type="text"
                     className="form-control mt-1"
                     placeholder="Search Users"
+                    onChange={handleUserSearch}
                   />
-                  <button
+                  {/* <button
                     className="primary-btn"
                   >
                     Search
-                  </button>
+                  </button> */}
                 </form>
                 <br />
               <div className="table-responsive">
@@ -155,7 +191,7 @@ const ListUsers = () => {
                         <td>
                           <div
                             className="badge badge-outline-danger action-btn"
-                            onClick={() => user.isBlocked ?  handleUnBlockUser(user._id) : handleBlockUser(user._id)}
+                            onClick={() => user.isBlocked ?  confirmAction(user._id,"UN_BLOCK") : confirmAction(user._id,"BLOCK")}
                           >
                             {user.isBlocked ? "Unblock" : "Block"}
                           </div>
@@ -182,10 +218,15 @@ const ListUsers = () => {
      
        
       </Col>
+      { showUserData &&
+
     <Col md={4} className='right-sidebar'>
-     {rightSideBar()}
-     {rightSide != "create" && <p onClick={()=>{setRightSide("create")}}>Back</p>}
+  
+    <UserDetails user={userDetails}/>
+    <p onClick={()=>{setShowUserData(false)}}>Back</p>
+      
     </Col>
+      }
     </Row>
     </Container>
   );

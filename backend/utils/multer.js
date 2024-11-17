@@ -6,7 +6,7 @@ let count=23423123
 
 const storage = multer.diskStorage({
     destination:function (req,file,cb){
-        console.log(req.body,file)
+      
         if (req.body.type === "category") {
             console.log("hello from multer")
             
@@ -26,6 +26,15 @@ const storage = multer.diskStorage({
             }
 
             cb(null, destPath);
+        }
+        if(req.body.type == 'update-book'){
+            const {bookId} = req.params
+            
+            const destPath = `public/images/books/${bookId}`
+            console.log(bookId,destPath)
+            console.log("hello from multer book images update")
+            cb(null, destPath);
+
         }
         
     }, 

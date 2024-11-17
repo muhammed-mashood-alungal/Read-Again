@@ -45,15 +45,36 @@ module.exports = {
     },
     async getAllBooks(req, res) {
         try {
-            let { page, limit } = req.query
+            let { page, limit ,name} = req.query
             console.log(req.query)
+            const query = {};
+
+            if (name) {
+                query.title = { $regex: new RegExp(name, "i") };
+            }
             page = parseInt(page)
             limit = parseInt(limit)
             let skip = (page - 1) * limit
             console.log(skip, limit)
-            const allBooks = await Book.find({}).skip(skip).limit(limit)
+            const allBooks = await Book.find(query).skip(skip).limit(limit)
             const totalBooks = await Book.countDocuments({})
-
+   
+            res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
+        } catch (err) {
+            console.log(err)
+            res.status(500).json({ message: "Somthing went wrong" })
+        }
+    },
+    async getListedBooks(req, res) {
+        try {
+            let { page, limit } = req.query
+            page = parseInt(page)
+            limit = parseInt(limit)
+            let skip = (page - 1) * limit
+            console.log(skip, limit)
+            const allBooks = await Book.find({isDeleted:false}).skip(skip).limit(limit)
+            const totalBooks = await Book.countDocuments({})
+   
             res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
@@ -93,7 +114,8 @@ module.exports = {
 
             const { bookId } = req.params
             console.log(bookId)
-            const bookData = await Book.findOne({ _id: bookId })
+            const bookData = await Book.findOne({ _id: bookId }).populate("category")
+            console.log(bookData)
             res.status(200).json({ success: true, bookData })
         } catch (err) {
             console.log(err)
@@ -117,28 +139,66 @@ module.exports = {
     },
     async getJustPublishedBooks(req, res) {
         try {
-            const books = await Book.find({}).sort({ createdAt: -1 }).limit(10)
+            const books = await Book.find({isDeleted:false}).sort({ createdAt: -1 }).limit(10)
             res.status(200).json({ books: books })
         } catch (err) {
             console.log(err)
             res.status(500).json({ message: "Something Went Wrong" })
         }
     },
-    async getRelatedBooks(req,res){
-        try{
-            const {tags}  = req.body
-            const {bookId} = req.params
-            console.log(tags,bookId)
-           const books = await Book.find({
-            _id:{$ne:bookId},
-            $or:tags
-           }).limit(8)
-           console.log(books)
-           res.status(200).json({ books: books })
+    async getRelatedBooks(req, res) {
+        try {
+            const { tags } = req.body
+            const { bookId } = req.params
+            console.log(tags, bookId)
+            const books = await Book.find({
+                _id: { $ne: bookId },
+                $or: tags,
+                isDeleted:false
+            }).limit(8)
+            console.log(books)
+            res.status(200).json({ books: books })
 
+        } catch (err) {
+            console.log(err)
+            res.status(404).json({ message: "Something went wrong while listing related Books" })
+        }
+    },
+    async updateBookImage(req,res){
+        try{
+            console.log("update controller")
+            const { bookId } = req.params
+            const {oldUrl} = req.body
+            console.log(req.file.filename)
+            console.log("old url",oldUrl)
+           const updatingBook = await Book.findOne({_id:bookId})
+
+           const oldPath = path.join(__dirname, '..', `public/images/books/${updatingBook._id}/${oldUrl}`);
+           if(fs.existsSync(oldPath)){
+            console.log("file exists")
+            fs.unlinkSync(oldPath)
+           }
+           const images = [...updatingBook.images]
+           console.log("old")
+           console.log(images)
+           const newImages = images.map((image,index)=>{
+            console.log(image,oldUrl)
+            if(image == oldUrl){
+                return req?.file?.filename
+            }else{
+                return image
+            }
+           })
+           console.log("new")
+           console.log(newImages)
+           updatingBook.images=newImages
+           await updatingBook.save()
+          
+           
+           res.status(200).json({message:"Successfully Updated" ,newImages})
         }catch(err){
-           console.log(err)
-           res.status(404).json({message:"Something went wrong while listing related Books"})
+            console.log(err)
+            res.status(400).json("Something Went Wrong While Updating Image ")
         }
     }
 }

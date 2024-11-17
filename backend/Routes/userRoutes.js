@@ -16,6 +16,7 @@ const { sendOTP,
 const passport = require('passport')
 const { getAllUsers } = require('../controller/adminController')
 const { isAdmin, protect ,isLoggedIn} = require('../middlewares/auth')
+const { googleAuthCallback } = require('../middlewares/googleAuthCallback')
 const router = express.Router()
 
 router.get('/',getAllUsers)
@@ -32,12 +33,7 @@ router.put('/:userId/unblock',unBlockUser)
 router.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-router.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/' }),
-    (req, res) => {
-        res.redirect('http://localhost:3000/');
-    }
-);
+router.get('/auth/google/callback',googleAuthCallback);
 router.get('/verify-token', verifyToken);
 
 module.exports=router 

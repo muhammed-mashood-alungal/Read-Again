@@ -51,8 +51,7 @@ function DetailsPage() {
      <ProductDetails bookData={bookData}/>
      <Suspense fallback={<h1>loading...</h1>}>  
      <ProductList books={related} title={'Related Books'}/>
-     </Suspense>
-     
+     </Suspense>    
      <Footer/>
     </>
   )
