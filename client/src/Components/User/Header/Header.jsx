@@ -27,14 +27,14 @@ const Header = () => {
         <a href="index.html" className="nav__logo">
           <img
             className="nav__logo-img"
-            src="assets/img/logo.svg"
+            src="/assets/img/logo.svg"
             alt="website logo"
           />
         </a>
         <div className={`nav__menu ${isMenuOpen ? 'open' : ''}`} id="nav-menu">
           <div className="nav__menu-top">
             <a href="index.html" className="nav__menu-logo">
-              <img src="./assets/img/logo.svg" alt="Logo" />
+              <img src="/assets/img/logo.svg" alt="Logo" />
             </a>
             <div className="nav__close" id="nav-close" >
               <i className="fi fi-rs-cross-small"></i>
@@ -82,21 +82,21 @@ const Header = () => {
               className="form__input"
             />
             <button className="search__btn">
-              <img src="assets/img/search.png" alt="search icon" />
+              <img src="/assets/img/search.png" alt="search icon" />
             </button>
           </div>
         </div>
         <div className="header__user-actions">
           <a href="wishlist.html" className="header__action-btn" title="Wishlist">
-            <img src="assets/img/icon-heart.svg" alt="Wishlist" />
+            <img src="/assets/img/icon-heart.svg" alt="Wishlist" />
             <span className="count">3</span>
           </a>
           <a href="cart.html" className="header__action-btn" title="Cart">
-            <img src="assets/img/icon-cart.svg" alt="Cart" />
+            <img src="/assets/img/icon-cart.svg" alt="Cart" />
             <span className="count">3</span>
           </a>
           <div className="header__action-btn nav__toggle" id="nav-toggle" >
-            <img src="./assets/img/menu-burger.svg" alt="Menu" />
+            <img src="/assets/img/menu-burger.svg" alt="Menu" />
           </div>
         </div>
       </nav>

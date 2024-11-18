@@ -56,13 +56,13 @@ module.exports = {
             limit = parseInt(limit)
             let skip = (page - 1) * limit
             console.log(skip, limit)
-            const allBooks = await Book.find(query).skip(skip).limit(limit)
+            const allBooks = await Book.find(query).skip(skip).limit(limit).populate("category")
             const totalBooks = await Book.countDocuments({})
    
             res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
-            res.status(500).json({ message: "Somthing went wrong" })
+            res.status(500).json({ message: "Something went wrong" })
         }
     },
     async getListedBooks(req, res) {
@@ -72,7 +72,7 @@ module.exports = {
             limit = parseInt(limit)
             let skip = (page - 1) * limit
             console.log(skip, limit)
-            const allBooks = await Book.find({isDeleted:false}).skip(skip).limit(limit)
+            const allBooks = await Book.find({isDeleted:false}).skip(skip).limit(limit).populate('category')
             const totalBooks = await Book.countDocuments({})
    
             res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
@@ -115,7 +115,7 @@ module.exports = {
             const { bookId } = req.params
             console.log(bookId)
             const bookData = await Book.findOne({ _id: bookId }).populate("category")
-            console.log(bookData)
+            console.log(bookData?.formats?.physical?.price)
             res.status(200).json({ success: true, bookData })
         } catch (err) {
             console.log(err)

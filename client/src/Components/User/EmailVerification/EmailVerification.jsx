@@ -13,6 +13,9 @@ import { createUser, getOtp } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { verifyEmail } from './verifyEmail';
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
+import Toast from '../../Toast/Toast';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const EmailVerification = (props) => {
   
@@ -20,24 +23,21 @@ const EmailVerification = (props) => {
   const dispatch= useDispatch()
   const formData = useSelector(state=>state.registrationData)
   const {loading ,error} = useSelector(state=>state.getOtp)
- // const {setForgetPassEmail} = useContext(ForgetPasswordContext)
   const [verificationLoading ,setVerificationLoading] = useState(false)
   const [verifyError , setVerifyError] = useState("")
-  // const [email, setEmail] = useState(formData ? formData.email : '');
   const [sended, setSended] = useState(false)
   const [otp, setOtp] = useState("");
   const [timer , setTimer]=useState(-1)
-  const [err,setErr]=useState("")
+  
   useEffect(()=>{
-    console.log(formData)
     if(!formData.email){
       navigate('/register')
     }
-
   },[formData,timer])
+
   useEffect(()=>{
     if(error || verifyError){
-        setErr(error || verifyError)
+        toast.error(error || verifyError)
     }
   },[error,verifyError])
 
@@ -46,7 +46,6 @@ const EmailVerification = (props) => {
     dispatch(getOtp(formData.email))
     setTimer(60)
     setSended(true)
-    setErr("")
   }
 
   useEffect(()=>{
@@ -85,19 +84,21 @@ const EmailVerification = (props) => {
         createUserAndNavigate()
       }
     }catch(err){
-      console.log(err.response)
+      console.log(err?.response)
       setVerificationLoading(false)
-      setVerifyError(err.response.data.message)
+      toast.error(err?.response?.data?.message)
     }
     
   };
   const createUserAndNavigate=async()=>{
     try{
       const created= await dispatch(createUser(formData))
-      if(created){
+      toast.success("User Created Successfully",{
+        autoClose: 1500
+      })
+      setTimeout(()=>{
         navigate('/')
-      }
-      console.log("user creating")
+      },[1500])
     }catch(err){
      console.log(err)
     }
@@ -110,24 +111,7 @@ const EmailVerification = (props) => {
       }
   }
  
-  // const sendOtp =async (e)=>{
-  //   setVerifyError('')
-    
-  //   e.preventDefault()
-    
-  //   if(!email ||email.trim() == "" || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) ){
-  //     setVerifyError("Enter a valid Email Address")
-  //     return
-  //   }
-  //   if(props.type !="registration" && await verifyEmail(email)){
-  //     setVerifyError("Invalid Credential")
-  //     return
-  //   }
-    
-  //   setTimer(60)
-  //   const response = await dispatch(getOtp(email))
-  //   if(response) setSended(true)
-  // }
+
 
 
   return (
@@ -136,7 +120,7 @@ const EmailVerification = (props) => {
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Verify Email</h3>
           {((loading || verificationLoading) == true) && <p>Loading....</p>}
-          {err && <p>{err}</p>}
+          <Toast/>
           {/* {verifyError && <p>{verifyError}</p>} */}
           <Form onSubmit={verifyOtp}>
             {/* <FormGroup>

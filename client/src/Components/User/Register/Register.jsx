@@ -13,6 +13,10 @@ import { validateRegister } from './forValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOtp, setRegistrationData } from '../../../redux/Actions/userActions';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
+import Toast from '../../Toast/Toast';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Register = () => {
   const location = useLocation();
@@ -26,13 +30,12 @@ const Register = () => {
     password: data ? data.password :'',
     confirmPassword: data ? data.confirmPassword :''
   });
-  const [err,setErr]=useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   useEffect(()=>{
     if(errorMessage){
-      setErr(errorMessage)
+      toast.error(errorMessage);
     }
   },[])
   const handleChange = (e) => {
@@ -46,7 +49,7 @@ const Register = () => {
    const result =await  validateRegister(formData)
    console.log(result)
    if(!result.success){
-    setErr(result.message)
+    toast.error(result.message);
    }else{
       dispatch(setRegistrationData(formData))
       dispatch(getOtp(formData.email))
@@ -59,7 +62,8 @@ const Register = () => {
       <Row className="justify-content-center align-items-center vh-100">
         <Col xs="10" sm="8" md="6" lg="4" className="register bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Create an Account</h3>
-        {err && <p>{err}</p>}
+   
+        <Toast />
           <Form onSubmit={handleRegister}>
             <FormGroup>
               <input

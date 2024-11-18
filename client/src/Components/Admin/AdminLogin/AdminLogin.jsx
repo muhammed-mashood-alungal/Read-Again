@@ -14,11 +14,14 @@ import { userLogin } from '../../../redux/Actions/userActions';
 import { useNavigate  ,Link} from 'react-router-dom';
 import { validateLogin } from '../../User/UserLogin/loginValidation';
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
+import Toast from '../../Toast/Toast';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [err,setErr] =useState("")
   const dispatch= useDispatch()
   const navigate= useNavigate()
   
@@ -37,21 +40,25 @@ const AdminLogin = () => {
 
   const handleLogin = async(e) => {
     e.preventDefault();
-    setErr("")
     const result = validateLogin({email,password})
     console.log(result)
     if(!result.success){
-      setErr(result.message)
+      toast.error(result.message)
       return
     }
     try{
       const response = await axiosAdminInstance.post('/login',{email,password})
        if(response.status == 200){
-        navigate('/admin')
+        toast.success("Login Success",{
+          autoClose: 1500
+        })
+        setTimeout(()=>{
+          navigate('/admin')
+        },[1500])
        }
     }catch(err){
       console.log(err)
-      setErr(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message)
     }
   };
 
@@ -59,8 +66,8 @@ const AdminLogin = () => {
     <Container fluid className="login-register__container">
       <Row className="justify-content-center align-items-center vh-100">
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
-          <h3 className="text-center mb-4">Login</h3>
-          {err && <p>{err}</p>}
+          <h3 className="text-center mb-4">Admin Login</h3>
+          <Toast/>
           <Form onSubmit={handleLogin}>
             <FormGroup>
               <input

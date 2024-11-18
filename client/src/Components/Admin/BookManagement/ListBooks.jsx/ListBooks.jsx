@@ -151,7 +151,7 @@ const ListBooks = () => {
                         </td>
                         <td>{book.title}</td>
                         <td>{book.author}</td>
-                        <td>{book.category}</td>
+                        <td>{book?.category?.name}</td>
                         <td>
                           <div
                             className="badge badge-outline-success action-btn"

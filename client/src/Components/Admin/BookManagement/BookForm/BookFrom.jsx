@@ -33,10 +33,8 @@ const BookForm = ({ bookDetails }) => {
 
   useEffect(() => {
     if (success) {
-
       setTimeout(() => {
         setSuccess(false)
-
       }, 3000)
     }
   }, [success])
@@ -79,7 +77,7 @@ const BookForm = ({ bookDetails }) => {
           setCategories(response.data.categories)
         }
        }catch(err){
-          setErr(err.response.data.message)
+          setErr(err?.response?.data?.message)
        }
     }
     fetchCategories()
@@ -195,7 +193,6 @@ const BookForm = ({ bookDetails }) => {
         console.log("success")
       }
     } catch (err) {
-      console.log(err)
       setErr(err?.response?.data?.message)
     }
   };

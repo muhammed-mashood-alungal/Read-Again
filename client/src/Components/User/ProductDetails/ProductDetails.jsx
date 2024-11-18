@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { bookImages } from "../../../redux/Constants/imagesDir";
 import './ProductDetails.css'
+import { RedoDot } from "lucide-react";
 const ProductDetails = ({bookData}) => {
   const [activeTab, setActiveTab] = useState("info");
   const [images,setImages] =useState([])
@@ -10,6 +11,13 @@ const ProductDetails = ({bookData}) => {
     zoomY: "0%",
     backgroundImage: "",
   });
+  const [selectedFormat,setSelectedFormat]=useState("physical")
+  const [price,setPrice]=useState(null)
+  useState(()=>{
+      if(bookData){
+        setPrice(bookData?.formats?.physical?.price)
+      }
+  },[])
 
   // Handle mouse move over image
   const handleMouseMove = (event) => {
@@ -18,7 +26,7 @@ const ProductDetails = ({bookData}) => {
       x: (event.nativeEvent.offsetX * 100) / imageZoom.offsetWidth,
       y: (event.nativeEvent.offsetY * 100) / imageZoom.offsetHeight,
     };
-
+   
     setZoom((prevZoom) => ({
       ...prevZoom,
       display: "block",
@@ -67,6 +75,15 @@ const ProductDetails = ({bookData}) => {
     }));
   };
 
+   const renderPrice = () => {
+    if (!bookData?.formats || !selectedFormat) {
+      return <td>N/A</td>;
+    }
+
+    const price = bookData.formats[selectedFormat]?.price;
+    return <td>{price ? `₹${price}` : 'NO stock Available'}</td>;
+  };
+
   return (
     <>
       <section className="details section--lg">
@@ -110,8 +127,8 @@ const ProductDetails = ({bookData}) => {
             </p>
             <div className="details__price ">
               <div className="flex">
-              <span className="new__price">{bookData?.physical?.price || 300}</span>
-              <span className="old__price">{bookData?.physical?.price || 499}</span>
+              <span className="new__price">{bookData?.formats?.physical?.price }</span>
+              <span className="old__price">{bookData?.formats?.physical?.price}</span>
               <span className="save__price">25% Off</span>
               </div>
               <div>
@@ -144,14 +161,21 @@ const ProductDetails = ({bookData}) => {
 
             
 
-            {/* Size Options */}
             <div className="details__size flex">
               <span className="details__size-title">Available Formats</span>
-              <ul className="size__list">
-                <li  className="size__link size-active mt-2">Physical Book</li>
-                <li  className="size__link size-active mt-2">e-Book</li>
-                <li  className="size__link size-active mt-2">Audio Book</li>
-              </ul>
+              <ul>
+  {bookData?.formats?.physical.price && (
+    <li className="size__link size-active mt-2">Physical Book</li>
+  )}
+
+  {bookData?.formats?.ebook?.price && (
+    <li className="size__link size-active mt-2">e-Book</li>
+  )}
+
+  {bookData?.formats?.audiobook?.price && (
+    <li className="size__link size-active mt-2">Audio Book</li>
+  )}
+</ul>
             </div>
 
             {/* Quantity and Actions */}
@@ -185,8 +209,8 @@ const ProductDetails = ({bookData}) => {
               <table className="info__table mb-4">
                 <tbody>
                   <tr><th>Author</th><td> {bookData.author}</td></tr>
-                  <tr><th>Published Date</th><td>{bookData.publicationDate}</td></tr>
-                  <tr><th>Page Count</th><td>348</td></tr>
+                  <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
+                  <tr><th>Stock Status</th>{renderPrice() }</tr>
                   {/* Add more rows as needed */}
                 </tbody>
               </table>
@@ -198,31 +222,29 @@ const ProductDetails = ({bookData}) => {
             <div className={`details__tab-content ${activeTab == 'reviews' && "active-tab"}`} id="reviews">
               <div className="reviews__container grid">
                 <div className="review__single flex-column-left ">
-                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
                 <div className="review__single flex-column-left ">
-                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
                 <div className="review__single flex-column-left ">
-                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
               </div>
 
-              {/* Review Form */}
               <div className="review__form">
                 <h4 className="review__form-title">Add a review</h4>
                 <div className="rate__product">
                   <i className="fi fi-rs-star"></i>
-                  {/* Add more star icons as needed */}
                 </div>
                 <form action="" className="form grid">
                   <textarea className="form__input textarea" placeholder="Write Comment"></textarea>
