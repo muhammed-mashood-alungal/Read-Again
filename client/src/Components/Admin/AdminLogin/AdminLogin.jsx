@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Row,
@@ -21,6 +21,20 @@ const AdminLogin = () => {
   const [err,setErr] =useState("")
   const dispatch= useDispatch()
   const navigate= useNavigate()
+  
+  const {isLoggedIn , role} = useSelector(state=>state.auth)
+  
+  useEffect(()=>{
+    console.log(isLoggedIn,role)
+     if(isLoggedIn && role === "ADMIN"){
+       navigate('/admin')
+     }else if(!isLoggedIn){
+      navigate('/admin/login')
+     }else{
+      navigate('/')
+     }
+  },[role,isLoggedIn,dispatch])
+
   const handleLogin = async(e) => {
     e.preventDefault();
     setErr("")

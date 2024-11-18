@@ -13,6 +13,7 @@ import { validateLogin } from './loginValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogin } from '../../../redux/Actions/userActions';
 import { useNavigate  ,Link} from 'react-router-dom';
+import GoogleSignInButton from '../GoogleButton/GoogleButton';
 
 const UserLogin = () => {
   const [email, setEmail] = useState('');
@@ -72,6 +73,9 @@ const UserLogin = () => {
             <br />
             <Link to={"/register"}>Create An Account</Link>
           </Form>
+          <Link to="http://localhost:5000/api/users/auth/google" className='no-underline'>
+            <GoogleSignInButton/>
+          </Link>
         </Col>
       </Row>
     </Container>

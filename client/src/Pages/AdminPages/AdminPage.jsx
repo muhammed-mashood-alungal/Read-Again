@@ -4,14 +4,40 @@ import Navbar from '../../Components/Admin/Navbar/Navbar';
 import './AdminPage.css';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../../Components/Admin/Sidebar/Sidebar';
-import { getUserData } from '../../redux/Actions/userActions';
+import { getUserData, removeAuth, setAuth } from '../../redux/Actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { axiosAuthInstance } from '../../redux/Constants/axiosConstants';
 
 const AdminPage = () => {
-  const dipatch = useDispatch()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {isLoggedIn , role} = useSelector(state=>state.auth)
+  
+  useEffect(()=>{
+    console.log(isLoggedIn,role)
+    if(isLoggedIn && role != "ADMIN"){
+      navigate('/')
+    }else if(!isLoggedIn){
+    navigate('/admin/login')
+   }
+  },[role,isLoggedIn])
   
 
+  useEffect(() => {
+    const checkAuth = async () => {
+        try {
+            const response = await axiosAuthInstance.get('/check-auth');
+            dispatch(setAuth({isLoggedIn : response.data.isLoggedIn , role : response.data.role}));
+        } catch (error) {
+            console.error('Token verification failed:', error);
+            dispatch(removeAuth());
+        }
+    }
+    checkAuth()
+}, [dispatch])
+
+
+  
 
   return (
     <Container fluid className="admin-container">

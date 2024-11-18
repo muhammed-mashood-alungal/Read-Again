@@ -2,6 +2,7 @@ const Category = require("../models/Category")
 const User = require("../models/Users")
 const bcrypt = require('bcrypt')
 const { generateToken } = require("../utils/jwt")
+const jwt = require('jsonwebtoken')
 module.exports = {
   async getAllUsers(req, res) {
     try {
@@ -34,16 +35,20 @@ module.exports = {
       throw new Error("Somthing went Wrong while fetching user data")
     }
   },
-   verifyToken (req, res) {
-    const token = req.body.token; 
+   checkAuth(req, res) {
+    console.log("check-auth")
+    const token = req.cookies.token
+    console.log(token)
     if (!token) {
-        return res.status(401).json({ message: 'No token provided' });
+        return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        return res.status(200).json({ userId: decoded.id, isLoggedIn:true , rolllll  });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+        res.status(200).json({ isLoggedIn : true , role: decoded.role  });
     } catch (error) {
-        return res.status(403).json({ message: 'Invalid or expired token' });
+        console.error(error);
+        res.status(403).json({ isLoggedIn : false , role: null});
     }
   },
   async adminLogin(req, res) {
@@ -56,6 +61,11 @@ module.exports = {
         const isMatched = await bcrypt.compare(password, Admin.password)
         if (isMatched) {
           const token = await generateToken({ id: Admin._id, role: Admin.role })
+            res.cookie('token',token,{
+              httpOnly:true,
+              secure:true
+            })
+            
           return res.status(200).json({ success: true, token })
         }
       }

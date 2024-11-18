@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {Link} from 'react-router-dom'
-import { getUserData } from '../../../redux/Actions/userActions';
-import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { getUserData, removeAuth } from '../../../redux/Actions/userActions';
+import { axiosAuthInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 const Header = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn,setIsLoggedIn] = useState(false)
+ const {isLoggedIn} = useSelector(state=>state.auth)
+  const dispatch = useDispatch()
+
+ const handleLogOut=async()=>{
+  try {
+    const response = await axiosAuthInstance.get('/logout');
+    console.log(response.data);
+    console.log("logoutted")
+    dispatch(removeAuth());
+  } catch (error) {
+    console.error("Logout failed", error.response?.data || error.message);
+  }
+ }
  
-  
  return (
     <header className="header">
       <div className="header__top">
@@ -70,7 +81,7 @@ const Header = () => {
                 </li>}
               {
                 isLoggedIn && <li className="nav__item">
-                <Link to='/login' className="nav__link no-underline">
+                <Link onClick={handleLogOut} className="nav__link no-underline">
                 Log Out
                 </Link>
                 </li>

@@ -11,7 +11,8 @@ const { sendOTP,
         recoverUser,
         blockUser, 
         unBlockUser,
-        verifyToken 
+        verifyToken, 
+        logout
         }  = require('../controller/userController')
 const passport = require('passport')
 const { getAllUsers } = require('../controller/adminController')
@@ -35,5 +36,6 @@ router.get('/auth/google',
 );
 router.get('/auth/google/callback',googleAuthCallback);
 router.get('/verify-token', verifyToken);
+
 
 module.exports=router 

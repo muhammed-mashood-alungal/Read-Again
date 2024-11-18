@@ -86,6 +86,10 @@ module.exports={
         if(response){
            delete userData.password
            const token = await generateToken({id:response._id,role:userData.role})
+           res.cookie('token',token,{
+            httpOnly:true,
+            secure:true
+          })
            return res.status(200).json({success:true ,userData, token })
         }else{
             return res.status(400).json({success:false , message :"something went wrong"})
@@ -139,6 +143,10 @@ module.exports={
         if(isMatched){
             const {password , ...userInfo} = doc
             const token = await generateToken({id:userInfo._id, role : userInfo.role})
+            res.cookie('token',token,{
+              httpOnly:true,
+              secure:true
+            })
            return  res.status(200).json({success:true , userInfo , token})
         }
        }
@@ -165,34 +173,36 @@ module.exports={
             res.status(400).json({success:false ,message :"Something Went Wrong !" })
         }
     },
-    async  findOrCreateGoogleUser(profile) {
+    async findOrCreateGoogleUser(profile) {
       try {
-        let user = await User.findOne({ googleId: profile.id });
+        let user = await User.findOne({ email: profile.emails[0].value });
+    
         if (user && user.isBlocked) {
           return { success: false, message: "Your account is banned." };
         }
     
         if (!user) {
-          const emailExist = await User.findOne({ email: profile.emails[0].value });
-          if (!emailExist) {
-            user = new User({
-              googleId: profile.id,
-              email: profile.emails[0].value,
-              username: profile.displayName,
-              role: "USER",
-            });
-            await user.save();
-          } else {
-            user = await User.findOneAndUpdate(
-              { email: profile.emails[0].value },
-              { googleId: profile.id },
-              { new: true }
-            );
-          }
+          user = new User({
+            googleId: profile.id,
+            email: profile.emails[0].value,
+            username: profile.displayName,
+            role: "USER",
+          });
+          await user.save();
+        } else if (!user.googleId) {
+          user = await User.findOneAndUpdate(
+            { email: profile.emails[0].value },
+            { googleId: profile.id },
+            { new: true } 
+          );
         }
     
-        return { success: true, user };
+        
+        const token = await generateToken({ id: user._id, role: user.role });
+
+        return { success: true, user, token };
       } catch (error) {
+        console.error("Error in google auth:", error.message);
         return { success: false, message: error.message };
       }
     }
@@ -242,7 +252,6 @@ module.exports={
     },
     async listOrUnlistCategory(req,res){
       try{
-        console.log("lsitng")
        const {categoryId} = req.params
        const category = await Category.findOne({_id:categoryId})
        if(!category){
@@ -269,8 +278,22 @@ module.exports={
           return res.status(403).json({ message: 'Token is invalid' });
         }
     
-        // If the token is valid, respond with a success status
+    
         res.status(200).json({ message: 'Token is valid' });
       });
+    },
+    logout(req,res){
+      try{
+       
+      res.clearCookie('token', {
+        httpOnly: true, 
+        secure: false,
+      });
+      
+      return res.status(200).json({ message: "Logged out successfully" });
+      }catch(err){
+        return res.status(400).json({ message: "Logged out Failed !" });
+      }
+      
     }
 }

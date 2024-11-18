@@ -70,10 +70,17 @@ export const getUserDataReducer = (state={},action) =>{
       return state
   }
 }
-export const authReducer = (state={},action)=>{
+
+const initialState = JSON.parse(localStorage.getItem('auth')) || {
+  isLoggedIn: false,
+  role: undefined,
+};
+export const authReducer = (state=initialState,action)=>{
   switch(action.type){
     case SET_AUTH :
       return {isLoggedIn:action.payload.isLoggedIn , role : action.payload.role}
+    case REMOVE_AUTH:
+      return {isLoggedIn : false , role : null}
     default :
       return state
   }

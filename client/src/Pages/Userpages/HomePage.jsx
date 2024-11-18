@@ -5,10 +5,26 @@ import Categories from '../../Components/User/Categories/Categories'
 import ProductList from '../../Components/User/ProductsList/ProductsList'
 import Showcase from '../../Components/User/Showcase/Showcase'
 import Footer from '../../Components/User/Footer/Footer'
-import { axiosBookInstance } from '../../redux/Constants/axiosConstants'
+import { axiosAdminInstance, axiosAuthInstance, axiosBookInstance } from '../../redux/Constants/axiosConstants'
+import { useDispatch } from 'react-redux'
+import { removeAuth, setAuth } from '../../redux/Actions/userActions'
 
 function HomePage() {
   const [justPublished,setJustPublished] = useState([])
+  const dispatch = useDispatch()
+  useEffect(() => {
+    const checkAuth = async () => {
+        try {
+            const response = await axiosAuthInstance.get('/check-auth');
+            dispatch(setAuth({isLoggedIn : response.data.isLoggedIn , role : response.data.role}));
+        } catch (error) {
+            console.error('Token verification failed:', error);
+            dispatch(removeAuth());
+        }
+    };
+    checkAuth();
+}, [dispatch]);
+
   useEffect(()=>{
     const fetchProducts =async ()=>{
       try{

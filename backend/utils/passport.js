@@ -17,8 +17,8 @@ passport.deserializeUser(async (id, done) => {
 });
 
 passport.use(new GoogleStrategy({
-  clientID: process.env.CLIENT_ID, // Replace with your Google OAuth client ID
-  clientSecret: process.env.CLIENT_SECRET, // Replace with your Google OAuth client secret
+  clientID: process.env.CLIENT_ID, 
+  clientSecret: process.env.CLIENT_SECRET, 
   callbackURL: '/api/users/auth/google/callback'
 },
 async (accessToken, refreshToken, profile, done) => {
@@ -27,7 +27,8 @@ async (accessToken, refreshToken, profile, done) => {
     if (!response.success) {
       return done(null, false, { message: response.message });
     }
-    done(null, response.user);
+  
+    done(null, {user:response.user,token: response.token});
   } catch (error) {
     done(error, null);
   }
