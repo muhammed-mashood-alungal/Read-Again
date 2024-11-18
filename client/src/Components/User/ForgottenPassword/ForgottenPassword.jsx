@@ -7,68 +7,47 @@ import {
   Form,
   FormGroup
 } from 'reactstrap';
-import './EmailVerification.css';
+import './ForgottenPassword.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUser, getOtp } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
-import { verifyEmail } from './verifyEmail';
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
+import { verifyEmail } from '../EmailVerification/verifyEmail';
 
-const EmailVerification = (props) => {
+const ForgottenPassword = (props) => {
   
   const navigate = useNavigate()
   const dispatch= useDispatch()
   const formData = useSelector(state=>state.registrationData)
   const {loading ,error} = useSelector(state=>state.getOtp)
- // const {setForgetPassEmail} = useContext(ForgetPasswordContext)
+  const {setForgetPassEmail} = useContext(ForgetPasswordContext)
   const [verificationLoading ,setVerificationLoading] = useState(false)
   const [verifyError , setVerifyError] = useState("")
-  // const [email, setEmail] = useState(formData ? formData.email : '');
+  const [email, setEmail] = useState(formData ? formData.email : '');
   const [sended, setSended] = useState(false)
   const [otp, setOtp] = useState("");
   const [timer , setTimer]=useState(-1)
-  const [err,setErr]=useState("")
-  useEffect(()=>{
-    console.log(formData)
-    if(!formData.email){
-      navigate('/register')
-    }
+//   useEffect(()=>{
+    
+//     if(!formData.email && props.type == "registration"){
+//       navigate('/register')
+//     }
 
-  },[formData,timer])
-  useEffect(()=>{
-    if(error || verifyError){
-        setErr(error || verifyError)
-    }
-  },[error,verifyError])
+//   },[formData])
 
-  const resendOtp= ()=>{
-    console.log("resending", formData.email)
-    dispatch(getOtp(formData.email))
-    setTimer(60)
-    setSended(true)
-    setErr("")
-  }
 
   useEffect(()=>{
-    setSended(true)
-    setTimer(60)
-  },[])
-  
-  useEffect(()=>{
-  if(timer > -1 ){
+  if(timer > -1 && !loading){
     setTimeout(()=>{
       setTimer(timer=>timer-1)
       
     },1000)
   }
-  if(timer ==0){
-    setSended(false)
-    setOtp("")
-  } 
+  if(timer ==0) setSended(false)
   },[timer,loading])
 
+  
 
- 
   const verifyOtp = async (e) => { 
     e.preventDefault()
     if(otp.length < 6){
@@ -78,11 +57,17 @@ const EmailVerification = (props) => {
     setVerificationLoading(true)
     
     try{
-      const response = await axiosUserInstance.post(`/${formData.email}/verify-otp`, {otp})
+      const response = await axiosUserInstance.post(`/${email}/verify-otp`, {otp})
       if(response.data.success){
         console.log("verification success")
         setVerificationLoading(false)
-        createUserAndNavigate()
+        if(props.type == "registration"){
+           createUserAndNavigate()
+        }else{
+          setForgetPassEmail(email)
+           navigate('/forgotten-password/change-password')
+        }
+       
       }
     }catch(err){
       console.log(err.response)
@@ -110,24 +95,23 @@ const EmailVerification = (props) => {
       }
   }
  
-  // const sendOtp =async (e)=>{
-  //   setVerifyError('')
+  const sendOtp =async (e)=>{
+    setVerifyError('')
+    e.preventDefault()
     
-  //   e.preventDefault()
+    if(!email ||email.trim() == "" || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) ){
+      setVerifyError("Enter a valid Email Address")
+      return
+    }
+    if(await verifyEmail(email)){
+      setVerifyError("Invalid Credential")
+      return
+    }
     
-  //   if(!email ||email.trim() == "" || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) ){
-  //     setVerifyError("Enter a valid Email Address")
-  //     return
-  //   }
-  //   if(props.type !="registration" && await verifyEmail(email)){
-  //     setVerifyError("Invalid Credential")
-  //     return
-  //   }
-    
-  //   setTimer(60)
-  //   const response = await dispatch(getOtp(email))
-  //   if(response) setSended(true)
-  // }
+    setTimer(60)
+    const response = await dispatch(getOtp(email))
+    if(response) setSended(true)
+  }
 
 
   return (
@@ -136,10 +120,10 @@ const EmailVerification = (props) => {
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Verify Email</h3>
           {((loading || verificationLoading) == true) && <p>Loading....</p>}
-          {err && <p>{err}</p>}
-          {/* {verifyError && <p>{verifyError}</p>} */}
+          {error && <p>{error}</p>}
+          {verifyError && <p>{verifyError}</p>}
           <Form onSubmit={verifyOtp}>
-            {/* <FormGroup>
+            <FormGroup>
               <input
                 type="email"
                 placeholder="Your Email"
@@ -149,7 +133,7 @@ const EmailVerification = (props) => {
                 required
                 disabled={sended}
               />
-            </FormGroup> */}
+            </FormGroup>
             <FormGroup>
               <input
                 type="text"
@@ -158,13 +142,19 @@ const EmailVerification = (props) => {
                 onChange={handleOtp}
                 className="form__input"
                 required
+                disabled={!sended}
               />
             </FormGroup>
 
             <div className='space-between mt-3'>
-              { <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={ sended ? verifyOtp : resendOtp}>
-                           {sended ? "Register" : "Resend"}
-                       </Link>
+              {sended ?  <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={verifyOtp}>
+                           Proceed
+                          </Link>
+                          :
+                          <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={sendOtp}>
+                           Sent OTP
+                          </Link>
+
             }
            
            
@@ -181,4 +171,4 @@ const EmailVerification = (props) => {
   );
 };
 
-export default EmailVerification;
+export default ForgottenPassword;

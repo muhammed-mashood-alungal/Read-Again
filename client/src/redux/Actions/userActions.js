@@ -30,7 +30,7 @@ export const getOtp = (email)=> async (dispatch)=>{
    return true
   }catch(err){
     console.log(err)
-    dispatch({type : GET_OTP_FAILED , payload : err?.response?.data.message })
+    dispatch({type : GET_OTP_FAILED , payload : err?.response?.data?.message })
     return false
   }
 }

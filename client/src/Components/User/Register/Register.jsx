@@ -12,7 +12,6 @@ import './Register.css';
 import { validateRegister } from './forValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOtp, setRegistrationData } from '../../../redux/Actions/userActions';
-import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
 
 const Register = () => {
@@ -50,6 +49,7 @@ const Register = () => {
     setErr(result.message)
    }else{
       dispatch(setRegistrationData(formData))
+      dispatch(getOtp(formData.email))
       navigate('/register/verify')
    }
   }

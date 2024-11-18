@@ -10,6 +10,7 @@ export const registrationDataReducer=(state={},action)=>{
         return state
    }
 }
+
 export const otpReducer = (state={},action)=>{
     switch(action.type){
         case GET_OTP_REQUEST:

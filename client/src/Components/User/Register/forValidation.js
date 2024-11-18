@@ -41,6 +41,5 @@ import { axiosUserInstance } from "../../../redux/Constants/axiosConstants";
       return {success:false , message : "Somthing Went Wrong , Please Try later"}
      }
   }
-   
 }
 export {validateRegister}

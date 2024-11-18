@@ -7,5 +7,8 @@ const nodemailer = require('nodemailer')
       user: "muhdmashoodalungal@gmail.com",
       pass: "quns zfdw afxf uhfz ",
     },
+    tls: {
+      rejectUnauthorized: false,
+    }
   });
 module.exports = transporter

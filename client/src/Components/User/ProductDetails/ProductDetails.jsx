@@ -1,51 +1,95 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { bookImages } from "../../../redux/Constants/imagesDir";
-import { Controlled as ControlledZoom } from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css';
-
+import './ProductDetails.css'
 const ProductDetails = ({bookData}) => {
   const [activeTab, setActiveTab] = useState("info");
-  const [selected,setSelectedImage] = useState(0)
   const [images,setImages] =useState([])
-   const [isZoomed, setIsZoomed] = useState(false)
+  const [zoom, setZoom] = useState({
+    display: "none",
+    zoomX: "0%",
+    zoomY: "0%",
+    backgroundImage: "",
+  });
 
-  const handleZoomChange = useCallback(shouldZoom => {
-    setIsZoomed(shouldZoom)
-  }, [])
+  // Handle mouse move over image
+  const handleMouseMove = (event) => {
+    const imageZoom = event.currentTarget;
+    const pointer = {
+      x: (event.nativeEvent.offsetX * 100) / imageZoom.offsetWidth,
+      y: (event.nativeEvent.offsetY * 100) / imageZoom.offsetHeight,
+    };
+
+    setZoom((prevZoom) => ({
+      ...prevZoom,
+      display: "block",
+      zoomX: `${pointer.x}%`,
+      zoomY: `${pointer.y}%`,
+    }));
+  };
+
+  // Handle mouse out of image
+  const handleMouseOut = () => {
+    setZoom((prevZoom) => ({
+      ...prevZoom,
+      display: "none",
+    }));
+  };
+
+  // Handle tab switching
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  useEffect(()=>{
-    if(bookData.images){
-      console.log(bookData.images)
-      setImages([...bookData.images])
-    }
-  },[bookData])
- 
-  const handleImageClick=(index)=>{
-     let newArr = [...images]
-     console.log(newArr)
-     let temp = newArr[0]
-     newArr[0] = newArr[index]
-     newArr[index]=temp
 
-     setImages(newArr)
-  }
-  
+  // Set images from bookData
+  useEffect(() => {
+    if (bookData.images) {
+      setImages([...bookData.images]);
+      // Set the initial zoom background image to the first image
+      setZoom((prevZoom) => ({
+        ...prevZoom,
+        backgroundImage: `url(${bookImages + bookData._id + "/" + bookData.images[0]})`,
+      }));
+    }
+  }, [bookData]);
+
+  // Handle image click for small images
+  const handleImageClick = (index) => {
+    let newArr = [...images];
+    let temp = newArr[0];
+    newArr[0] = newArr[index];
+    newArr[index] = temp;
+    setImages(newArr);
+
+    // Update zoom background image with the new selected image
+    setZoom((prevZoom) => ({
+      ...prevZoom,
+      backgroundImage: `url(${bookImages + bookData._id + "/" + newArr[0]})`,
+    }));
+  };
 
   return (
     <>
       <section className="details section--lg">
         <div className="details__container container grid">
-          {/* Product Image Gallery */}
           <div className="details__group">
-          <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
-             <img
-              src={bookImages+bookData._id+"/"+images[0]}
-              alt="Product"
-              className="details__img"
-            />
-            </ControlledZoom>
+          <div
+              className="imageZoom"
+              style={{
+                "--url": zoom.backgroundImage,
+                "--zoom-x": zoom.zoomX,
+                "--zoom-y": zoom.zoomY,
+                "--display": zoom.display,
+              }}
+              onMouseMove={handleMouseMove}
+              onMouseOut={handleMouseOut}
+            >
+              <img
+                src={bookImages + bookData._id + "/" + images[0]}
+                alt="Product"
+                className="details__img Zoomable"
+              />
+            </div>
+          
             <div className="details__small-images grid">
               {images.length != 0  && images.map((image,i)=>{
                 return images[i+1] && <img

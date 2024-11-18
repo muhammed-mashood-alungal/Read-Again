@@ -22,6 +22,7 @@ import { axiosAdminInstance, axiosAuthInstance, axiosUserInstance } from './redu
 import { useEffect } from 'react';
 import { removeAuth, setAuth } from './redux/Actions/userActions';
 import { useDispatch } from 'react-redux';
+import ForgottenPassword from './Components/User/ForgottenPassword/ForgottenPassword';
 
 function App() {
   const dispatch = useDispatch()
@@ -57,8 +58,8 @@ function App() {
       </Routes>
       <ForgetPassProvider>
       <Routes>
-      <Route  path='/register/verify' element={<EmailVerifyPage type="registration"/>}/>
-      <Route  path='/forgotten-password/verify' element={<EmailVerifyPage/>}/>
+      <Route  path='/register/verify' element={<EmailVerifyPage/>}/>
+      <Route  path='/forgotten-password/verify' element={<ForgottenPassword/>}/>
       <Route  path='/forgotten-password/change-password' element={<ChangePassword/>}/>
       </Routes>
       </ForgetPassProvider>

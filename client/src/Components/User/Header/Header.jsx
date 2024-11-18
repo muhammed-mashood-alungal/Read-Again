@@ -21,20 +21,7 @@ const Header = () => {
  
  return (
     <header className="header">
-      <div className="header__top">
-        <div className="header__container container">
-          <div className="header__contact">
-            <span>(+01) - 2345 - 6789</span>
-            <span>Our location</span>
-          </div>
-          <p className="header__alert-news">
-            Super Values Deals - Save more coupons
-          </p>
-          <Link to='/login' className="header__top-action">
-            Log In / Sign Up
-          </Link>
-        </div>
-      </div>
+  
 
       <nav className="nav container">
         <a href="index.html" className="nav__logo">
