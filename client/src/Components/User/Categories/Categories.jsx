@@ -26,9 +26,9 @@ const CategoriesSection = () => {
       <div className="categories__container">
       {
         categories && categories.map((category)=>{
-          return <Link to={'/library'} className="category__item">
+          return <Link to={'/library'} className="category__item no-underline">
                    <img src={categoryImages+category.image} alt="" className="category__img" />
-                   <h3 className="category__title">{category.name}</h3>
+                   <h3 className="category__title no-underline">{category.name}</h3>
                  </Link>
         })
       }

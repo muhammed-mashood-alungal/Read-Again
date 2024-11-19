@@ -2,6 +2,7 @@
     width: 550px;
     position: relative;
     border-radius: 20px;
+    transition: background-position 0.1s ease; 
   }
   
   .imageZoom img {
@@ -10,6 +11,7 @@
     object-fit: cover;
     object-position: 0 0;
     border-radius: 20px;
+    transition: transform 0.1s ease;
   }
   
   .imageZoom::after {
@@ -31,4 +33,17 @@
   }
   .details__small-img{
     border-radius: 10px;
+  }
+  .stock-out{
+    color:red !important;
+  }
+  .hurry-up{
+    color:#f58b00 !important;
+  }
+  .in-stock{
+    color: green !important;
+  }
+  .selected{
+    background-color: aliceblue;
+    color: #088179;
   }

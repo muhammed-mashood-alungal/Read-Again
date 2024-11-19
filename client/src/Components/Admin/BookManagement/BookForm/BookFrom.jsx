@@ -20,6 +20,7 @@ const BookForm = ({ bookDetails }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [ISBN, setISBN] = useState('');
   const [categories , setCategories] = useState([])
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
 
 
   const [formats, setFormats] = useState({
@@ -83,6 +84,17 @@ const BookForm = ({ bookDetails }) => {
     fetchCategories()
   },[])
 
+  const popularLanguages = [
+    { value: "English" },
+    { value: "Hindi" },
+    { value: "Spanish" },
+    { value: "French" },
+    { value: "Chinese" },
+    { value: "Arabic" },
+  ];
+
+ 
+
   const handleCropComplete = async(croppedImage) => {
     const newImages = [...images];
     console.log(croppedImage)
@@ -96,15 +108,13 @@ const BookForm = ({ bookDetails }) => {
       setIsModalOpen(false);
     } else {
       try{
-        console.log("update form")
-        
         const oldUrl = path.basename(imageUrls[selectedImageIndex])
         console.log(oldUrl)
         const newImages = [...images];
         newImages[selectedImageIndex] = croppedImage
         const newUrls = [...imageUrls]
         newUrls[selectedImageIndex] = URL.createObjectURL(croppedImage)
-         setImages(newImages)
+        setImages(newImages)
         setImageUrls(newUrls)
         const formData = new FormData()
         formData.append("type","update-book")
@@ -256,7 +266,7 @@ const BookForm = ({ bookDetails }) => {
     value={category}
     onChange={(e) => setCategory(e.target.value)}
     className="form-control"
-  >
+   >
     <option value="">Select a Category</option>
     {categories.map((cat) => (
       <option key={cat._id} value={cat._id}>
@@ -265,7 +275,6 @@ const BookForm = ({ bookDetails }) => {
     ))}
   </select>
 </div>
-
         <div className="form-group">
           <label>Genre</label>
           <input

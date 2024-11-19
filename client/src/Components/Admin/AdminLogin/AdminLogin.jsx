@@ -55,7 +55,7 @@ const AdminLogin = () => {
         setTimeout(()=>{
           navigate('/admin')
         },[1500])
-       }
+       } 
     }catch(err){
       console.log(err)
       toast.error(err?.response?.data?.message)

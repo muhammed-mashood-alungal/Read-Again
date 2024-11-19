@@ -13,13 +13,12 @@ const ProductDetails = ({bookData}) => {
   });
   const [selectedFormat,setSelectedFormat]=useState("physical")
   const [price,setPrice]=useState(null)
-  useState(()=>{
-      if(bookData){
-        setPrice(bookData?.formats?.physical?.price)
-      }
-  },[])
+  useEffect(() => {
+    if (bookData && bookData.formats && selectedFormat) {
+      setPrice(bookData.formats[selectedFormat]?.price);
+    }
+  }, [bookData, selectedFormat]);
 
-  // Handle mouse move over image
   const handleMouseMove = (event) => {
     const imageZoom = event.currentTarget;
     const pointer = {
@@ -75,14 +74,20 @@ const ProductDetails = ({bookData}) => {
     }));
   };
 
-   const renderPrice = () => {
+   
+  const renderStock= ()=>{
     if (!bookData?.formats || !selectedFormat) {
       return <td>N/A</td>;
     }
-
-    const price = bookData.formats[selectedFormat]?.price;
-    return <td>{price ? `₹${price}` : 'NO stock Available'}</td>;
-  };
+    const stock = bookData?.formats[selectedFormat]?.stock;
+    if(stock < 1){
+      return  <td className="stock-out">Stock Out</td>;
+    }else if(stock < 10){
+      return <td className="hurry-up">Hurry Up</td>;
+    }else{
+      return <td className="in-stock">In Stock</td>;
+    }
+  }
 
   return (
     <>
@@ -101,7 +106,7 @@ const ProductDetails = ({bookData}) => {
               onMouseOut={handleMouseOut}
             >
               <img
-                src={bookImages + bookData._id + "/" + images[0]}
+                src={bookImages + bookData?._id + "/" + images[0]}
                 alt="Product"
                 className="details__img Zoomable"
               />
@@ -110,7 +115,7 @@ const ProductDetails = ({bookData}) => {
             <div className="details__small-images grid">
               {images.length != 0  && images.map((image,i)=>{
                 return images[i+1] && <img
-                src={bookImages+bookData._id+"/"+images[i+1]}
+                src={bookImages+bookData?._id+"/"+images[i+1]}
                 className="details__small-img"
                 onClick={()=>{handleImageClick(i+1)}}
               />
@@ -121,14 +126,14 @@ const ProductDetails = ({bookData}) => {
 
           {/* Product Details */}
           <div className="details__group">
-            <h3 className="details__title">{bookData.title}</h3>
+            <h3 className="details__title">{bookData?.title}</h3>
             <p className="details__brand">
-              Author: <span>{bookData.author}</span>
+              Author: <span>{bookData?.author}</span>
             </p>
             <div className="details__price ">
               <div className="flex">
-              <span className="new__price">{bookData?.formats?.physical?.price }</span>
-              <span className="old__price">{bookData?.formats?.physical?.price}</span>
+              <span className="new__price">{price - (25 / 100) * price}</span>
+              <span className="old__price">{price}</span>
               <span className="save__price">25% Off</span>
               </div>
               <div>
@@ -143,7 +148,7 @@ const ProductDetails = ({bookData}) => {
              
             </div>
             <p className="short__description">
-             {bookData.description}
+             {bookData?.description}
             </p>
             <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p>
             <ul className="products__list">
@@ -160,20 +165,26 @@ const ProductDetails = ({bookData}) => {
             </ul>
 
             
-
+            <span className="details__size-title">Available Formats</span>
             <div className="details__size flex">
-              <span className="details__size-title">Available Formats</span>
+              
               <ul>
   {bookData?.formats?.physical.price && (
-    <li className="size__link size-active mt-2">Physical Book</li>
+    <li className={`size__link size-active mt-2 ${selectedFormat == "physical" && "selected"}` }
+    onClick={()=>{setSelectedFormat("physical")}}
+    >Physical Book</li>
   )}
 
   {bookData?.formats?.ebook?.price && (
-    <li className="size__link size-active mt-2">e-Book</li>
+    <li className={`size__link size-active mt-2 ${selectedFormat == "ebook" && "selected"}` }
+    onClick={()=>{setSelectedFormat("ebook")}}
+    >e-Book</li>
   )}
 
   {bookData?.formats?.audiobook?.price && (
-    <li className="size__link size-active mt-2">Audio Book</li>
+    <li className={`size__link size-active mt-2 ${selectedFormat == "audiobook" && "selected"}` }
+    onClick={()=>{setSelectedFormat("audiobook")}}
+    >Audio Book</li>
   )}
 </ul>
             </div>
@@ -208,9 +219,9 @@ const ProductDetails = ({bookData}) => {
             <div className={`details__tab-content ${activeTab == 'info' && "active-tab"}`} id="info">
               <table className="info__table mb-4">
                 <tbody>
-                  <tr><th>Author</th><td> {bookData.author}</td></tr>
+                  <tr><th>Author</th><td> {bookData?.author}</td></tr>
                   <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
-                  <tr><th>Stock Status</th>{renderPrice() }</tr>
+                  <tr><th>Stock Status</th>{renderStock()}</tr>
                   {/* Add more rows as needed */}
                 </tbody>
               </table>

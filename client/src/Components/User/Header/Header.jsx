@@ -11,8 +11,6 @@ const Header = () => {
  const handleLogOut=async()=>{
   try {
     const response = await axiosAuthInstance.get('/logout');
-    console.log(response.data);
-    console.log("logoutted")
     dispatch(removeAuth());
   } catch (error) {
     console.error("Logout failed", error.response?.data || error.message);
@@ -33,7 +31,7 @@ const Header = () => {
         </a>
         <div className={`nav__menu ${isMenuOpen ? 'open' : ''}`} id="nav-menu">
           <div className="nav__menu-top">
-            <a href="index.html" className="nav__menu-logo">
+            <a href="" className="nav__menu-logo ">
               <img src="/assets/img/logo.svg" alt="Logo" />
             </a>
             <div className="nav__close" id="nav-close" >
@@ -42,17 +40,17 @@ const Header = () => {
           </div>
           <ul className="nav__list">
             <li className="nav__item">
-              <Link to={'/'} className="nav__link active-link">
+              <Link to={'/'} className="nav__link active-link no-underline">
                 Home
               </Link>
             </li>
             <li className="nav__item">
-              <Link to={'/library'} className="nav__link">
+              <Link to={'/library'} className="nav__link no-underline">
                 Library
               </Link>
             </li>
             <li className="nav__item">
-              <Link to="#" className="nav__link">
+              <Link to="#" className="nav__link no-underline">
                 My Account
               </Link>
               </li>

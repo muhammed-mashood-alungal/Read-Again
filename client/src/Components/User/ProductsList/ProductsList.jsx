@@ -6,8 +6,6 @@ import { bookImages } from '../../../redux/Constants/imagesDir';
 import { Link } from 'react-router-dom';
 
 const ProductList = ({books,title}) => {
-
-
   return (
     <Container>
       <section className="products container section">
@@ -17,7 +15,7 @@ const ProductList = ({books,title}) => {
          </h3>
           {books?.length > 0  && books?.map((book, index) => (
             <Col key={book._id} md="4" lg="3" className="mb-4">
-              <Link to={`/book-details/${book._id}`}>
+              <Link to={`/book-details/${book._id}`} className='no-underline'>
               <div className="product__item">
                 <div className="product__banner">
                   <Link to={`/book-details/${book._id}`} className="product__images">
@@ -31,10 +29,10 @@ const ProductList = ({books,title}) => {
                   <div className="product__badge ">New</div>
                 </div>
                 <div className="product__content">
-                  <span className="product__category">{book.category}</span>
-                  <a href="details.html"><h3 className="product__title">{book.title}</h3></a>
-                  <div className="product__rating">
-                    <i className="fi fi-rs-star"></i>
+                  <span className="product__category">{book?.category?.name}</span>
+                  <button ><h3 className="product__title no-underline">{book.title}</h3></button>
+                  <div className="product__rating no-hover-underline">
+                    <i className="fi fi-rs-star no-hover-underline"></i>
                     <i className="fi fi-rs-star"></i>
                     <i className="fi fi-rs-star"></i>
                     <i className="fi fi-rs-star"></i>
@@ -43,7 +41,7 @@ const ProductList = ({books,title}) => {
                   <div className="product__price flex">
                     <span className="new__price">{book?.physical?.price}</span>
                   </div>
-                  <a href="#" className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></a>
+                  <span href="#" className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></span>
                 </div>
               </div>
               </Link>

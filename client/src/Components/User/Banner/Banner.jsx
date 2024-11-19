@@ -12,7 +12,7 @@ const Banner = () => {
           <p className="home__description">
             Save more with coupons & up to 20% off
           </p>
-          <a href="shop.html" className="btn">Shop Now</a>
+          <button href="#" className="primary-btn">Shop Now</button>
         </div>
         <img src="assets/img/creative-composition-world-book-day_23-2148883765.png" className="home__img" alt="hats" />
       </div>
