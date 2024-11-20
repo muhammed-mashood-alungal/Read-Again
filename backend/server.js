@@ -5,11 +5,18 @@ const {connectDB} = require('./config/db')
 const userRoutes = require('./Routes/userRoutes')
 const adminRoutes = require('./Routes/adminRoutes')
 const bookRoutes = require('./Routes/booksRoutes')
+const categoryRoutes = require('./Routes/categoryRoutes')
+const authRoutes = require('./Routes/authRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
+
+
+
+app.use(cookieParser());
 app.use(express.urlencoded({extended : true}))
 app.use(express.json())
 app.use('/public/images', express.static(path.join(__dirname, 'public/images')));
@@ -30,10 +37,12 @@ require('./utils/passport.js');
 app.use('/api/users',userRoutes)
 app.use('/api/admin',adminRoutes)
 app.use('/api/books',bookRoutes)
+app.use('/api/categories',categoryRoutes)
+app.use('/api/auth',authRoutes)
 app.use((err,req,res,next)=>{
-    console.log(req.body)
- 
-  console.log("hello")
+    if(err){
+        console.log(err)
+    }
 }) 
 
 app.listen(process.env.PORT,()=>{

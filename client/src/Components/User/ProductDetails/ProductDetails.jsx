@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { bookImages } from "../../../redux/Constants/imagesDir";
+<<<<<<< HEAD
 import { Controlled as ControlledZoom } from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css';
 
@@ -12,6 +13,51 @@ const ProductDetails = ({bookData}) => {
   const handleZoomChange = useCallback(shouldZoom => {
     setIsZoomed(shouldZoom)
   }, [])
+=======
+import './ProductDetails.css'
+import { RedoDot } from "lucide-react";
+const ProductDetails = ({bookData}) => {
+  const [activeTab, setActiveTab] = useState("info");
+  const [images,setImages] =useState([])
+  const [zoom, setZoom] = useState({
+    display: "none",
+    zoomX: "0%",
+    zoomY: "0%",
+    backgroundImage: "",
+  });
+  const [selectedFormat,setSelectedFormat]=useState("physical")
+  const [price,setPrice]=useState(null)
+  useEffect(() => {
+    if (bookData && bookData.formats && selectedFormat) {
+      setPrice(bookData.formats[selectedFormat]?.price);
+    }
+  }, [bookData, selectedFormat]);
+
+  const handleMouseMove = (event) => {
+    const imageZoom = event.currentTarget;
+    const pointer = {
+      x: (event.nativeEvent.offsetX * 100) / imageZoom.offsetWidth,
+      y: (event.nativeEvent.offsetY * 100) / imageZoom.offsetHeight,
+    };
+   
+    setZoom((prevZoom) => ({
+      ...prevZoom,
+      display: "block",
+      zoomX: `${pointer.x}%`,
+      zoomY: `${pointer.y}%`,
+    }));
+  };
+
+  // Handle mouse out of image
+  const handleMouseOut = () => {
+    setZoom((prevZoom) => ({
+      ...prevZoom,
+      display: "none",
+    }));
+  };
+
+  // Handle tab switching
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
@@ -33,12 +79,54 @@ const ProductDetails = ({bookData}) => {
   }
   
 
+  // Set images from bookData
+  useEffect(() => {
+    if (bookData.images) {
+      setImages([...bookData.images]);
+      // Set the initial zoom background image to the first image
+      setZoom((prevZoom) => ({
+        ...prevZoom,
+        backgroundImage: `url(${bookImages + bookData._id + "/" + bookData.images[0]})`,
+      }));
+    }
+  }, [bookData]);
+
+  // Handle image click for small images
+  const handleImageClick = (index) => {
+    let newArr = [...images];
+    let temp = newArr[0];
+    newArr[0] = newArr[index];
+    newArr[index] = temp;
+    setImages(newArr);
+
+    // Update zoom background image with the new selected image
+    setZoom((prevZoom) => ({
+      ...prevZoom,
+      backgroundImage: `url(${bookImages + bookData._id + "/" + newArr[0]})`,
+    }));
+  };
+
+   
+  const renderStock= ()=>{
+    if (!bookData?.formats || !selectedFormat) {
+      return <td>N/A</td>;
+    }
+    const stock = bookData?.formats[selectedFormat]?.stock;
+    if(stock < 1){
+      return  <td className="stock-out">Stock Out</td>;
+    }else if(stock < 10){
+      return <td className="hurry-up">Hurry Up</td>;
+    }else{
+      return <td className="in-stock">In Stock</td>;
+    }
+  }
+
   return (
     <>
       <section className="details section--lg">
         <div className="details__container container grid">
-          {/* Product Image Gallery */}
           <div className="details__group">
+<<<<<<< HEAD
           <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
              <img
               src={bookImages+bookData._id+"/"+images[0]}
@@ -50,6 +138,30 @@ const ProductDetails = ({bookData}) => {
               {images.length != 0  && images.map((image,i)=>{
                 return images[i+1] && <img
                 src={bookImages+bookData._id+"/"+images[i+1]}
+=======
+          <div
+              className="imageZoom"
+              style={{
+                "--url": zoom.backgroundImage,
+                "--zoom-x": zoom.zoomX,
+                "--zoom-y": zoom.zoomY,
+                "--display": zoom.display,
+              }}
+              onMouseMove={handleMouseMove}
+              onMouseOut={handleMouseOut}
+            >
+              <img
+                src={bookImages + bookData?._id + "/" + images[0]}
+                alt="Product"
+                className="details__img Zoomable"
+              />
+            </div>
+          
+            <div className="details__small-images grid">
+              {images.length != 0  && images.map((image,i)=>{
+                return images[i+1] && <img
+                src={bookImages+bookData?._id+"/"+images[i+1]}
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                 className="details__small-img"
                 onClick={()=>{handleImageClick(i+1)}}
               />
@@ -60,6 +172,7 @@ const ProductDetails = ({bookData}) => {
 
           {/* Product Details */}
           <div className="details__group">
+<<<<<<< HEAD
             <h3 className="details__title">{bookData.title}</h3>
             <p className="details__brand">
               Author: <span>{bookData.author}</span>
@@ -68,6 +181,16 @@ const ProductDetails = ({bookData}) => {
               <div className="flex">
               <span className="new__price">{bookData?.physical?.price || 300}</span>
               <span className="old__price">{bookData?.physical?.price || 499}</span>
+=======
+            <h3 className="details__title">{bookData?.title}</h3>
+            <p className="details__brand">
+              Author: <span>{bookData?.author}</span>
+            </p>
+            <div className="details__price ">
+              <div className="flex">
+              <span className="new__price">{price - (25 / 100) * price}</span>
+              <span className="old__price">{price}</span>
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
               <span className="save__price">25% Off</span>
               </div>
               <div>
@@ -82,7 +205,11 @@ const ProductDetails = ({bookData}) => {
              
             </div>
             <p className="short__description">
+<<<<<<< HEAD
              {bookData.description}
+=======
+             {bookData?.description}
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
             </p>
             <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p>
             <ul className="products__list">
@@ -99,6 +226,7 @@ const ProductDetails = ({bookData}) => {
             </ul>
 
             
+<<<<<<< HEAD
 
             {/* Size Options */}
             <div className="details__size flex">
@@ -108,6 +236,30 @@ const ProductDetails = ({bookData}) => {
                 <li  className="size__link size-active mt-2">e-Book</li>
                 <li  className="size__link size-active mt-2">Audio Book</li>
               </ul>
+=======
+            <span className="details__size-title">Available Formats</span>
+            <div className="details__size flex">
+              
+              <ul>
+  {bookData?.formats?.physical.price && (
+    <li className={`size__link size-active mt-2 ${selectedFormat == "physical" && "selected"}` }
+    onClick={()=>{setSelectedFormat("physical")}}
+    >Physical Book</li>
+  )}
+
+  {bookData?.formats?.ebook?.price && (
+    <li className={`size__link size-active mt-2 ${selectedFormat == "ebook" && "selected"}` }
+    onClick={()=>{setSelectedFormat("ebook")}}
+    >e-Book</li>
+  )}
+
+  {bookData?.formats?.audiobook?.price && (
+    <li className={`size__link size-active mt-2 ${selectedFormat == "audiobook" && "selected"}` }
+    onClick={()=>{setSelectedFormat("audiobook")}}
+    >Audio Book</li>
+  )}
+</ul>
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
             </div>
 
             {/* Quantity and Actions */}
@@ -140,9 +292,15 @@ const ProductDetails = ({bookData}) => {
             <div className={`details__tab-content ${activeTab == 'info' && "active-tab"}`} id="info">
               <table className="info__table mb-4">
                 <tbody>
+<<<<<<< HEAD
                   <tr><th>Author</th><td> {bookData.author}</td></tr>
                   <tr><th>Published Date</th><td>{bookData.publicationDate}</td></tr>
                   <tr><th>Page Count</th><td>348</td></tr>
+=======
+                  <tr><th>Author</th><td> {bookData?.author}</td></tr>
+                  <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
+                  <tr><th>Stock Status</th>{renderStock()}</tr>
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   {/* Add more rows as needed */}
                 </tbody>
               </table>
@@ -154,31 +312,41 @@ const ProductDetails = ({bookData}) => {
             <div className={`details__tab-content ${activeTab == 'reviews' && "active-tab"}`} id="reviews">
               <div className="reviews__container grid">
                 <div className="review__single flex-column-left ">
+<<<<<<< HEAD
                   <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+=======
+                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
                 <div className="review__single flex-column-left ">
+<<<<<<< HEAD
                   <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+=======
+                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
                 <div className="review__single flex-column-left ">
+<<<<<<< HEAD
                   <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+=======
+                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
               </div>
 
-              {/* Review Form */}
               <div className="review__form">
                 <h4 className="review__form-title">Add a review</h4>
                 <div className="rate__product">
                   <i className="fi fi-rs-star"></i>
-                  {/* Add more star icons as needed */}
                 </div>
                 <form action="" className="form grid">
                   <textarea className="form__input textarea" placeholder="Write Comment"></textarea>

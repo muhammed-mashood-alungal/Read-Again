@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {Link} from 'react-router-dom'
+<<<<<<< HEAD
 import { getUserData } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 const Header = () => {
@@ -25,19 +26,40 @@ const Header = () => {
           </Link>
         </div>
       </div>
+=======
+import { getUserData, removeAuth } from '../../../redux/Actions/userActions';
+import { axiosAuthInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+const Header = () => {
+  const [isMenuOpen, setMenuOpen] = useState(false);
+ const {isLoggedIn} = useSelector(state=>state.auth)
+  const dispatch = useDispatch()
+
+ const handleLogOut=async()=>{
+  try {
+    const response = await axiosAuthInstance.get('/logout');
+    dispatch(removeAuth());
+  } catch (error) {
+    console.error("Logout failed", error.response?.data || error.message);
+  }
+ }
+ 
+ return (
+    <header className="header">
+  
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
       <nav className="nav container">
         <a href="index.html" className="nav__logo">
           <img
             className="nav__logo-img"
-            src="assets/img/logo.svg"
+            src="/assets/img/logo.svg"
             alt="website logo"
           />
         </a>
         <div className={`nav__menu ${isMenuOpen ? 'open' : ''}`} id="nav-menu">
           <div className="nav__menu-top">
-            <a href="index.html" className="nav__menu-logo">
-              <img src="./assets/img/logo.svg" alt="Logo" />
+            <a href="" className="nav__menu-logo ">
+              <img src="/assets/img/logo.svg" alt="Logo" />
             </a>
             <div className="nav__close" id="nav-close" >
               <i className="fi fi-rs-cross-small"></i>
@@ -45,18 +67,19 @@ const Header = () => {
           </div>
           <ul className="nav__list">
             <li className="nav__item">
-              <a href="index.html" className="nav__link active-link">
+              <Link to={'/'} className="nav__link active-link no-underline">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav__item">
-              <a href="shop.html" className="nav__link">
-                Shop
-              </a>
+              <Link to={'/library'} className="nav__link no-underline">
+                Library
+              </Link>
             </li>
             <li className="nav__item">
-              <a href="accounts.html" className="nav__link">
+              <Link to="#" className="nav__link no-underline">
                 My Account
+<<<<<<< HEAD
               </a>
               </li>
 
@@ -77,6 +100,23 @@ const Header = () => {
                
                 : <li className="nav__item">
                 <Link to='/login' className="nav__link no-underline">
+=======
+              </Link>
+              </li>
+              { !isLoggedIn && <li className="nav__item">
+                <Link to='/register' className="nav__link no-underline">
+                Sign up
+                </Link>
+                </li>}
+                {!isLoggedIn && <li className="nav__item">
+                <Link to='/login' className="nav__link no-underline">
+                Log In 
+                </Link>
+                </li>}
+              {
+                isLoggedIn && <li className="nav__item">
+                <Link onClick={handleLogOut} className="nav__link no-underline">
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                 Log Out
                 </Link>
                 </li>
@@ -90,21 +130,25 @@ const Header = () => {
               className="form__input"
             />
             <button className="search__btn">
-              <img src="assets/img/search.png" alt="search icon" />
+              <img src="/assets/img/search.png" alt="search icon" />
             </button>
           </div>
         </div>
         <div className="header__user-actions">
           <a href="wishlist.html" className="header__action-btn" title="Wishlist">
-            <img src="assets/img/icon-heart.svg" alt="Wishlist" />
+            <img src="/assets/img/icon-heart.svg" alt="Wishlist" />
             <span className="count">3</span>
           </a>
           <a href="cart.html" className="header__action-btn" title="Cart">
-            <img src="assets/img/icon-cart.svg" alt="Cart" />
+            <img src="/assets/img/icon-cart.svg" alt="Cart" />
             <span className="count">3</span>
           </a>
           <div className="header__action-btn nav__toggle" id="nav-toggle" >
+<<<<<<< HEAD
             <img src="./assets/img/menu-burger.svg" alt="Menu" />
+=======
+            <img src="/assets/img/menu-burger.svg" alt="Menu" />
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
           </div>
         </div>
       </nav>

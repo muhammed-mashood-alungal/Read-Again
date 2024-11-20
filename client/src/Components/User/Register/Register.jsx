@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -12,10 +12,17 @@ import './Register.css';
 import { validateRegister } from './forValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOtp, setRegistrationData } from '../../../redux/Actions/userActions';
-import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
+import Toast from '../../Toast/Toast';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Register = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const errorMessage = searchParams.get("error");
+
   const data = useSelector(state=>state.registrationData)
   const [formData, setFormData] = useState({
     username: data ? data.username :'',
@@ -23,11 +30,14 @@ const Register = () => {
     password: data ? data.password :'',
     confirmPassword: data ? data.confirmPassword :''
   });
-  
-  
-  const [err,setErr]=useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(errorMessage){
+      toast.error(errorMessage);
+    }
+  },[])
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -39,9 +49,10 @@ const Register = () => {
    const result =await  validateRegister(formData)
    console.log(result)
    if(!result.success){
-    setErr(result.message)
+    toast.error(result.message);
    }else{
       dispatch(setRegistrationData(formData))
+      dispatch(getOtp(formData.email))
       navigate('/register/verify')
    }
   }
@@ -51,7 +62,8 @@ const Register = () => {
       <Row className="justify-content-center align-items-center vh-100">
         <Col xs="10" sm="8" md="6" lg="4" className="register bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Create an Account</h3>
-        {err && <p>{err}</p>}
+   
+        <Toast />
           <Form onSubmit={handleRegister}>
             <FormGroup>
               <input

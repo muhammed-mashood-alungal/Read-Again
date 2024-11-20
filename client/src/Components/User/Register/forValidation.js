@@ -2,7 +2,8 @@ import { axiosUserInstance } from "../../../redux/Constants/axiosConstants";
 
  async function validateRegister(formData){
    const {username, email ,password , confirmPassword} = formData
-   const usernameReg =/^[A-Za-z]*$/
+   const usernameReg = /^[A-Za-z\s]*$/;
+
    const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    const passwordReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -41,6 +42,5 @@ import { axiosUserInstance } from "../../../redux/Constants/axiosConstants";
       return {success:false , message : "Somthing Went Wrong , Please Try later"}
      }
   }
-   
 }
 export {validateRegister}

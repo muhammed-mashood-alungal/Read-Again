@@ -10,11 +10,17 @@ const { sendOTP,
         deleteUser, 
         recoverUser,
         blockUser, 
-        unBlockUser 
+        unBlockUser,
+        verifyToken, 
+        logout
         }  = require('../controller/userController')
 const passport = require('passport')
 const { getAllUsers } = require('../controller/adminController')
 const { isAdmin, protect ,isLoggedIn} = require('../middlewares/auth')
+<<<<<<< HEAD
+=======
+const { googleAuthCallback } = require('../middlewares/googleAuthCallback')
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 const router = express.Router()
 
 router.get('/',isAdmin,getAllUsers)
@@ -31,11 +37,17 @@ router.put('/:userId/unblock',isAdmin,unBlockUser)
 router.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
+<<<<<<< HEAD
 router.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
         res.redirect('http://localhost:3000/');
     }
 );
+=======
+router.get('/auth/google/callback',googleAuthCallback);
+router.get('/verify-token', verifyToken);
+
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
 module.exports=router 

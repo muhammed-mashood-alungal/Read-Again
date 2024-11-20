@@ -30,4 +30,13 @@ code {
   justify-content: start;
   align-items: start;
   flex-direction: column;
+<<<<<<< HEAD
+=======
+}
+.err-msg{
+  color: red;
+}
+.no-hover-underline:hover{
+  text-decoration: none !important;
+>>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 }

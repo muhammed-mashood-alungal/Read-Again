@@ -1,0 +1,49 @@
+.imageZoom {
+    width: 550px;
+    position: relative;
+    border-radius: 20px;
+    transition: background-position 0.1s ease; 
+  }
+  
+  .imageZoom img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 0 0;
+    border-radius: 20px;
+    transition: transform 0.1s ease;
+  }
+  
+  .imageZoom::after {
+    border-radius: 20px;
+    display: var(--display);
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    background-image: var(--url);
+    background-size: 200%;
+    background-position: var(--zoom-x) var(--zoom-y);
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .details__small-images{
+    margin-top: 10px;
+  }
+  .details__small-img{
+    border-radius: 10px;
+  }
+  .stock-out{
+    color:red !important;
+  }
+  .hurry-up{
+    color:#f58b00 !important;
+  }
+  .in-stock{
+    color: green !important;
+  }
+  .selected{
+    background-color: aliceblue;
+    color: #088179;
+  }

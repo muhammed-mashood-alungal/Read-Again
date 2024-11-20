@@ -2,7 +2,7 @@ import React from 'react';
 
 const showcaseData = [
   {
-    title: "Hot Releases",
+    title: "Highly Recommended",
     products: [
       {
         imgSrc: "./assets/img/showcase-img-1.jpg",
@@ -25,7 +25,7 @@ const showcaseData = [
     ]
   },
   {
-    title: "Deals & Outlet",
+    title: "Staff picks",
     products: [
       {
         imgSrc: "./assets/img/showcase-img-4.jpg",
@@ -88,9 +88,9 @@ const Showcase = () => (
                 />
               </a>
               <div className="showcase__content">
-                <a href="details.html">
+                <button>
                   <h4 className="showcase__title">{product.name}</h4>
-                </a>
+                </button>
                 <div className="showcase__price flex">
                   <span className="new__price">{product.newPrice}</span>
                   <span className="old__price">{product.oldPrice}</span>

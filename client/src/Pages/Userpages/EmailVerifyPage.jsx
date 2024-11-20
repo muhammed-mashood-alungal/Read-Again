@@ -6,7 +6,7 @@ import Footer from '../../Components/User/Footer/Footer'
 function EmailVerifyPage(props) {
   return (
     <>
-     <EmailVerification  {...props}/>
+     <EmailVerification/>
     </>
   )
 }
