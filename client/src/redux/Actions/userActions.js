@@ -66,14 +66,26 @@ export const changePass = (email,password) =>async (dispatch) =>{
     return false
   }
 }
-export const getUserData =(userId)=>async(dispatch) =>{
+export const getUserData =()=>async(dispatch) =>{
   try{
     dispatch({type : GET_USER_DATA_REQUEST})
+    const token = localStorage.getItem("token")
 
-    const {userData} = await axiosUserInstance.get(`/${userId}`)
+    // withCredentials: true, // Enables sending cookies with the request
+    // headers: {
+    //   'Authorization': 'Bearer your_token_here', // Example header
+    //   'Content-Type': 'application/json' // Set any other headers you need
+    // }
+    const {userData} = await axiosUserInstance.get(`/token-verify`,{
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
     dispatch({type: GET_USER_DATA_SUCCESS , payload : userData})
   }catch(err){
     console.log(err)
     dispatch({type:GET_USER_DATA_FAILED , payload : err?.response?.data?.message})
   }
 }
+

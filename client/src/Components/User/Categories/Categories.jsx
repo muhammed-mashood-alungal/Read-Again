@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Categories.css'; 
+import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
+import { Link } from 'react-router-dom';
+import { categoryImages } from '../../../redux/Constants/imagesDir';
 
 const CategoriesSection = () => {
+  const [categories,setCategories] = useState([])
+  const [err,setErr] = useState("")
   useEffect(()=>{
-    
+    async function fetchCategories(){
+      try{
+        const response = await axiosAdminInstance.get('/categories')
+        if(response.status == 200){
+          setCategories(response.data.categories)
+        }
+       }catch(err){
+          setErr(err.response?.data?.message)
+       }
+    }
+    fetchCategories()
   },[])
   return (
     <section className="categories container section">
@@ -11,31 +26,14 @@ const CategoriesSection = () => {
         <span>Popular</span> Categories
       </h3>
       <div className="categories__container">
-        <a href="shop.html" className="category__item">
-          <img src="assets/img/category-1.jpg" alt="" className="category__img" />
-          <h3 className="category__title">T-Shirt</h3>
-        </a>
-        <a href="shop.html" className="category__item">
-          <img src="assets/img/category-2.jpg" alt="" className="category__img" />
-          <h3 className="category__title">Bags</h3>
-        </a>
-        <a href="shop.html" className="category__item">
-          <img src="assets/img/category-3.jpg" alt="" className="category__img" />
-          <h3 className="category__title">Sandal</h3>
-        </a>
-        <a href="shop.html" className="category__item">
-          <img src="assets/img/category-4.jpg" alt="" className="category__img" />
-          <h3 className="category__title">Scarf Cap</h3>
-        </a>
-        <a href="shop.html" className="category__item">
-          <img src="assets/img/category-5.jpg" alt="" className="category__img" />
-          <h3 className="category__title">Shoes</h3>
-        </a>
-        <a href="shop.html" className="category__item">
-          <img src="assets/img/category-6.jpg" alt="" className="category__img" />
-          <h3 className="category__title">Pillowcase</h3>
-        </a>
-        
+      {
+        categories && categories.map((category)=>{
+          return <Link to={'/library'} className="category__item">
+                   <img src={categoryImages+category.image} alt="" className="category__img" />
+                   <h3 className="category__title">{category.name}</h3>
+                 </Link>
+        })
+      }
       </div>
     </section>
   );

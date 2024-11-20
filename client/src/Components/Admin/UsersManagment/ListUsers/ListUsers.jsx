@@ -4,7 +4,6 @@ import { Col, Container, Row } from 'reactstrap';
 import UserForm from '../UserForm/UserForm';
 import { axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
 import UserDetails from '../UserDetails/UserDetails';
-import { getUserData } from '../../../../redux/Actions/userActions';
 import {useDispatch} from 'react-redux'
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
@@ -18,12 +17,24 @@ const ListUsers = () => {
 
   useEffect(() => {
    const fetchUsers =async()=>{
-     const response = await axiosUserInstance.get(`/?page=${currentPage}&limit=${limit}`)
-     console.log(response.data)
-     let pages= Math.ceil(response?.data?.totalUsers/limit)
-     setTotalPages(pages)
-     setUsers(response?.data?.users)
-     console.log(response?.data?.users)
+    
+    try{
+      const token= localStorage.getItem("token")
+      const response = await axiosUserInstance.get(`/?page=${currentPage}&limit=${limit}`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(response.data)
+      let pages= Math.ceil(response?.data?.totalUsers/limit)
+      setTotalPages(pages)
+      setUsers(response?.data?.users)
+      console.log(response?.data?.users)
+    }catch(err){
+      console.log(err)
+    }
+     
+    
     }
    fetchUsers()
   }, [currentPage]);
@@ -53,7 +64,12 @@ const ListUsers = () => {
   
    const handleBlockUser =async (id) => {
     try{
-     await axiosUserInstance.put(`/${id}/block`)
+      const token = localStorage.getItem("token")
+     await axiosUserInstance.put(`/${id}/block`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
      console.log("recovered")
      setUsers(users=>{
       return users.map((user)=>{
@@ -66,7 +82,12 @@ const ListUsers = () => {
    };
    const handleUnBlockUser =async (id) => {
     try{
-     await axiosUserInstance.put(`/${id}/unblock`)
+      const token = localStorage.getItem("token")
+     await axiosUserInstance.put(`/${id}/unblock`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
      setUsers(users=>{
       return users.map((user)=>{
         return user._id == id ? {...user,isBlocked : false} : user

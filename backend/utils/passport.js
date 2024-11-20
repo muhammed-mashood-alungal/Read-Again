@@ -21,7 +21,7 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET, // Replace with your Google OAuth client secret
   callbackURL: '/api/users/auth/google/callback'
 },
-async(accessToken, refreshToken, profile, done) => {
+async(accessToken, refreshToken, profile, done) => { 
     try {
       const user = await findOrCreateGoogleUser(profile);
       done(null, user);

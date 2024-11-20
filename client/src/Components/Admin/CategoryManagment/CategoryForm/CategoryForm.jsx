@@ -44,7 +44,12 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       formData.append("image" ,image )
       
       console.log(formData)
-      const response = await axiosAdminInstance.post('/categories/create',formData)
+      const token=localStorage.getItem("token")
+      const response = await axiosAdminInstance.post('/categories/create',formData,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       console.log(response.data)
       if(response.status ==200){
         setSuccess(true)
@@ -71,7 +76,12 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       }
       
       console.log(categoryData._id)
-      const response = await axiosAdminInstance.put(`/categories/${categoryData._id}/edit`,formData)
+      const token= localStorage.getItem("token")
+      const response = await axiosAdminInstance.put(`/categories/${categoryData._id}/edit`,formData,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       console.log(response.data)
       if(response.status ==200){
         setSuccess(true)

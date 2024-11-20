@@ -1,6 +1,7 @@
 const Category = require("../models/Category")
 const User = require("../models/Users")
-
+const bcrypt =  require('bcrypt')
+const { generateToken } = require("../utils/jwt")
 module.exports={
     async getAllUsers(req,res){
         try{
@@ -39,7 +40,6 @@ module.exports={
     async getAllCategories(req,res){
         try{
            const categories =await Category.find({})
-           console.log(categories)
            res.status(200).json({categories:categories})
         }catch(err){
           res.status(400).json({messsage:err})
@@ -74,6 +74,25 @@ module.exports={
         res.status(200).json({ success: true, updatedCategory });
       } catch (err) {
         res.status(400).json({ success: false, message: "Error while updating category" })
+      }
+    }, 
+    async adminLogin(req,res){
+      try{
+       const {email,password} = req.body
+       console.log(email,password)
+       const Admin = await User.findOne({role:"ADMIN"})
+       if(!Admin)  return res.status(401).json({message:"Invalid Credential"})
+       if(Admin?.email == email){
+        const isMatched = await bcrypt.compare(password,Admin.password)
+         if(isMatched){
+             const token = await generateToken({id:Admin._id, role : Admin.role})
+            return  res.status(200).json({success:true , token})
+         }
+       }
+        return res.status(401).json({message:"Invalid Credential"})
+      }catch(err){
+        console.log(err)
+        return res.status(401).json({message:"Invalid Credential"})
       }
     }
     

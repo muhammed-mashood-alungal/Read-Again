@@ -25,3 +25,9 @@ code {
   display: flex;
   justify-content: space-between;
 }
+.flex-column-left{
+  display:flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+}
