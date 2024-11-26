@@ -1,4 +1,4 @@
-import { axiosUserInstance } from "../../../redux/Constants/axiosConstants"
+import { axiosUserInstance } from "../redux/Constants/axiosConstants"
 
 export const verifyEmail= async(email)=>{
     try{

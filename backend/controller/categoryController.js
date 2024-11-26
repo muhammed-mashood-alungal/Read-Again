@@ -32,7 +32,15 @@ module.exports = {
             if (name) {
                 query.name = { $regex: new RegExp(name, "i") };
             }
-            const categories = await Category.find(query)
+            let categories = await Category.find(query)
+            categories = categories.map(category => {
+                return {
+                    ...category._doc, 
+                    createdAt: new Date(category.createdAt).toUTCString().slice(5, 16),
+                    updatedAt: new Date(category.updatedAt).toUTCString().slice(5,16)
+                };
+            });
+            console.log(categories)
             res.status(200).json({ categories: categories })
         } catch (err) {
             res.status(400).json({ messsage: err })
@@ -56,8 +64,9 @@ module.exports = {
     },
     async updateCategory(req, res) {
         try {
+            console.log("Update Category")
             const { categoryId } = req.params
-            console.log(req.file.originalname,req.file.filename)
+            console.log(req.file?.originalname,req.file?.filename)
             let updatedData = { ...req.body }
             if (req.file) {
                 updatedData.image = req.file.filename
@@ -71,6 +80,7 @@ module.exports = {
 
             res.status(200).json({ success: true, updatedCategory });
         } catch (err) {
+            console.log(err)
             res.status(400).json({ success: false, message: "Error while updating category" })
         }
     }

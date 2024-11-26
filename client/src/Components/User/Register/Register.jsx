@@ -9,7 +9,7 @@ import {
   Button
 } from 'reactstrap';
 import './Register.css';
-import { validateRegister } from './forValidation';
+import { validateRegister } from '../../../validations/registerValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOtp, setRegistrationData } from '../../../redux/Actions/userActions';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
@@ -53,7 +53,7 @@ const Register = () => {
    }else{
       dispatch(setRegistrationData(formData))
       dispatch(getOtp(formData.email))
-      navigate('/register/verify')
+      navigate('/register/verify',{ state: { origin: 'register' } })
    }
   }
 

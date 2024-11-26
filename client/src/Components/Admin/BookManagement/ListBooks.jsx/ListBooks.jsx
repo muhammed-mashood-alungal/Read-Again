@@ -4,7 +4,7 @@ import {axiosAdminInstance, axiosBookInstance, axiosCategoryInstance, axiosUserI
 import { bookImages, categoryImages } from '../../../../redux/Constants/imagesDir';
 import BookForm from '../BookForm/BookFrom';
 import BookDetails from '../BookDetails/BookDetails';
-import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
+import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 
 const ListBooks = () => {
   const [allBooks, setAllbooks] = useState([]);
@@ -67,19 +67,11 @@ const ListBooks = () => {
   const handleBookDelete=async()=>{
     try{
       const token = localStorage.getItem("token")
-<<<<<<< HEAD
-       await axiosBookInstance.put(`/${bookId}/toggle-delete`,{
-=======
        await axiosBookInstance.put(`/${selectedBookId}/toggle-delete`,{
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-<<<<<<< HEAD
-       console.log(bookId)
-=======
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
        setAllbooks(books=>{
         return books.map((book)=>{
           return book._id == selectedBookId ? {...book,isDeleted:!book.isDeleted} : book

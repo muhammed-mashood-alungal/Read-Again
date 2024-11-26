@@ -79,7 +79,7 @@ const initialState = JSON.parse(localStorage.getItem('auth')) || {
 export const authReducer = (state=initialState,action)=>{
   switch(action.type){
     case SET_AUTH :
-      return {isLoggedIn:action.payload.isLoggedIn , role : action.payload.role}
+      return {isLoggedIn:action.payload.isLoggedIn , role : action.payload.role , userId:action.payload.id}
     case REMOVE_AUTH:
       return {isLoggedIn : false , role : null}
     default :

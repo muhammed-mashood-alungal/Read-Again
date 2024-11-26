@@ -11,7 +11,7 @@ const UsersSChema=mongoose.Schema({
         unique:[true,"User with this Email address already exists!"]
     },
     phone:{
-        type:Number,
+        type:String
     }, 
     googleId:{
       type:String
@@ -28,9 +28,12 @@ const UsersSChema=mongoose.Schema({
       bio:{
         type:String
       },
-      addresses:{
-        type:[mongoose.Schema.Types.ObjectId]
-      },
+      addresses: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Address", 
+        },
+      ],
       genres:{
         type:[mongoose.Schema.Types.ObjectId]
       },

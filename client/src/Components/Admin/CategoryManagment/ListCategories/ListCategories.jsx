@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'reactstrap';
 import {axiosAdminInstance, axiosCategoryInstance, axiosUserInstance} from '../../../../redux/Constants/axiosConstants'
 import CategoryForm from '../CategoryForm/CategoryForm';
 import { categoryImages } from '../../../../redux/Constants/imagesDir';
-import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
+import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -36,7 +36,7 @@ const CategoryManagement = () => {
     try{
       await axiosCategoryInstance.put(`/${selectedCategoryId}/list-or-unlist`)
       setCategories(categories=>{
-        return categories.map((category)=>{
+      return categories.map((category)=>{
          return  category._id == selectedCategoryId ? {...category,listed:!category.listed} : category
         })
       })
@@ -48,7 +48,6 @@ const CategoryManagement = () => {
   };
   const showUpdateForm = async(id) =>{
     try{
-      console.log(id) 
     const response = await  axiosCategoryInstance.get(`/${id}`)
     console.log(response.data.categoryData)
     setCategoryData(response.data.categoryData)

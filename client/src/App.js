@@ -18,14 +18,11 @@ import CategoryManagement from './Components/Admin/CategoryManagment/ListCategor
 import ListUsers from './Components/Admin/UsersManagment/ListUsers/ListUsers';
 import ListBooks from './Components/Admin/BookManagement/ListBooks.jsx/ListBooks';
 import AdminLogin from './Components/Admin/AdminLogin/AdminLogin';
-<<<<<<< HEAD
-=======
 import { axiosAdminInstance, axiosAuthInstance, axiosUserInstance } from './redux/Constants/axiosConstants';
 import { useEffect } from 'react';
 import { removeAuth, setAuth } from './redux/Actions/userActions';
 import { useDispatch } from 'react-redux';
 import ForgottenPassword from './Components/User/ForgottenPassword/ForgottenPassword';
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
 function App() {
   const dispatch = useDispatch()
@@ -33,7 +30,7 @@ function App() {
     const checkAuth = async () => {
         try {
             const response = await axiosAuthInstance.get('/check-auth');
-            dispatch(setAuth({isLoggedIn : response.data.isLoggedIn , role : response.data.role}));
+            dispatch(setAuth(response.data));
         } catch (error) {
             console.error('Token verification failed:', error);
             dispatch(removeAuth());

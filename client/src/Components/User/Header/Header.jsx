@@ -1,32 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {Link} from 'react-router-dom'
-<<<<<<< HEAD
-import { getUserData } from '../../../redux/Actions/userActions';
-import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
-const Header = () => {
-  const [isMenuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn,setIsLoggedIn] = useState(false)
- 
-  
-
-  return (
-    <header className="header">
-      <div className="header__top">
-        <div className="header__container container">
-          <div className="header__contact">
-            <span>(+01) - 2345 - 6789</span>
-            <span>Our location</span>
-          </div>
-          <p className="header__alert-news">
-            Super Values Deals - Save more coupons
-          </p>
-          <Link to='/login' className="header__top-action">
-            Log In / Sign Up
-          </Link>
-        </div>
-      </div>
-=======
 import { getUserData, removeAuth } from '../../../redux/Actions/userActions';
 import { axiosAuthInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 const Header = () => {
@@ -46,7 +20,6 @@ const Header = () => {
  return (
     <header className="header">
   
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
       <nav className="nav container">
         <a href="index.html" className="nav__logo">
@@ -77,30 +50,8 @@ const Header = () => {
               </Link>
             </li>
             <li className="nav__item">
-              <Link to="#" className="nav__link no-underline">
+              <Link to={"/account"} className="nav__link no-underline">
                 My Account
-<<<<<<< HEAD
-              </a>
-              </li>
-
-              {
-                !isLoggedIn ?  
-                <div>
-                <li className="nav__item">
-                <Link to='/register' className="nav__link no-underline">
-                Sign up
-                </Link>
-                </li>
-                <li className="nav__item">
-                <Link to='/login' className="nav__link no-underline">
-                Log In 
-                </Link>
-                </li>
-                </div>
-               
-                : <li className="nav__item">
-                <Link to='/login' className="nav__link no-underline">
-=======
               </Link>
               </li>
               { !isLoggedIn && <li className="nav__item">
@@ -116,7 +67,6 @@ const Header = () => {
               {
                 isLoggedIn && <li className="nav__item">
                 <Link onClick={handleLogOut} className="nav__link no-underline">
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                 Log Out
                 </Link>
                 </li>
@@ -144,11 +94,7 @@ const Header = () => {
             <span className="count">3</span>
           </a>
           <div className="header__action-btn nav__toggle" id="nav-toggle" >
-<<<<<<< HEAD
-            <img src="./assets/img/menu-burger.svg" alt="Menu" />
-=======
             <img src="/assets/img/menu-burger.svg" alt="Menu" />
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
           </div>
         </div>
       </nav>

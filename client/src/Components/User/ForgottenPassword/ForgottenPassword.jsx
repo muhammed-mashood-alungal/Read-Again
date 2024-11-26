@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 import {
   Container,
   Row,
@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createUser, getOtp } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
-import { verifyEmail } from '../EmailVerification/verifyEmail';
+import { verifyEmail } from '../../../validations/verifyEmail'; 
 
 const ForgottenPassword = (props) => {
   
@@ -34,7 +34,7 @@ const ForgottenPassword = (props) => {
 //     }
 
 //   },[formData])
-
+ 
 
   useEffect(()=>{
   if(timer > -1 && !loading){

@@ -30,13 +30,25 @@ code {
   justify-content: start;
   align-items: start;
   flex-direction: column;
-<<<<<<< HEAD
-=======
 }
 .err-msg{
   color: red;
 }
 .no-hover-underline:hover{
   text-decoration: none !important;
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
+}
+.link-button{
+  color: #088179;
+  font-size:17px;
+  margin: 10px;
+}
+.link-button:hover{
+  color: #000;
+}
+.delete-btn{
+  margin: 10px;
+  color: rgb(197, 0, 0);
+}
+.delete-btn:hover{
+  color: #000;
 }

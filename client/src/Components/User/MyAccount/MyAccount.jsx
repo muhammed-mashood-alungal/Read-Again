@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import Toast from '../../Toast/Toast';
+import {  toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import UpdateProfile from './UpdateProfile';
+import {Link} from 'react-router-dom'
+import ChangePass from './ChangePass';
+import Addresses from './Addresses';
 const MyAccount = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-
+  const [profileData,setProfileData] =useState({})
+  const {isLoggedIn,userId}=useSelector(state=>state.auth)
+  const navigate = useNavigate()
+  
+  
   const handleTabClick = (target) => {
-    console.log(target);
     setActiveTab(target);
   };
+  useEffect(()=>{
+    if(!isLoggedIn || !userId){
+      navigate('/')
+    }
+  },[isLoggedIn])
+
+  useEffect(()=>{
+    const getProfileData =async()=> {
+      try{
+        const response = await axiosUserInstance.get(`/${userId}`)
+        setProfileData(response?.data?.userData)
+      }catch(err){
+        console.log(err)
+        toast.error(err?.response?.data?.error)
+      }
+    }
+    getProfileData();
+  },[])
 
   return (
     <section className="accounts section--lg">
+      <Toast/>
       <div className="accounts__container container grid">
+        
         <div className="account__tabs">
           <p
             className={`account__tab ${activeTab === 'dashboard' ? 'active-tab' : ''}`}
@@ -36,12 +67,17 @@ const MyAccount = () => {
           >
             <i className="fi fi-rs-marker"></i> My Address
           </p>
-          <p
+          {
+             profileData.password && (
+              <p
             className={`account__tab ${activeTab === 'change-password' ? 'active-tab' : ''}`}
             onClick={() => handleTabClick('change-password')}
-          >
+            >
             <i className="fi fi-rs-settings-sliders"></i> Change Password
-          </p>
+            </p>
+             )
+          }
+          
           <p className="account__tab">
             <i className="fi fi-rs-exit"></i> Logout
           </p>
@@ -50,11 +86,31 @@ const MyAccount = () => {
         <div className="tabs__content">
           {activeTab === 'dashboard' && (
             <div className={`tab__content ${activeTab === 'dashboard' ? 'active-tab' : ''}`} id="dashboard">
-              <h3 className="tab__header">Hello Rosie</h3>
+              <h3 className="tab__header">Hello {profileData?.username}</h3>
               <div className="tab__body">
-                <p className="tab__description">
-                  From your account dashboard, you can easily check & view your recent order, manage your shipping and billing addresses, and edit your password and account details.
-                </p>
+                <table>
+                  <tr>
+                    <th>User Name</th>
+                    <th>{profileData?.username}</th>
+                  </tr>
+                  <tr>
+                    <th>Email Address</th>
+                    <th>{profileData?.email}</th>
+                  </tr>
+                  <tr>
+                    <th>Phone Number</th>
+                    <th>{profileData?.phone  ? profileData?.phone:
+                    <>
+                    Not Added <br />
+                    <button className="link-button"
+                    onClick={() => handleTabClick('update-profile')}>
+                    Add Phone Number
+                    </button>
+                    </>
+                     }</th>
+                    
+                  </tr>
+                </table>
               </div>
             </div>
           )}
@@ -101,49 +157,23 @@ const MyAccount = () => {
             </div>
           )}
 
+        
           {activeTab === 'update-profile' && (
-            <div className={`tab__content ${activeTab === 'update-profile' ? 'active-tab' : ''}`} id="update-profile">
-              <h3 className="tab__header">Update Profile</h3>
-              <div className="tab__body">
-                <form className="form grid">
-                  <input type="text" placeholder="Username" className="form__input" />
-                  <div className="form__btn">
-                    <button className="btn btn--md">Save</button>
-                  </div>
-                </form>
+             <div className={`tab__content ${activeTab === 'update-profile' ? 'active-tab' : ''}`} id="update-profile">
+             <UpdateProfile activeTab={true}  profileData={profileData}
+             />
               </div>
-            </div>
-          )}
-
+          ) }
           {activeTab === 'address' && (
+            
             <div className={`tab__content ${activeTab === 'address' ? 'active-tab' : ''}`} id="address">
-              <h3 className="tab__header">Shipping Address</h3>
-              <div className="tab__body">
-                <address className="address">
-                  3522 Interstate <br />
-                  75 Business Spur, <br />
-                  Sault Ste. <br />
-                  Marie, Mi 49783
-                </address>
-                <p className="city">New York</p>
-                <a href="#" className="edit">Edit</a>
-              </div>
+              <Addresses userId={profileData._id} userAddresses={profileData?.addresses}/>
             </div>
           )}
 
-          {activeTab === 'change-password' && (
+          {activeTab === 'change-password'  && (
             <div className={`tab__content ${activeTab === 'change-password' ? 'active-tab' : ''}`} id="change-password">
-              <h3 className="tab__header">Change Password</h3>
-              <div className="tab__body">
-                <form className="form grid">
-                  <input type="password" placeholder="Current Password" className="form__input" />
-                  <input type="password" placeholder="New Password" className="form__input" />
-                  <input type="password" placeholder="Confirm Password" className="form__input" />
-                  <div className="form__btn">
-                    <button className="btn btn--md">Save</button>
-                  </div>
-                </form>
-              </div>
+               <ChangePass email={profileData.email}/>
             </div>
           )}
         </div>

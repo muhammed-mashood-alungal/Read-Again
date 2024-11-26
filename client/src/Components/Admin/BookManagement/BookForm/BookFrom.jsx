@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { bookFormValidate } from './BookFormValidate';
 import path from 'path-browserify';
 import { axiosAdminInstance, axiosBookInstance, axiosCategoryInstance } from '../../../../redux/Constants/axiosConstants';
 import CropImage from '../../CropImage/CropImage'
 import { bookImages } from '../../../../redux/Constants/imagesDir';
-<<<<<<< HEAD
-import { ThermometerSnowflakeIcon } from 'lucide-react';
-=======
 import './BookForm.css'
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
+import { bookFormValidate } from '../../../../validations/BookFormValidate';
+import { validateImage } from '../../../../validations/imageValidation';
+import Toast from '../../../Toast/Toast'
+import {  toast } from 'react-toastify';
 
 const BookForm = ({ bookDetails }) => {
   const [title, setTitle] = useState('');
@@ -112,6 +111,7 @@ const BookForm = ({ bookDetails }) => {
       setIsModalOpen(false);
     } else {
       try{
+        setIsModalOpen(false);
         const oldUrl = path.basename(imageUrls[selectedImageIndex])
         console.log(oldUrl)
         const newImages = [...images];
@@ -128,7 +128,8 @@ const BookForm = ({ bookDetails }) => {
         setImageUrls(response.data.newImages.map(imageName => {
           return bookImages + bookDetails._id + "/" + imageName
         }))
-        setIsModalOpen(false);
+        
+        
       }catch(err){
         console.log(err)
       }
@@ -154,71 +155,12 @@ const BookForm = ({ bookDetails }) => {
   const handleSubmit = async (e) => { 
     try {
 
-<<<<<<< HEAD
-        e.preventDefault();
-        setErr("")
-        const bookData = {
-            title, author, category, genre, description, images, publicationDate, ISBN, formats
-        }
-        
-        const result = await bookFormValidate(bookData,!isCreateForm)
-        if(!result.success){
-            setErr(result.message)
-            return
-        }
-        const token=localStorage.getItem("token")
-        if(!isCreateForm){
-         
-         console.log(token)
-          await axiosBookInstance.put(`/${bookDetails._id}/edit`,bookData,{
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
-          setSuccess(true)
-          console.log("success")
-        }else{
-            
-            const formData = new FormData()
-            formData.append('type' , "books")
-            formData.append("ISBN" , ISBN)
-            formData.append("title" , title )
-            formData.append("author" ,author)
-            formData.append("category" ,category)
-            formData.append("genre" , genre)
-            formData.append("description" , description)
-            formData.append("publicationDate" , publicationDate)
-            
-            formData.append("formats",JSON.stringify(formats))
-            console.log(images)
-            if(images.length > 0){
-                images.forEach((image, index) => {
-                  console.log(image)
-                    formData.append(`image-${index + 1}`, image); 
-                })
-            }
-            
-            await axiosBookInstance.post("/create",formData,{
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            })
-            setSuccess(true)
-            console.log("success")
-        }
-    }catch(err){
-        console.log(err)
-        setErr(err?.response?.data?.message)
-    }
-  };
-=======
       e.preventDefault();
       setErr("")
       console.log(imageUrls.length)
       const bookData = {
         title, author, category, genre, description, imageUrls, publicationDate, ISBN, formats
       }
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
       const result =  bookFormValidate(bookData, !isCreateForm)
       if (!result.success) {
@@ -276,6 +218,10 @@ const BookForm = ({ bookDetails }) => {
     setImages(images.filter((_, i) => i !== index));
   };
   const handleSetImage = (index, file) => {
+    if(!validateImage(file)){
+      toast.error("Make sure the image is either .png , .jpg or .jpeg")
+      return 
+    }
     if(isCreateForm){
       const newImages = [...images];
       newImages[index] = file
@@ -294,6 +240,7 @@ const BookForm = ({ bookDetails }) => {
  
   return (
     <div>
+      <Toast/>
       {isModalOpen && <CropImage
         isOpen={isModalOpen}
         imageSrc={selectedImage}

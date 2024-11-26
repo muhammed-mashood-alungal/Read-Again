@@ -9,7 +9,6 @@ import {
   Button,
 } from 'reactstrap';
 import './UserLogin.css';
-import { validateLogin } from './loginValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogin } from '../../../redux/Actions/userActions';
 import { useNavigate  ,Link, useLocation} from 'react-router-dom';
@@ -17,6 +16,7 @@ import GoogleSignInButton from '../GoogleButton/GoogleButton';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from '../../Toast/Toast';
+import { validateLogin } from '../../../validations/loginValidation';
 
 const UserLogin = () => {
   const [email, setEmail] = useState('');

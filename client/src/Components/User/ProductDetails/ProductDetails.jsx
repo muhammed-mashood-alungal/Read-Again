@@ -1,21 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { bookImages } from "../../../redux/Constants/imagesDir";
-<<<<<<< HEAD
-import { Controlled as ControlledZoom } from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css';
-
-const ProductDetails = ({bookData}) => {
-  const [activeTab, setActiveTab] = useState("info");
-  const [selected,setSelectedImage] = useState(0)
-  const [images,setImages] =useState([])
-   const [isZoomed, setIsZoomed] = useState(false)
-
-  const handleZoomChange = useCallback(shouldZoom => {
-    setIsZoomed(shouldZoom)
-  }, [])
-=======
 import './ProductDetails.css'
-import { RedoDot } from "lucide-react";
 const ProductDetails = ({bookData}) => {
   const [activeTab, setActiveTab] = useState("info");
   const [images,setImages] =useState([])
@@ -57,7 +42,6 @@ const ProductDetails = ({bookData}) => {
   };
 
   // Handle tab switching
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
@@ -68,15 +52,15 @@ const ProductDetails = ({bookData}) => {
     }
   },[bookData])
  
-  const handleImageClick=(index)=>{
-     let newArr = [...images]
-     console.log(newArr)
-     let temp = newArr[0]
-     newArr[0] = newArr[index]
-     newArr[index]=temp
+  // const handleImageClick=(index)=>{
+  //    let newArr = [...images]
+  //    console.log(newArr)
+  //    let temp = newArr[0]
+  //    newArr[0] = newArr[index]
+  //    newArr[index]=temp
 
-     setImages(newArr)
-  }
+  //    setImages(newArr)
+  // }
   
 
   // Set images from bookData
@@ -126,19 +110,6 @@ const ProductDetails = ({bookData}) => {
       <section className="details section--lg">
         <div className="details__container container grid">
           <div className="details__group">
-<<<<<<< HEAD
-          <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
-             <img
-              src={bookImages+bookData._id+"/"+images[0]}
-              alt="Product"
-              className="details__img"
-            />
-            </ControlledZoom>
-            <div className="details__small-images grid">
-              {images.length != 0  && images.map((image,i)=>{
-                return images[i+1] && <img
-                src={bookImages+bookData._id+"/"+images[i+1]}
-=======
           <div
               className="imageZoom"
               style={{
@@ -161,7 +132,6 @@ const ProductDetails = ({bookData}) => {
               {images.length != 0  && images.map((image,i)=>{
                 return images[i+1] && <img
                 src={bookImages+bookData?._id+"/"+images[i+1]}
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                 className="details__small-img"
                 onClick={()=>{handleImageClick(i+1)}}
               />
@@ -172,16 +142,6 @@ const ProductDetails = ({bookData}) => {
 
           {/* Product Details */}
           <div className="details__group">
-<<<<<<< HEAD
-            <h3 className="details__title">{bookData.title}</h3>
-            <p className="details__brand">
-              Author: <span>{bookData.author}</span>
-            </p>
-            <div className="details__price ">
-              <div className="flex">
-              <span className="new__price">{bookData?.physical?.price || 300}</span>
-              <span className="old__price">{bookData?.physical?.price || 499}</span>
-=======
             <h3 className="details__title">{bookData?.title}</h3>
             <p className="details__brand">
               Author: <span>{bookData?.author}</span>
@@ -190,7 +150,6 @@ const ProductDetails = ({bookData}) => {
               <div className="flex">
               <span className="new__price">{price - (25 / 100) * price}</span>
               <span className="old__price">{price}</span>
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
               <span className="save__price">25% Off</span>
               </div>
               <div>
@@ -205,11 +164,7 @@ const ProductDetails = ({bookData}) => {
              
             </div>
             <p className="short__description">
-<<<<<<< HEAD
-             {bookData.description}
-=======
              {bookData?.description}
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
             </p>
             <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p>
             <ul className="products__list">
@@ -226,17 +181,6 @@ const ProductDetails = ({bookData}) => {
             </ul>
 
             
-<<<<<<< HEAD
-
-            {/* Size Options */}
-            <div className="details__size flex">
-              <span className="details__size-title">Available Formats</span>
-              <ul className="size__list">
-                <li  className="size__link size-active mt-2">Physical Book</li>
-                <li  className="size__link size-active mt-2">e-Book</li>
-                <li  className="size__link size-active mt-2">Audio Book</li>
-              </ul>
-=======
             <span className="details__size-title">Available Formats</span>
             <div className="details__size flex">
               
@@ -259,7 +203,6 @@ const ProductDetails = ({bookData}) => {
     >Audio Book</li>
   )}
 </ul>
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
             </div>
 
             {/* Quantity and Actions */}
@@ -292,15 +235,9 @@ const ProductDetails = ({bookData}) => {
             <div className={`details__tab-content ${activeTab == 'info' && "active-tab"}`} id="info">
               <table className="info__table mb-4">
                 <tbody>
-<<<<<<< HEAD
-                  <tr><th>Author</th><td> {bookData.author}</td></tr>
-                  <tr><th>Published Date</th><td>{bookData.publicationDate}</td></tr>
-                  <tr><th>Page Count</th><td>348</td></tr>
-=======
                   <tr><th>Author</th><td> {bookData?.author}</td></tr>
                   <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
                   <tr><th>Stock Status</th>{renderStock()}</tr>
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   {/* Add more rows as needed */}
                 </tbody>
               </table>
@@ -312,31 +249,19 @@ const ProductDetails = ({bookData}) => {
             <div className={`details__tab-content ${activeTab == 'reviews' && "active-tab"}`} id="reviews">
               <div className="reviews__container grid">
                 <div className="review__single flex-column-left ">
-<<<<<<< HEAD
-                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
-=======
                   <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
                 <div className="review__single flex-column-left ">
-<<<<<<< HEAD
-                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
-=======
                   <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>
                 </div>
                 <div className="review__single flex-column-left ">
-<<<<<<< HEAD
-                  <img src="./assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
-=======
                   <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
                   <h4 className="review__title">Jacky Chan</h4>
                   <p className="review__description">Fast shipping from Poland.</p>
                   <span className="review__date">December 4, 2022 at 3:12 pm</span>

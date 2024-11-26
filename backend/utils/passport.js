@@ -21,14 +21,6 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET, 
   callbackURL: '/api/users/auth/google/callback'
 },
-<<<<<<< HEAD
-async(accessToken, refreshToken, profile, done) => { 
-    try {
-      const user = await findOrCreateGoogleUser(profile);
-      done(null, user);
-     } catch (error) {
-      done(error, null);
-=======
 async (accessToken, refreshToken, profile, done) => {
   try {
     const response = await findOrCreateGoogleUser(profile);
@@ -39,7 +31,6 @@ async (accessToken, refreshToken, profile, done) => {
     done(null, {user:response.user,token: response.token});
   } catch (error) {
     done(error, null);
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
   }
 
   }));

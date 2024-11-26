@@ -83,15 +83,6 @@ export const getUserData =()=>async(dispatch) =>{
   try{
     dispatch({type : GET_USER_DATA_REQUEST})
     const token = localStorage.getItem("token")
-<<<<<<< HEAD
-
-    // withCredentials: true, // Enables sending cookies with the request
-    // headers: {
-    //   'Authorization': 'Bearer your_token_here', // Example header
-    //   'Content-Type': 'application/json' // Set any other headers you need
-    // }
-=======
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
     const {userData} = await axiosUserInstance.get(`/token-verify`,{
       withCredentials: true,
       headers: {

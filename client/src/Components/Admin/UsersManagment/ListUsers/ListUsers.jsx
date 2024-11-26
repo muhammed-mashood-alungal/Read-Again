@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './ListUsers.css';
 import { Col, Container, Row } from 'reactstrap';
-import UserForm from '../UserForm/UserForm';
 import { axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
 import UserDetails from '../UserDetails/UserDetails';
 import {useDispatch} from 'react-redux'
-import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
+import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
+
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
   const [userDetails,setUserDetails] = useState({})

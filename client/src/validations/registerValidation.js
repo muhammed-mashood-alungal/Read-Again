@@ -1,4 +1,4 @@
-import { axiosUserInstance } from "../../../redux/Constants/axiosConstants";
+import { axiosUserInstance } from "../redux/Constants/axiosConstants";
 
  async function validateRegister(formData){
    const {username, email ,password , confirmPassword} = formData

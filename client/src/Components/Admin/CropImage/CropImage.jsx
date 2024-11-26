@@ -1,11 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-<<<<<<< HEAD
-import './CropImage.css'
-=======
 import './CropImage.css';
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
 const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
     const [crop, setCrop] = useState(null);

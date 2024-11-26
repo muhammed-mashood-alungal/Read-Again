@@ -1,9 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, FormGroup } from 'reactstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
 import { useDispatch } from 'react-redux';
 import { changePass } from '../../../redux/Actions/userActions';
+import { validateChangePassword } from '../../../validations/passwordValidations';
+import { toast } from 'react-toastify';
+import Toast from '../../Toast/Toast'
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -14,32 +17,38 @@ const ChangePassword = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
 
+  useEffect(()=>{
+    if(!forgetPassEmail){
+      navigate('/forgotten-password/verify')
+    }
+  },[])
+
   const handleChangePassword =async (e) => {
     e.preventDefault();
     setLoading(true);
     
-    // Perform password change logic here
-    // Example:
-    if (newPassword === confirmPassword) {
-      const success = await dispatch(changePass(forgetPassEmail,newPassword))
+    const result = validateChangePassword(newPassword,confirmPassword)
+    if (result.success) {
+      const success =  dispatch(changePass(forgetPassEmail,newPassword))
       setLoading(false);
       if(success){
         navigate('/')
       }else{
-        console.log(success)
+        toast.error("Something Went Wrong")
       }
     } else {
-      setError("Passwords do not match.");
+      toast.error(result.message)
       setLoading(false);
     }
   };
 
   return (
     <Container fluid className="login-register__container">
+      <Toast/>
       <Row className="justify-content-center align-items-center vh-100">
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Change Password</h3>
-          {loading && <p>Loading....</p>}
+          {loading && <p>Loading....</p>} 
           {error && <p>{error}</p>}
           
           <Form onSubmit={handleChangePassword}>

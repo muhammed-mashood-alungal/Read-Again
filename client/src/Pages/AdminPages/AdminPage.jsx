@@ -4,16 +4,6 @@ import Navbar from '../../Components/Admin/Navbar/Navbar';
 import './AdminPage.css';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../../Components/Admin/Sidebar/Sidebar';
-<<<<<<< HEAD
-import { getUserData } from '../../redux/Actions/userActions';
-import { useDispatch, useSelector } from 'react-redux';
-
-const AdminPage = () => {
-  const dipatch = useDispatch()
-  const navigate = useNavigate()
-  
-
-=======
 import { getUserData, removeAuth, setAuth } from '../../redux/Actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosAuthInstance } from '../../redux/Constants/axiosConstants';
@@ -37,7 +27,7 @@ const AdminPage = () => {
     const checkAuth = async () => {
         try {
             const response = await axiosAuthInstance.get('/check-auth');
-            dispatch(setAuth({isLoggedIn : response.data.isLoggedIn , role : response.data.role}));
+            dispatch(setAuth(response.data));
         } catch (error) {
             console.error('Token verification failed:', error);
             dispatch(removeAuth());
@@ -48,7 +38,6 @@ const AdminPage = () => {
 
 
   
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
 
   return (
     <Container fluid className="admin-container">

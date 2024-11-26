@@ -3,6 +3,10 @@ import { axiosAdminInstance, axiosCategoryInstance, axiosUserInstance } from '..
 import { categoryImages } from '../../../../redux/Constants/imagesDir';
 import CropImage from '../../CropImage/CropImage';
 import './CategoryForm.css'
+import Toast from '../../../Toast/Toast'
+import {  toast } from 'react-toastify';
+import { validateImage } from '../../../../validations/imageValidation';
+
 
 const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const [name, setName] = useState("")
@@ -57,20 +61,12 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       
       console.log(formData)
       const token=localStorage.getItem("token")
-<<<<<<< HEAD
-      const response = await axiosAdminInstance.post('/categories/create',formData,{
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-=======
       const response = await axiosCategoryInstance.post('/create',formData,{
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
         }
       });
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
       console.log(response.data)
       if(response.status ==200){
         setSuccess(true)
@@ -99,11 +95,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       
       console.log(categoryData._id)
       const token= localStorage.getItem("token")
-<<<<<<< HEAD
-      const response = await axiosAdminInstance.put(`/categories/${categoryData._id}/edit`,formData,{
-=======
       const response = await axiosCategoryInstance.put(`/${categoryData._id}/edit`,formData,{
->>>>>>> dc5bdfea52910490befd6242471e3f6164bc8958
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -111,6 +103,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       console.log(response.data)
       if(response.status ==200){
         setSuccess(true)
+        setIsCreateForm(true)
       }
     }catch(err){
       console.log(err)
@@ -131,6 +124,10 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
 };
 
   const handleSetImage=(file)=>{
+        if(!validateImage(file)){
+          toast.error("Make sure the image is either .png , .jpg or .jpeg")
+          return 
+        }
         setImage(file)
         setImageUrl(URL.createObjectURL(file))
         setSelectedImage(file); 
@@ -156,6 +153,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
 
   return (
     <div className="category-form ">
+      <Toast/>
         <h4 className="card-title">{isCreateForm ? "Create New " : "Update "}Category</h4>
         {isModalOpen && <CropImage
                 isOpen={isModalOpen}
@@ -185,8 +183,6 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
               accept='.png, .jpg, .jpeg'
               name="image"
               onChange={(e) => { handleSetImage(e.target.files[0])}}
-              
-              // onChange={handlePhoto}
               className="form-control"
               placeholder="Image URL"
             />
