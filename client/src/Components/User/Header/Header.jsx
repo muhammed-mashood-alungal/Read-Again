@@ -89,10 +89,10 @@ const Header = () => {
             <img src="/assets/img/icon-heart.svg" alt="Wishlist" />
             <span className="count">3</span>
           </a>
-          <a href="cart.html" className="header__action-btn" title="Cart">
+          <Link to={"/cart"} className="header__action-btn" title="Cart">
             <img src="/assets/img/icon-cart.svg" alt="Cart" />
             <span className="count">3</span>
-          </a>
+          </Link>
           <div className="header__action-btn nav__toggle" id="nav-toggle" >
             <img src="/assets/img/menu-burger.svg" alt="Menu" />
           </div>

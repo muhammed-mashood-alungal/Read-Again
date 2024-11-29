@@ -7,6 +7,7 @@ const adminRoutes = require('./Routes/adminRoutes')
 const bookRoutes = require('./Routes/booksRoutes')
 const categoryRoutes = require('./Routes/categoryRoutes')
 const authRoutes = require('./Routes/authRoutes')
+const cartRoutes = require('./Routes/cartRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -14,8 +15,8 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
 
-
-
+ 
+ 
 app.use(cookieParser());
 app.use(express.urlencoded({extended : true}))
 app.use(express.json())
@@ -39,6 +40,7 @@ app.use('/api/admin',adminRoutes)
 app.use('/api/books',bookRoutes)
 app.use('/api/categories',categoryRoutes)
 app.use('/api/auth',authRoutes)
+app.use('/api/cart',cartRoutes)
 app.use((err,req,res,next)=>{
     if(err){
         console.log(err)

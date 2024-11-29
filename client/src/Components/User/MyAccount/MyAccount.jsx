@@ -39,7 +39,6 @@ const MyAccount = () => {
 
   return (
     <section className="accounts section--lg">
-      <Toast/>
       <div className="accounts__container container grid">
         
         <div className="account__tabs">

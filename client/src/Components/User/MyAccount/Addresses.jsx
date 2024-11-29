@@ -180,7 +180,6 @@ function Addresses({ userAddresses, userId }) {
         currentAction === "creating" &&  (
           <div className='p-3'>
             <h4>Add New Address</h4>
-            <Toast />
             <form className="form grid " >
               <input type="text" placeholder="Your City"
                 className="form__input"
@@ -232,7 +231,6 @@ function Addresses({ userAddresses, userId }) {
         currentAction === "editing"  && (
           <div className='p-3'>
             <h4>Edit Address</h4>
-            <Toast />
             <form className="form grid " >
               <input type="text" placeholder="Your City"
                 className="form__input"

@@ -63,7 +63,6 @@ const Register = () => {
         <Col xs="10" sm="8" md="6" lg="4" className="register bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Create an Account</h3>
    
-        <Toast />
           <Form onSubmit={handleRegister}>
             <FormGroup>
               <input

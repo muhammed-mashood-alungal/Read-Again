@@ -1,22 +1,71 @@
 import React, { useEffect, useState } from "react";
 import { bookImages } from "../../../redux/Constants/imagesDir";
 import './ProductDetails.css'
-const ProductDetails = ({bookData}) => {
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, resetCartStates } from "../../../redux/Actions/userActions";
+import {  toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
+
+const ProductDetails = ({ bookData }) => {
   const [activeTab, setActiveTab] = useState("info");
-  const [images,setImages] =useState([])
+  const [images, setImages] = useState([])
   const [zoom, setZoom] = useState({
     display: "none",
     zoomX: "0%",
     zoomY: "0%",
     backgroundImage: "",
   });
-  const [selectedFormat,setSelectedFormat]=useState("physical")
-  const [price,setPrice]=useState(null)
+  const [selectedFormat, setSelectedFormat] = useState("physical")
+  const [price, setPrice] = useState(null)
+  const [quantity, setQuantity]=useState(1)
+  const {userId} = useSelector(state=>state.auth)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   useEffect(() => {
     if (bookData && bookData.formats && selectedFormat) {
       setPrice(bookData.formats[selectedFormat]?.price);
     }
   }, [bookData, selectedFormat]);
+
+ 
+
+
+  useEffect(() => {
+    if (bookData.images) {
+      console.log(bookData.images)
+      setImages([...bookData.images])
+    }
+  }, [bookData])
+  
+  
+  
+
+ 
+  // const handleImageClick=(index)=>{
+  //    let newArr = [...images]
+  //    console.log(newArr)
+  //    let temp = newArr[0]
+  //    newArr[0] = newArr[index]                                                                                                                                                                                                      
+  //    newArr[index]=temp
+
+  //    setImages(newArr)
+  // }
+
+
+  // Set images from bookData
+  useEffect(() => {
+    if (bookData.images) {
+      setImages([...bookData.images]);
+      setZoom((prevZoom) => ({
+        ...prevZoom,
+        backgroundImage: `url(${bookImages + bookData._id + "/" + bookData.images[0]})`,
+      }));
+    }
+  }, [bookData]);
+
+  const handleQuantityChange=(e)=>{
+    setQuantity(e.target.value)
+  }
 
   const handleMouseMove = (event) => {
     const imageZoom = event.currentTarget;
@@ -24,7 +73,7 @@ const ProductDetails = ({bookData}) => {
       x: (event.nativeEvent.offsetX * 100) / imageZoom.offsetWidth,
       y: (event.nativeEvent.offsetY * 100) / imageZoom.offsetHeight,
     };
-   
+
     setZoom((prevZoom) => ({
       ...prevZoom,
       display: "block",
@@ -33,7 +82,6 @@ const ProductDetails = ({bookData}) => {
     }));
   };
 
-  // Handle mouse out of image
   const handleMouseOut = () => {
     setZoom((prevZoom) => ({
       ...prevZoom,
@@ -41,41 +89,11 @@ const ProductDetails = ({bookData}) => {
     }));
   };
 
-  // Handle tab switching
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  useEffect(()=>{
-    if(bookData.images){
-      console.log(bookData.images)
-      setImages([...bookData.images])
-    }
-  },[bookData])
- 
-  // const handleImageClick=(index)=>{
-  //    let newArr = [...images]
-  //    console.log(newArr)
-  //    let temp = newArr[0]
-  //    newArr[0] = newArr[index]
-  //    newArr[index]=temp
-
-  //    setImages(newArr)
-  // }
   
 
-  // Set images from bookData
-  useEffect(() => {
-    if (bookData.images) {
-      setImages([...bookData.images]);
-      // Set the initial zoom background image to the first image
-      setZoom((prevZoom) => ({
-        ...prevZoom,
-        backgroundImage: `url(${bookImages + bookData._id + "/" + bookData.images[0]})`,
-      }));
-    }
-  }, [bookData]);
-
-  // Handle image click for small images
   const handleImageClick = (index) => {
     let newArr = [...images];
     let temp = newArr[0];
@@ -83,24 +101,36 @@ const ProductDetails = ({bookData}) => {
     newArr[index] = temp;
     setImages(newArr);
 
-    // Update zoom background image with the new selected image
+  
     setZoom((prevZoom) => ({
       ...prevZoom,
       backgroundImage: `url(${bookImages + bookData._id + "/" + newArr[0]})`,
     }));
   };
 
-   
-  const renderStock= ()=>{
+  const handleAddToCart = (bookId) => {
+    if (!userId) {
+      navigate('/login')
+    }
+    const itemInfo = {
+      productId: bookId,
+      quantity: quantity
+    }
+    dispatch(addToCart(userId, itemInfo))
+  }
+  
+
+
+  const renderStock = () => {
     if (!bookData?.formats || !selectedFormat) {
       return <td>N/A</td>;
     }
     const stock = bookData?.formats[selectedFormat]?.stock;
-    if(stock < 1){
-      return  <td className="stock-out">Stock Out</td>;
-    }else if(stock < 10){
+    if (stock < 1) {
+      return <td className="stock-out">Stock Out</td>;
+    } else if (stock < 10) {
       return <td className="hurry-up">Hurry Up</td>;
-    }else{
+    } else {
       return <td className="in-stock">In Stock</td>;
     }
   }
@@ -110,7 +140,7 @@ const ProductDetails = ({bookData}) => {
       <section className="details section--lg">
         <div className="details__container container grid">
           <div className="details__group">
-          <div
+            <div
               className="imageZoom"
               style={{
                 "--url": zoom.backgroundImage,
@@ -127,16 +157,16 @@ const ProductDetails = ({bookData}) => {
                 className="details__img Zoomable"
               />
             </div>
-          
+
             <div className="details__small-images grid">
-              {images.length != 0  && images.map((image,i)=>{
-                return images[i+1] && <img
-                src={bookImages+bookData?._id+"/"+images[i+1]}
-                className="details__small-img"
-                onClick={()=>{handleImageClick(i+1)}}
-              />
+              {images.length != 0 && images.map((image, i) => {
+                return images[i + 1] && <img
+                  src={bookImages + bookData?._id + "/" + images[i + 1]}
+                  className="details__small-img"
+                  onClick={() => { handleImageClick(i + 1) }}
+                />
               })}
-              
+
             </div>
           </div>
 
@@ -148,23 +178,23 @@ const ProductDetails = ({bookData}) => {
             </p>
             <div className="details__price ">
               <div className="flex">
-              <span className="new__price">{price - (25 / 100) * price}</span>
-              <span className="old__price">{price}</span>
-              <span className="save__price">25% Off</span>
+                <span className="new__price">{price - (25 / 100) * price}</span>
+                <span className="old__price">{price}</span>
+                <span className="save__price">25% Off</span>
               </div>
               <div>
-              <div className="product__rating">
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                  </div>
+                <div className="product__rating">
+                  <i className="fi fi-rs-star"></i>
+                  <i className="fi fi-rs-star"></i>
+                  <i className="fi fi-rs-star"></i>
+                  <i className="fi fi-rs-star"></i>
+                  <i className="fi fi-rs-star"></i>
+                </div>
               </div>
-             
+
             </div>
             <p className="short__description">
-             {bookData?.description}
+              {bookData?.description}
             </p>
             <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p>
             <ul className="products__list">
@@ -177,47 +207,50 @@ const ProductDetails = ({bookData}) => {
               <li className="list__item flex">
                 <i className="fi-rs-credit-card"></i> {"Cash on Delivery available"}
               </li>
-              
+
             </ul>
 
-            
+
             <span className="details__size-title">Available Formats</span>
             <div className="details__size flex">
-              
+
               <ul>
-  {bookData?.formats?.physical.price && (
-    <li className={`size__link size-active mt-2 ${selectedFormat == "physical" && "selected"}` }
-    onClick={()=>{setSelectedFormat("physical")}}
-    >Physical Book</li>
-  )}
+                {bookData?.formats?.physical.price && (
+                  <li className={`size__link size-active mt-2 ${selectedFormat == "physical" && "selected"}`}
+                    onClick={() => { setSelectedFormat("physical") }}
+                  >Physical Book</li>
+                )}
 
-  {bookData?.formats?.ebook?.price && (
-    <li className={`size__link size-active mt-2 ${selectedFormat == "ebook" && "selected"}` }
-    onClick={()=>{setSelectedFormat("ebook")}}
-    >e-Book</li>
-  )}
+                {bookData?.formats?.ebook?.price && (
+                  <li className={`size__link size-active mt-2 ${selectedFormat == "ebook" && "selected"}`}
+                    onClick={() => { setSelectedFormat("ebook") }}
+                  >e-Book</li>
+                )}
 
-  {bookData?.formats?.audiobook?.price && (
-    <li className={`size__link size-active mt-2 ${selectedFormat == "audiobook" && "selected"}` }
-    onClick={()=>{setSelectedFormat("audiobook")}}
-    >Audio Book</li>
-  )}
-</ul>
+                {bookData?.formats?.audiobook?.price && (
+                  <li className={`size__link size-active mt-2 ${selectedFormat == "audiobook" && "selected"}`}
+                    onClick={() => { setSelectedFormat("audiobook") }}
+                  >Audio Book</li>
+                )}
+              </ul>
             </div>
 
             {/* Quantity and Actions */}
             <div className="details__action">
-              <input type="number" className="quantity" defaultValue="3" />
+              <input type="number" className="quantity" 
+               value={quantity}
+              onChange={handleQuantityChange}
+              min={1} />
               <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
-              <button  className="primary-btn">Add To Cart</button>
-              <button  className="primary-btn">Buy Now</button>
-              <button  className="primary-btn">Borrow</button>
-              
-              
+              <button className="primary-btn" onClick={(e)=>{handleAddToCart(bookData?._id)}}>Add To Cart</button>
+              <button className="primary-btn">Buy Now</button>
+              <button className="primary-btn">Borrow</button>
+
+
             </div>
 
             {/* Meta Information */}
-            
+
           </div>
         </div>
       </section>

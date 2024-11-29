@@ -1,6 +1,7 @@
 import axios from "axios"
-import { CHANGE_PASS_FAILED, CHANGE_PASS_REQUEST, CHANGE_PASS_SUCCESS, CREATE_USER_FAILED, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, GET_OTP_FAILED, GET_OTP_REQUEST, GET_OTP_SUCCESS, GET_USER_DATA_FAILED, GET_USER_DATA_REQUEST, GET_USER_DATA_SUCCESS, LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS, REMOVE_AUTH, SET_AUTH, SET_REGISTRATION_DATA } from "../Constants/userConstants"
-import { axiosUserInstance } from "../Constants/axiosConstants"
+import { ADD_TO_CART_FAILED, ADD_TO_CART_REQUEST, ADD_TO_CART_SUCCESS, CHANGE_PASS_FAILED, CHANGE_PASS_REQUEST, CHANGE_PASS_SUCCESS, CREATE_USER_FAILED, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, GET_OTP_FAILED, GET_OTP_REQUEST, GET_OTP_SUCCESS, GET_USER_DATA_FAILED, GET_USER_DATA_REQUEST, GET_USER_DATA_SUCCESS, LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS, REMOVE_AUTH, RESET_CART_STATES, SET_AUTH, SET_REGISTRATION_DATA } from "../Constants/userConstants"
+import { axiosCartInstance, axiosUserInstance } from "../Constants/axiosConstants"
+import { toast } from "react-toastify"
 
 export const setRegistrationData=(data)=>{
   return {
@@ -96,3 +97,25 @@ export const getUserData =()=>async(dispatch) =>{
   }
 }
 
+export const addToCart =(userId,itemInfo)=>async (dispatch)=>{
+  try{
+   dispatch({type:ADD_TO_CART_REQUEST})
+   
+    const response = await axiosCartInstance.post(`/${userId}/add-to-cart`,{itemInfo})
+    if(response.status == 200){
+      dispatch({type:ADD_TO_CART_SUCCESS})
+      toast.success("Item Added to cart")
+    }
+    
+    console.log("success")
+  }catch(err){
+   dispatch({type:ADD_TO_CART_FAILED,payload:err?.response?.data?.message})
+   toast.error(err?.response?.data?.message || "Network Error")
+    console.log(err)
+  }
+}
+export const resetCartStates=()=>{
+  return{
+    type:RESET_CART_STATES
+  }
+}

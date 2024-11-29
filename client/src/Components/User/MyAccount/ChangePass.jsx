@@ -34,7 +34,6 @@ function ChangePass({email}) {
   return (
     
     <div>
-        <Toast/>
         <h3 className="tab__header">Change Password</h3>
               <div className="tab__body">
                 <form className="form grid" onSubmit={handleChangePass}>

@@ -240,7 +240,6 @@ const BookForm = ({ bookDetails }) => {
  
   return (
     <div>
-      <Toast/>
       {isModalOpen && <CropImage
         isOpen={isModalOpen}
         imageSrc={selectedImage}

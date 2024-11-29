@@ -147,7 +147,6 @@ const EmailVerification = (props) => {
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Verify Email</h3>
           {((loading || verificationLoading) == true) && <p>Loading....</p>}
-          <Toast/>
           {/* {verifyError && <p>{verifyError}</p>} */}
           <Form onSubmit={verifyOtp}>
             {/* <FormGroup>

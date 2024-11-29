@@ -153,7 +153,6 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
 
   return (
     <div className="category-form ">
-      <Toast/>
         <h4 className="card-title">{isCreateForm ? "Create New " : "Update "}Category</h4>
         {isModalOpen && <CropImage
                 isOpen={isModalOpen}

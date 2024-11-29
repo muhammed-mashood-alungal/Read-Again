@@ -1,7 +1,8 @@
 import { legacy_createStore, combineReducers, applyMiddleware } from "redux";
 import {thunk} from 'redux-thunk';
 import logger from 'redux-logger'
-import { authReducer, createUserReducer, getUserDataReducer, otpReducer, registrationDataReducer, userLoginReducer } from "./Reducers/userReducer";
+import { addToCartReducer, authReducer, createUserReducer, getUserDataReducer, otpReducer, registrationDataReducer, userLoginReducer } from "./Reducers/userReducer";
+
 
 
 const rootReducer = combineReducers({
@@ -10,7 +11,8 @@ const rootReducer = combineReducers({
     createUser:createUserReducer,
     user:userLoginReducer,
     userData:getUserDataReducer,
-    auth:authReducer
+    auth:authReducer,
+    addToCart:addToCartReducer
 })
 
 const store = legacy_createStore(rootReducer,applyMiddleware(thunk,logger))

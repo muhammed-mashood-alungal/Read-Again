@@ -1,4 +1,4 @@
-import { CHANGE_PASS_FAILED, CHANGE_PASS_REQUEST, CHANGE_PASS_SUCCESS, CREATE_USER_FAILED, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, GET_OTP_FAILED, GET_OTP_REQUEST, GET_OTP_SUCCESS, GET_USER_DATA_FAILED, GET_USER_DATA_REQUEST, GET_USER_DATA_SUCCESS, LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS, REMOVE_AUTH, REMOVE_REGISTRATION_DATA, SET_AUTH, SET_REGISTRATION_DATA} from "../Constants/userConstants";
+import { ADD_TO_CART_FAILED, ADD_TO_CART_REQUEST, ADD_TO_CART_SUCCESS, CHANGE_PASS_FAILED, CHANGE_PASS_REQUEST, CHANGE_PASS_SUCCESS, CREATE_USER_FAILED, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, GET_OTP_FAILED, GET_OTP_REQUEST, GET_OTP_SUCCESS, GET_USER_DATA_FAILED, GET_USER_DATA_REQUEST, GET_USER_DATA_SUCCESS, LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS, REMOVE_AUTH, REMOVE_REGISTRATION_DATA, RESET_CART_STATES, SET_AUTH, SET_REGISTRATION_DATA} from "../Constants/userConstants";
 
 export const registrationDataReducer=(state={},action)=>{
    switch(action.type){
@@ -82,6 +82,20 @@ export const authReducer = (state=initialState,action)=>{
       return {isLoggedIn:action.payload.isLoggedIn , role : action.payload.role , userId:action.payload.id}
     case REMOVE_AUTH:
       return {isLoggedIn : false , role : null}
+    default :
+      return state
+  }
+}
+export const addToCartReducer = (state={cartError:null,success:false},action)=>{
+  switch(action.type){
+    case ADD_TO_CART_REQUEST:
+      return {loading:true , cartError: null , success:false}
+    case ADD_TO_CART_SUCCESS:
+       return {loading :false , cartError:null , success:true}
+    case ADD_TO_CART_FAILED:
+      return {loading:false , cartError:action.payload , success:false}
+    case RESET_CART_STATES :
+      return {loading:false , cartError : null , success:false}
     default :
       return state
   }

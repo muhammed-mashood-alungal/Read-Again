@@ -24,7 +24,7 @@ const [justPublished,setJustPublished]=useState([])
     <>
     <Header/>
     <Breadcrumbs/>
-    <ProductList books={justPublished} title={'Just Published'}/>
+    <ProductList books={justPublished} title={''}/>
     <Footer/>
     </>
   )

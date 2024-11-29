@@ -16,7 +16,17 @@ code {
   color:#fff;
   padding: 10px;
   margin: 3px;
+  font-size: 16px;
   border-radius: 5px;
+  transition: all ease;
+  transition-duration: 0.2s;
+}
+.primary-btn:hover{
+  background-color: #bed1d0;
+  color:#088179;
+  padding: 10px;
+  font-size: 16px;
+ 
 }
 .no-underline{
   text-decoration: none;
@@ -51,4 +61,8 @@ code {
 }
 .delete-btn:hover{
   color: #000;
+}
+.empty-msg{
+  color:#088179;
+  text-align: center;
 }

@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ProductList.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col } from 'reactstrap';
 import { bookImages } from '../../../redux/Constants/imagesDir';
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../../../redux/Actions/userActions';
 const ProductList = ({books,title}) => {
+
+  const {userId} = useSelector(state=>state.auth)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  
+  const handleAddToCart=(e,bookId)=>{
+  if(!userId){
+    navigate('/login')
+  }
+  e.preventDefault()
+  const itemInfo={
+    productId:bookId,
+    quantity:1
+  }
+  dispatch(addToCart(userId,itemInfo))
+  }
   return (
     <Container>
       <section className="products container section">
@@ -41,7 +58,7 @@ const ProductList = ({books,title}) => {
                   <div className="product__price flex">
                     <span className="new__price">{book?.physical?.price}</span>
                   </div>
-                  <span href="#" className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></span>
+                  <span onClick={(e)=>{handleAddToCart(e,book?._id)}} className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></span>
                 </div>
               </div>
               </Link>

@@ -52,7 +52,6 @@ function UpdateProfile({activeTab,profileData}) {
   return (
    <>
     <h3 className="tab__header">Update Profile</h3>
-    <Toast/>
               <div className="tab__body">
                 <form className="form grid" onSubmit={handleUpdateProfile}>
                   <input type="text" 

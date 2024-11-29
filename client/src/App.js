@@ -23,6 +23,7 @@ import { useEffect } from 'react';
 import { removeAuth, setAuth } from './redux/Actions/userActions';
 import { useDispatch } from 'react-redux';
 import ForgottenPassword from './Components/User/ForgottenPassword/ForgottenPassword';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const dispatch = useDispatch()
@@ -50,7 +51,7 @@ function App() {
         <Route  path='/register' element={<RegisterPage/>}/>
         <Route  path='/admin/login' element={<AdminLogin/>}/>
         <Route  path='/library' element={<LibraryPage/>}/>
-        <Route  path='/cart' element={<CartPage/>}/>
+        <Route  path='/cart/' element={<CartPage/>}/>
         <Route  path='/wishlist' element={<WishlistPage/>}/>
         <Route  path='/account' element={<AccountPage/>}/>
         <Route  path='/checkout' element={<CheckOutPage/>}/>
@@ -70,6 +71,18 @@ function App() {
         <Route path='category' element={<CategoryManagement />} />
       </Route>
       </Routes>
+      <ToastContainer
+    position="bottom-left"
+    autoClose={5000}
+    hideProgressBar={false}
+    newestOnTop={false}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+    theme="light"
+    />
     </div>
     </BrowserRouter>
   );
