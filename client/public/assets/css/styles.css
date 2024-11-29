@@ -702,6 +702,7 @@ table {
 
 .product__item:hover {
   box-shadow: 0 0 10px hsl(0, 0%, 0%, 0.1);
+  text-decoration: none;
 }
 
 .product__item:hover .product__img.hover,

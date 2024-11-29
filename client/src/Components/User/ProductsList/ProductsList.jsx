@@ -46,7 +46,7 @@ const ProductList = ({books,title}) => {
                   <div className="product__badge ">New</div>
                 </div>
                 <div className="product__content">
-                  <span className="product__category">{book?.category?.name}</span>
+                  <span className="product__category">{book?.category?.name}</span> <br />
                   <button ><h3 className="product__title no-underline">{book.title}</h3></button>
                   <div className="product__rating no-hover-underline">
                     <i className="fi fi-rs-star no-hover-underline"></i>

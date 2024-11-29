@@ -33,7 +33,6 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
    setName("")
    setImage(null)
    setImageUrl("")
-   setErr("")
     setTimeout(()=>{
      setSuccess(false)
    
@@ -46,11 +45,12 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       e.preventDefault()
       setErr('')
       if(name.trim() == ""){
-        setErr("Enter a Category Name")
+       
+        toast.error("Enter a Category")
         return
       }
       if(!image && !imageUrl){
-        setErr("Select  category Image")
+        toast.error("Select  category Image")
         return 
       }
       const formData =new FormData()
@@ -81,9 +81,8 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const handleUpdateCategory =async (e) => {
     try{
       e.preventDefault()
-      setErr('')
       if(name.trim() ==""){
-        setErr("Enter a Category Name")
+        toast.error("Enter a Category Name")
         return
       }
       const formData =new FormData()
@@ -102,12 +101,12 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       })
       console.log(response.data)
       if(response.status ==200){
-        setSuccess(true)
+        toast.success("Category Created")
         setIsCreateForm(true)
       }
     }catch(err){
       console.log(err)
-      setErr(err?.respons?.data?.message)
+      toast.error(err?.respons?.data?.message)
     }
   };
  

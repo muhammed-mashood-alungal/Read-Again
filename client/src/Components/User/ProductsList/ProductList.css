@@ -1,4 +1,16 @@
-
-  
-  
- 
+.no-hover-underline{
+    text-decoration:none;
+}
+.no-hover-underline:hover{
+    text-decoration:none !important;
+}
+.product__rating:hover{
+    text-decoration: none !important;
+}
+.no-underline{
+    
+    text-decoration: none !important;
+}
+.no-underline:hover{
+    text-decoration: none !important;
+}

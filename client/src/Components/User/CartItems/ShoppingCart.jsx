@@ -22,7 +22,7 @@ const ShoppingCart = () => {
       const fetchCartData = async () => {
         try {
           const { data } = await axiosCartInstance.get(`/${userId}`)
-          console.log(data)
+          console.log(data.cart.items)
           setCartItems(data.cart.items)
         } catch (err) {
           console.log(err)
@@ -116,7 +116,7 @@ const ShoppingCart = () => {
                   <td>
                     <h3 className="table__title"></h3>
                     <p className="table__description">
-                      {item.productId.title}
+                      {item?.productId?.title}
                     </p>
                   </td>
                   <td>

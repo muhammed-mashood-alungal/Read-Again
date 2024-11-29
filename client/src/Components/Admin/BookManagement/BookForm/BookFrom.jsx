@@ -299,7 +299,7 @@ const BookForm = ({ bookDetails }) => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="form-control"
+            className="form-control description"
             placeholder="Enter Description"
           />
         </div>

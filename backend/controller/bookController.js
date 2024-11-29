@@ -43,7 +43,7 @@ module.exports = {
             res.status(500).json({ message: "Somthing went wrong" })
         }
     },
-    async getAllBooksByFilter(req, res) {
+    async getAllBooks(req, res) {
         try {
             let { page, limit, name } = req.query
             console.log(req.query)
@@ -65,17 +65,52 @@ module.exports = {
             res.status(500).json({ message: "Something went wrong" })
         }
     },
-    async getListedBooks(req, res) {
+    async getBooksByFilter(req, res) {
         try {
-            let { page, limit } = req.query
-            page = parseInt(page)
-            limit = parseInt(limit)
+            let { page, limit , sortBy , price , category } = req.query
+            console.log(req.query)  
+            page = parseInt(page) || 1
+            limit = parseInt(limit) || 10
             let skip = (page - 1) * limit
-            console.log(skip, limit)
-            const allBooks = await Book.find({ isDeleted: false }).skip(skip).limit(limit).populate('category')
+           
+           
+            let sort =  { }
+            if(sortBy == "Newness"){
+               sort.publicationDate = 1
+            }else if(sortBy == "Price: High to Low"){
+               sort={"formats.physical.price":-1}
+            
+            }else if(sortBy == "Price: Low to High"){
+                sort={"formats.physical.price":1}
+            }else if (sortBy == "A-Z"){
+                sort.title=1
+            }else if (sortBy == "Z-A"){
+                sort.title = -1
+            }
+            
+            console.log(sort,price)  
+            const priceRange= {}
+            let  find = {isDeleted : false } 
+            if(price  != "{}"){
+                price = price ? JSON.parse(price) : {}
+                find ={...find,"formats.physical.price":price}
+            }
+            
+            console.log(find)
+            let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category')
+            .sort(sort)
+            if(category != "All"){
+                allBooks = allBooks.filter((book)=>{
+                  return book.category.name == category
+                })
+            }
+            console.log(allBooks[0])
+
+
+
             const totalBooks = await Book.countDocuments({})
 
-            res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
+            res.status(200).json({ success: true, books: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
             res.status(500).json({ message: "Somthing went wrong" })
