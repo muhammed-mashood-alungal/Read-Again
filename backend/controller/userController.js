@@ -1,5 +1,3 @@
-
-const { ChevronsRightLeft } = require("lucide-react");
 const Otp = require("../models/Otps");
 const User = require("../models/Users");
 const { hashPassword, verifyPassword } = require("../utils/bcrypt");
@@ -371,7 +369,15 @@ module.exports = {
     try {
       const addressData = req.body
       const { userId } = req.params
-      await Address.create({ ...addressData, userId })
+      const addresses = await Address.findOne({userId})
+      if(!addresses){
+        console.log("firlst")
+        await Address.create({ ...addressData, userId ,isDefault:true })
+      }else{
+        console.log("sdfasdf")
+        await Address.create({ ...addressData, userId })
+      }
+      
       res.status(200).json({ success: true })
     } catch (err) {
       console.log(err)
@@ -413,6 +419,18 @@ module.exports = {
     }catch(err){
      console.log(err)
      res.status(400).json({succes:false,message:"Somthing went Wrong While Deleting Address"})
+    }
+  },
+  async changeDefaultAddress(req,res){
+    try{
+      const {userId} = req.params
+      const {addressId} = req.body
+      await Address.findOneAndUpdate({userId,isDefault:true},{isDefault:false})
+      await Address.findOneAndUpdate({_id:addressId},{isDefault:true})
+       res.status(200).json({success:true})
+    }catch(err){
+       console.log(err)
+       res.status(400).json({message:"Somthing Went Wrong"})
     }
   }
 }

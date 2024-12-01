@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import Toast from '../../Toast/Toast';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
+import './MyAccount.css'
 function Addresses({ userAddresses, userId }) {
   const [currentAction , setCurrentAction] = useState("view")
   const [city, setCity] = useState("")
@@ -139,6 +140,19 @@ function Addresses({ userAddresses, userId }) {
     setShowModal(false)
     setAddressId("")
   }
+
+  const handleDefaultAddress=async(addressId,index)=>{
+    try{
+      await axiosUserInstance.put(`/${userId}/address/change-default`,{addressId})
+      setAddresses(addresses=>{
+        return  addresses.map((address)=>{
+          return address._id == addressId ? {...address,isDefault:true} : {...address,isDefault:false}
+        })
+      })
+    }catch(err){
+      console.log(err)
+    }
+  }
   
 
 
@@ -154,19 +168,34 @@ function Addresses({ userAddresses, userId }) {
            onCancel={onCancel}/>
            }
             <h3 className="tab__header">Shipping Address</h3>
+            
             {
-              addresses.map((address) => {
-                return <div className="tab__body">
+              
+              addresses.map((address,index) => {
+                return <div className="tab__body ">
+                  <input
+                type="radio"
+                name="idDefault"
+                id="idDefault"
+                checked={address.isDefault}
+                className="payment__input"
+                onClick={(e)=>{handleDefaultAddress(address._id,index)}}
+              /> &nbsp;
+              <label htmlFor="idDefault" className="default_label">
+                  Delivery Address
+              </label>
                   <address className="address">
                     {address?.city}, {address?.landmark} <br />
                     {address?.state}, {address?.country} <br />
                     {address?.postalCode} <br />
                     {address?.phoneNumbers[0]} , {address?.phoneNumbers[1]}
                   </address>
+                 
                   <button className="link-button" onClick={()=>{setEditingMode(address)}}>Edit</button> 
                   <button className="delete-btn" onClick={()=>{
                     setAddressId(address._id)
                     setShowModal(true)}}>Delete</button>
+                <hr />
                 </div>
               })
             }
@@ -224,6 +253,11 @@ function Addresses({ userAddresses, userId }) {
 
             </form>
             <button className='primary-btn' role="submit" onClick={handleSubmit}>Save</button>
+            <button className='secondary-btn' onClick={
+              ()=>{
+                setCurrentAction("view")
+              }
+            }>Cancel</button>
           </div>
         )
       }
@@ -275,6 +309,11 @@ function Addresses({ userAddresses, userId }) {
 
             </form>
             <button className='primary-btn' role="submit" onClick={handleSubmit}>Save</button>
+            <button className='secondary-btn' onClick={
+              ()=>{
+                setCurrentAction("view")
+              }
+            }>Cancel</button>
           </div>
         )
       }

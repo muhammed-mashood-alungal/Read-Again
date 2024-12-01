@@ -1,0 +1,11 @@
+.cart-total-section{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+.cart-total{
+    width: 300px;
+    border:  1px solid #088179;
+    padding: 10px;
+    border-radius: 15px;
+}

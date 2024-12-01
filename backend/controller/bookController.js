@@ -91,11 +91,13 @@ module.exports = {
             console.log(sort,price)  
             const priceRange= {}
             let  find = {isDeleted : false } 
+            
             if(price  != "{}"){
-                price = price ? JSON.parse(price) : {}
+                console.log(price)
+                price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}
             }
-            
+            console.log(price) 
             console.log(find)
             let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category')
             .sort(sort)
