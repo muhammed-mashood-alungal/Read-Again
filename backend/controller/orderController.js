@@ -42,30 +42,22 @@ module.exports = {
             res.status(400).json({ success: false, message: "Order Placing Failed Please try Again" })
         }
     },
-    async updateOrderStatus(req, res) {
+    async changeStatus(req, res) {
         try {
-
-            const { orderId } = req.params
-            const { status, reason } = req.body
+            
+            const { orderId ,status } = req.params
+            console.log(orderId,status)
             const order = await Order.findOneAndUpdate({ _id: orderId }, {
                 $set: {
                     orderStatus: status
                 }
             })
-            if (status == "ordered" || status == "canceled" || status == "returned") {
+           
                 order.items = order.items.map((item) => {
                     item.status = status
                     return item
                 })
-                if (status == 'canceled') {
-                    order.cancelReason = reason
-                }
-                if (status == 'returned') {
-                    order.cancelReason = reason
-                }
                 order.save()
-            }
-
             res.status(200).json({ success: true })
         }
         catch (err) {
@@ -77,7 +69,6 @@ module.exports = {
         try {
             const { userId } = req.params
             const orders = await Order.find({ userId }).populate("items.bookId").populate("userId")
-            console.log(orders)
             res.status(200).json({ success: true, orders })
         } catch (err) {
             console.log(err)
@@ -107,15 +98,15 @@ module.exports = {
 
             const { orderId } = req.params
             const { cancellationReason } = req.body
-            console.log(cancellationReason)
             const order = await Order.findOne({ _id: orderId })
             order.orderStatus = "Canceled"
             order.cancelReason = cancellationReason
             for (const item of order.items) {
                 item.status = "Canceled";
+                item.reason = cancellationReason
                 const book = await Book.findOne({ _id: item.bookId });
                 if (book) {
-                    book.formats.physical.stock += 1;
+                    book.formats.physical.stock += item.quantity;
                     await book.save();
                 }
             }
@@ -146,6 +137,143 @@ module.exports = {
         } catch (err) {
             console.log(err)
             res.status(400).json({ message: "Something Went Wrong" })
+        }
+    },
+    async approveReturnRequest(req,res){
+        try{
+            const {orderId} = req.params
+            await Order.findOneAndUpdate({_id:orderId},{
+                $set:{
+                    orderStatus:"Returned"
+                }
+            })
+            res.status(200).json({success:true})
+        }catch{
+          console.log(err)
+          res.status(400).json({message:"Something Went Wrong While Returning Order"})
+        }
+    },
+    async rejectReturnRequest(req,res){
+        try{
+            const {orderId} = req.params
+            await Order.findOneAndUpdate({_id:orderId},{
+                $set:{
+                    isRejectedOnce:true,
+                    orderStatus:"Delivered"
+                }
+            })
+            res.status(200).json({success:true})
+        }catch{
+          console.log(err)
+          res.status(400).json({message:"Something Went Wrong While Rejecting Return Order"})
+        }
+    },
+    async cancelOrderItem(req,res){
+        try{
+            console.log("cancelling order")
+            const {orderId, itemId} = req.params
+            console.log(itemId)
+            const {cancellationReason} = req.body
+            const order = await Order.findOne({_id:orderId})
+            for(let i=0 ; i< order.items.length ; i++){
+                if(order.items[i].bookId == itemId){
+                    console.log("Done")
+                    order.items[i].status="Canceled"
+                    order.items[i].reason =cancellationReason
+                    const book=await Book.findOne({_id:itemId})
+                    book.formats.physical.stock += order.items[i].quantity
+                    await book.save()
+                    break;
+                }
+            }
+            const itemStatuses = order.items.map(item=>item.status)
+            const isAllItemsCancelled = itemStatuses.every((status)=>status == "Canceled")
+            if(isAllItemsCancelled){
+                order.orderStatus = "Canceled"
+                order.cancellationReason = "All Items Are Cancelled"
+            }
+            await order.save()
+           
+            res.status(200).json({success:true , isAllItemsCancelled})
+        }catch(err){
+            console.log(err)
+            res.status(400).json({success:false,message:"Something Went Wrong While Canceling This Item"})
+        }
+    },
+    async returnOrderItem(req,res){
+        try{
+            console.log("returning order")
+            const {orderId, itemId} = req.params
+            console.log(itemId)
+            const {returnReason} = req.body
+            const order = await Order.findOne({_id:orderId})
+            for(let i=0 ; i< order.items.length ; i++){
+                if(order.items[i].bookId == itemId){
+                    console.log("Done")
+                    order.items[i].status="Return Requested"
+                    order.items[i].reason =returnReason
+                    // const book=await Book.findOne({_id:itemId})
+                    // book.formats.physical.stock += order.items[i].quantity
+                    // await book.save()
+                    // break;
+                }
+            }
+            // const itemStatuses = order.items.map(item=>item.status)
+            // const isAllItemsCancelled = itemStatuses.every((status)=>status == "Canceled")
+            // if(isAllItemsCancelled){
+            //     order.orderStatus = "Canceled"
+            //     order.cancellationReason = "All Items Are Cancelled"
+            // }
+            await order.save()
+            res.status(200).json({success:true })
+        }catch(err){
+            console.log(err)
+            res.status(400).json({success:false,message:"Something Went Wrong While Canceling This Item"})
+        }
+    },
+    async approveItemReturn(req,res){
+        try{ 
+            const {orderId, itemId} = req.params
+            console.log(itemId,orderId)
+            const order = await Order.findOne({_id:orderId})
+            for(let i=0 ; i< order.items.length ; i++){
+                if(order.items[i].bookId == itemId){
+                    console.log("Done")
+                    order.items[i].status="Returned"
+                    console.log()
+                    const book=await Book.findOne({_id:itemId})
+                    book.formats.physical.stock += order.items[i].quantity
+                    await book.save()
+                    break;
+                }
+            }
+            const itemStatuses = order.items.map(item=>item.status)
+            const isAllItemsReturned = itemStatuses.every((status)=>status == "Returned")
+            if(isAllItemsReturned){
+                order.orderStatus = "Returned"
+                order.cancellationReason = "All Items Are Returned"
+            }
+            await order.save()
+            res.status(200).json({success:true,isAllItemsReturned})
+        }catch(err){
+            console.log(err)
+            res.status(400).json({success:false,message:"Something Went Wrong"})
+        }
+    },
+    async rejectItemReturn(req,res){
+        try{
+            const {orderId, itemId} = req.params
+            const order = await Order.findOne({_id:orderId})
+            for(let i=0 ; i< order.items.length ; i++){
+                if(order.items[i].bookId == itemId){
+                    order.items[i].status="Delivered"
+                }
+            }
+            await order.save()
+            res.status(200).json({success:true})
+        }catch(err){
+            console.log(err)
+            res.status(400).json({success:false,message:"Something Went Wrong"})
         }
     }
 }

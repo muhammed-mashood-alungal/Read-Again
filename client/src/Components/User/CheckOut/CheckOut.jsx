@@ -61,8 +61,9 @@ const Checkout = () => {
   const handlePlaceOrder = async() => {
     try {
       cart.items = cart.items.map((item) => {
+        console.log(item)
         return {
-          bookId: item.productId._id,
+          bookId: item.productId?._id,
           quantity: item.quantity,
           unitPrice: item?.productId?.formats?.physical?.price,
           totalPrice: item?.productId?.formats?.physical?.price * item.quantity

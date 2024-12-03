@@ -55,7 +55,6 @@ module.exports = {
             page = parseInt(page)
             limit = parseInt(limit)
             let skip = (page - 1) * limit
-            console.log(skip, limit)
             const allBooks = await Book.find(query).skip(skip).limit(limit).populate("category")
             const totalBooks = await Book.countDocuments({})
 
@@ -97,8 +96,6 @@ module.exports = {
                 price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}
             }
-            console.log(price) 
-            console.log(find)
             let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category')
             .sort(sort)
             if(category != "All"){
@@ -106,9 +103,6 @@ module.exports = {
                   return book.category.name == category
                 })
             }
-            console.log(allBooks[0])
-
-
 
             const totalBooks = await Book.countDocuments({})
 
@@ -120,7 +114,6 @@ module.exports = {
     },
     async editBook(req, res) {
         try {
-            console.log("healsdf", req.params.bookId)
             const { bookId } = req.params
             const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
 
@@ -157,9 +150,7 @@ module.exports = {
         try {
 
             const { bookId } = req.params
-            console.log(bookId)
             const bookData = await Book.findOne({ _id: bookId }).populate("category")
-            console.log(bookData?.formats?.physical?.price)
             res.status(200).json({ success: true, bookData })
         } catch (err) {
             console.log(err)

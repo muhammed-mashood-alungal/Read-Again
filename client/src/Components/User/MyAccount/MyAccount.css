@@ -4,7 +4,7 @@
 
 
 /* Order view CSS*/
-.order-details-container {
+.my-order-details-container {
     padding: 20px;
     margin: 0 auto;
     background-color: #fff;
@@ -13,7 +13,7 @@
     font-family: Arial, sans-serif;
   }
   
-  .order-header {
+  .my-order-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,7 +22,7 @@
     margin-bottom: 20px;
   }
   
-  .order-status {
+  .my-order-status {
     color: #088179;
     padding: 5px 10px;
     border-radius: 4px;
@@ -48,52 +48,54 @@
     color: #b46011;
   }
 
-  .order-meta {
+  .my-order-meta {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
   }
   
-  .order-meta label {
+  .my-order-meta label {
     color: #666;
     font-size: 0.9em;
     display: block;
     margin-bottom: 5px;
   }
   
-  .order-items {
+  .my-order-items {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
   }
   
-  .order-items th {
+  .my-order-items th {
     background-color: #f4f4f4;
     text-align: left;
     padding: 10px;
     border-bottom: 1px solid #ddd;
   }
   
-  .order-items td {
+  .my-order-items td {
     padding: 10px;
     border-bottom: 1px solid #eee;
   }
   
-  .order-total {
+  .my-order-total {
     display: flex;
     justify-content: space-between;
     border-top: 1px solid #eee;
     padding-top: 10px;
     font-size: 1.1em;
   }
-  
-  .shipping-info {
+  .my-shipping-info {
     margin-top: 20px;
     border-top: 1px solid #eee;
     padding-top: 20px;
   }
   
-  .shipping-info h3 {
+  .my-shipping-info h3 {
     margin-bottom: 10px;
     color: #333;
+  }
+  .return-item-msg{
+    color: rgb(202, 11, 11) ;
   }

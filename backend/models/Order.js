@@ -67,6 +67,12 @@ const OrderSchema = mongoose.Schema({
         enum: ["Razorpay","Wallet", "COD"],
         required: true
     },
+    paymentStatus:{
+        type: String,
+        enum: ["Pending","Success", "Failed"],
+        required: true,
+        default:"Pending"
+    },
     paymentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Payment"
@@ -95,6 +101,10 @@ const OrderSchema = mongoose.Schema({
     returnReason: {
         type: String,
         default: null
+    },
+    isRejectedOnce:{
+        type:Boolean,
+        default:false
     },
     canceledAt: {
         type: Date,

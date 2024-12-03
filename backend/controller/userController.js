@@ -251,8 +251,6 @@ module.exports = {
         ...userData.toObject(),
         addresses,
       };
-      console.log(data)
-      console.log(JSON.stringify(data, null, 2));
 
       res.status(200).json({ success: true, userData: data })
     } catch (err) {
@@ -263,7 +261,6 @@ module.exports = {
   async blockUser(req, res) {
     try {
       const { userId } = req.params
-      console.log(userId)
       await User.updateOne({ _id: userId }, {
         $set: {
           isBlocked: true
@@ -399,7 +396,6 @@ module.exports = {
     try{
      const address = req.body
      const {addressId} =req.params
-     console.log(address)
      await Address.findOneAndUpdate({_id:addressId},{
       $set:address
      })

@@ -104,3 +104,6 @@
   .approve-btn:hover {
     background-color: rgb(94, 250, 62);
   }
+  .change-status-div{
+    max-width: 100px;
+  }

@@ -77,7 +77,6 @@ const ShoppingCart = () => {
         const items = cart?.items?.filter((_, idx) => {
           return idx != selectedIndex
         })
-        console.log()
         return {
           ...cart, items: items,
           totalQuantity: newQuantity,
@@ -85,7 +84,7 @@ const ShoppingCart = () => {
         }
       })
       setSelectedIndex(-1)
-    } catch (err) {
+    } catch (err) { 
       console.log(err)
       toast.error(err?.response?.data?.message)
     } finally {
@@ -194,11 +193,7 @@ const ShoppingCart = () => {
                   </tbody>
                 </Table>
               </div>
-            </>
-        }
-
-      </Container>
-      <div className='cart-total-section container'>
+              <div className='cart-total-section container'>
         <div className="cart-total">
           <h5>Cart Details</h5>
           <hr />
@@ -217,6 +212,11 @@ const ShoppingCart = () => {
             onClick={loadCheckOut}>Check Out</button>
         </div>
       </div>
+            </>
+        }
+
+      </Container>
+     
     </section>
   );
 };

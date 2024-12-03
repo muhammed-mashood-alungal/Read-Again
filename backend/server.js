@@ -39,7 +39,7 @@ require('./utils/passport.js');
 app.use('/api/users',userRoutes)
 app.use('/api/admin',adminRoutes)
 app.use('/api/books',bookRoutes)
-app.use('/api/categories',categoryRoutes)
+app.use('/api/categories',categoryRoutes) 
 app.use('/api/auth',authRoutes)
 app.use('/api/cart',cartRoutes)
 app.use('/api/orders',orderRoutes)

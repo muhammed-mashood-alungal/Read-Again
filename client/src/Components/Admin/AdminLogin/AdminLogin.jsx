@@ -16,8 +16,6 @@ import { validateLogin } from '../../../validations/loginValidation';
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
