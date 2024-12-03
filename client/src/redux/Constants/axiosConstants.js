@@ -21,3 +21,6 @@ export const axiosAuthInstance = axios.create({
 export const axiosCartInstance = axios.create({
     baseURL:"http://localhost:5000/api/cart"
 })
+export const axiosOrderInstance = axios.create({
+    baseURL:"http://localhost:5000/api/orders"
+})

@@ -240,7 +240,8 @@ const ProductDetails = ({ bookData }) => {
               <input type="number" className="quantity" 
                value={quantity}
               onChange={handleQuantityChange}
-              min={1} />
+              min={1} 
+              max={bookData?.formats?.physical?.stock}/>
               <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
               <button className="primary-btn" onClick={(e)=>{handleAddToCart(bookData?._id)}}>Add To Cart</button>
               <button className="primary-btn">Buy Now</button>
@@ -270,7 +271,14 @@ const ProductDetails = ({ bookData }) => {
                 <tbody>
                   <tr><th>Author</th><td> {bookData?.author}</td></tr>
                   <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
-                  <tr><th>Stock Status</th>{renderStock()}</tr>
+                  <tr><th>Stock Status</th>
+                  <th
+                  className={`${bookData.stockStatus == "Stock Out" && "stock-out"}
+                     ${bookData.stockStatus == "Hurry Up" && 'hurry-up'}
+                     ${bookData.stockStatus == "In Stock" && 'in-stock'}`
+                     }
+                  >{bookData?.stockStatus}</th>
+                  </tr>
                   {/* Add more rows as needed */}
                 </tbody>
               </table>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import Toast from '../../Toast/Toast';
 import {  toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
@@ -8,9 +8,11 @@ import UpdateProfile from './UpdateProfile';
 import {Link} from 'react-router-dom'
 import ChangePass from './ChangePass';
 import Addresses from './Addresses';
+import OrderHistory from './OrderHistory';
 const MyAccount = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [profileData,setProfileData] =useState({})
+  const [orders,setOrders]=useState([])
   const {isLoggedIn,userId}=useSelector(state=>state.auth)
   const navigate = useNavigate()
   
@@ -35,6 +37,18 @@ const MyAccount = () => {
       }
     }
     getProfileData();
+  },[])
+  useEffect(()=>{
+    const getUserOrderHistory =async()=> {
+      try{
+        const response = await axiosOrderInstance.get(`/${userId}`)
+        setOrders(response?.data?.orders)
+      }catch(err){
+        console.log(err)
+        toast.error(err?.response?.data?.error)
+      }
+    }
+    getUserOrderHistory();
   },[])
 
   return (
@@ -107,7 +121,6 @@ const MyAccount = () => {
                     </button>
                     </>
                      }</th>
-                    
                   </tr>
                 </table>
               </div>
@@ -116,43 +129,7 @@ const MyAccount = () => {
 
           {activeTab === 'orders' && (
             <div className={`tab__content ${activeTab === 'orders' ? 'active-tab' : ''}`} id="orders">
-              <h3 className="tab__header">Your Orders</h3>
-              <div className="tab__body">
-                <table className="placed__order-table">
-                  <thead>
-                    <tr>
-                      <th>Orders</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                      <th>Totals</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>#1357</td>
-                      <td>March 19, 2022</td>
-                      <td>Processing</td>
-                      <td>$125.00</td>
-                      <td><a href="#" className="view__order">View</a></td>
-                    </tr>
-                    <tr>
-                      <td>#2468</td>
-                      <td>June 29, 2022</td>
-                      <td>Completed</td>
-                      <td>$364.00</td>
-                      <td><a href="#" className="view__order">View</a></td>
-                    </tr>
-                    <tr>
-                      <td>#2366</td>
-                      <td>August 02, 2022</td>
-                      <td>Completed</td>
-                      <td>$280.00</td>
-                      <td><a href="#" className="view__order">View</a></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <OrderHistory orders={orders}/>
             </div>
           )}
 

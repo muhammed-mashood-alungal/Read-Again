@@ -37,17 +37,20 @@ const ShoppingCart = () => {
 
   const handleQuantiyChange = async (value, index, productPrice) => {
     try {
+      
       const items = [...cart.items]
+    
       const priceInc = (value * productPrice) - (items[index].quantity * productPrice)
       const quantityInc = value - items[index].quantity
       console.log(priceInc)
+     
+      console.log(cart.totalAmount, value)
+      await axiosCartInstance.put(`/${userId}/update-quantity`, { value, index, priceInc })
       if (value > 3) {
         items[index].quantity = 3
       } else {
         items[index].quantity = value
       }
-      console.log(cart.totalAmount)
-      await axiosCartInstance.put(`/${userId}/update-quantity`, { value, index, priceInc })
       setCart(cart => {
         return {
           ...cart,
@@ -56,9 +59,8 @@ const ShoppingCart = () => {
           totalAmount: cart.totalAmount + priceInc
         }
       })
-      
+
     } catch (err) {
-      console.log(err?.response?.data)
       if (err.response?.status == 400) {
         toast.error(err?.response?.data?.message)
       }
@@ -68,8 +70,8 @@ const ShoppingCart = () => {
     try {
       console.log("removing")
       const newAmount = cart.totalAmount - (cart.items[selectedIndex].quantity * cart.items[selectedIndex]?.productId?.formats?.physical?.price)
-      const newQuantity =  cart.totalQuantity - cart.items[selectedIndex].quantity
-      await axiosCartInstance.put(`/${userId}/remove-item`, { index:selectedIndex , newAmount , newQuantity })
+      const newQuantity = cart.totalQuantity - cart.items[selectedIndex].quantity
+      await axiosCartInstance.put(`/${userId}/remove-item`, { index: selectedIndex, newAmount, newQuantity })
       toast.success("Item Removed")
       setCart(cart => {
         const items = cart?.items?.filter((_, idx) => {
@@ -93,7 +95,20 @@ const ShoppingCart = () => {
   const onCancel = () => {
     setSelectedIndex(-1)
   }
-
+  
+  const loadCheckOut=()=>{
+    cart.items = cart.items.filter((item)=>{
+      console.log(item.productId.stockStatus)
+      if(item.productId.stockStatus != "Stock Out"){
+        return item
+      }else{
+        cart.totalAmount = cart.totalAmount - (item.productId.formats.physical.price * item.quantity)
+        cart.totalQuantity = cart.totalQuantity - (item.quantity)
+      }
+    })
+    console.log(cart)
+    navigate('/checkout',{state:{cart}})
+  }
   return (
     <section className="section--lg">
       {
@@ -120,6 +135,7 @@ const ShoppingCart = () => {
                       <th>Name</th>
                       <th>Price</th>
                       <th>Quantity</th>
+                      <th>Status</th>
                       <th>Subtotal</th>
                       <th>Remove</th>
                     </tr>
@@ -145,11 +161,24 @@ const ShoppingCart = () => {
                           <span className="table__price">{item.productId?.formats?.physical?.price}</span>
                         </td>
                         <td>
+                          {
+                            item.productId.stockStatus == "Stock Out" ?
+                            <input type="text" value={item.quantity} className="quantity"
+                           // onChange={(e) => { handleQuantiyChange(e.target.value, index, item?.productId?.formats?.physical?.price) }}
+                          /> :
                           <input type="number" value={item.quantity} className="quantity"
-                            min="1"
-                            onChange={(e) => { handleQuantiyChange(e.target.value, index, item?.productId?.formats?.physical?.price) }}
-                          />
+                          min="1"
+                          onChange={(e) => { handleQuantiyChange(e.target.value, index, item?.productId?.formats?.physical?.price) }}
+                        />
+                          }
+                          
                         </td>
+                        <td
+                          className={`${item?.productId?.stockStatus == "Stock Out" && "stock-out"}
+                          ${item?.productId?.stockStatus == "Hurry Up" && 'hurry-up'}
+                          ${item?.productId?.stockStatus == "In Stock" && 'in-stock'}`
+                          }
+                        >{item?.productId?.stockStatus}</td>
                         <td>
                           <span className="subtotal">{item.productId?.formats?.physical?.price * item.quantity}</span>
                         </td>
@@ -185,13 +214,10 @@ const ShoppingCart = () => {
           </table>
 
           <button className='primary-btn mt-3'
-            onClick={() => {
-              navigate('/checkout' , {state:{cart}})
-            }}>Check Out</button>
+            onClick={loadCheckOut}>Check Out</button>
         </div>
       </div>
     </section>
-
   );
 };
 

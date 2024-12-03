@@ -2,55 +2,93 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Table } from 'reactstrap';
 import Addresses from '../MyAccount/Addresses';
 import { toast } from 'react-toastify';
-import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosCartInstance, axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
-  const {userId, isLoggedIn} = useSelector(state=>state.auth)
+  const { userId, isLoggedIn } = useSelector(state => state.auth)
   const location = useLocation()
   const cart = location?.state?.cart
-  
-  const [addresses,setAddresses] = useState([])
-  const navigate=useNavigate()
-  useEffect(()=>{
-    if(!isLoggedIn){
+  //const [cart,setCart]=useState({})
+  const [addresses, setAddresses] = useState([])
+  const [paymentMethod, setPaymentMethod] = useState("COD")
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!isLoggedIn) {
       navigate('/login')
       toast.error("Login to access Checkout")
     }
-  },[isLoggedIn])
-  // useEffect(()=>{
-  //   console.log(cart)
-  //   if(!cart){
-  //     navigate('/cart')
-
+  }, [isLoggedIn])
+  // useEffect(() => {
+  //   if (!userId) {
+  //     navigate("/login", { state: { cart } })
+  //   } else {
+  //     const fetchCartData = async () => {
+  //       try {
+  //         const { data } = await axiosCartInstance.get(`/${userId}`)
+  //         console.log(data.cart)
+  //         setCart(data.cart ? data.cart : {})
+  //       } catch (err) {
+  //         console.log(err)
+  //         navigate('/cart')
+  //         toast.error("Something Went Wrong. Please try later")
+  //       }
+  //     }
+  //     fetchCartData()
   //   }
-  // },[cart])
-  useEffect(()=>{
-    const getProfileData =async()=> {
-      try{
+  // }, [userId])
+  useEffect(() => {
+    const getProfileData = async () => {
+      try {
         console.log(userId)
         const response = await axiosUserInstance.get(`/${userId}`)
         setAddresses(response?.data?.userData?.addresses)
-      }catch(err){
+      } catch (err) {
         console.log(err)
-        if(userId){
-           toast.error(err?.response?.data?.error)
+        if (userId) {
+          toast.error(err?.response?.data?.error)
         }
-       
+
       }
     }
     getProfileData();
-  },[userId])
-  if(!cart){
-    return navigate('/cart')
+  }, [userId])
+  const handleMethodChange = (event) => {
+    setPaymentMethod(event.target.value);
+  }
+
+  const handlePlaceOrder = async() => {
+    try {
+      cart.items = cart.items.map((item) => {
+        return {
+          bookId: item.productId._id,
+          quantity: item.quantity,
+          unitPrice: item?.productId?.formats?.physical?.price,
+          totalPrice: item?.productId?.formats?.physical?.price * item.quantity
+        }
+      })
+      const orderDetails = {
+        items: cart.items,
+        shippingCharge: 0,
+        totalAmount: cart.totalAmount,
+        orderStatus: "Ordered",
+        paymentMethod:paymentMethod
+      }
+      console.log(orderDetails)
+      await axiosOrderInstance.post(`/${userId}/place-order`,orderDetails)
+      console.log("orderPlaced")
+      toast.success("Your Order Placed Successfully")
+    } catch (err) {
+      console.log(err)
+      toast.error(err?.response?.data?.message)
+    }
   }
   return (
     <section className="checkout section--lg">
       <div className="checkout__container container grid">
         <div className="checkout__group">
-          
-          <Addresses userAddresses={addresses} userId={userId}/>
+          <Addresses userAddresses={addresses} userId={userId} />
         </div>
 
         <div className="checkout__group">
@@ -63,25 +101,25 @@ const Checkout = () => {
               </tr>
             </thead>
             <tbody>
-             {
-              cart.items.map((item)=>{
-                return <tr>
-                <td>
-                  <img
-                    src="./assets/img/product-1-2.jpg"
-                    alt=""
-                    className="order__img"
-                  />
-                </td>
-                <td>
-                  <h3 className="table__title">{item?.productId?.title}</h3>
-                  <p className="table__quantity">{item?.quantity}</p>
-                </td>
-                <td><span className="table__price">{item?.quantity * item?.productId?.formats?.physical?.price}</span></td>
-              </tr>  
-              })
-             }
-              
+              {
+                cart?.items?.map((item) => {
+                  return <tr>
+                    <td>
+                      <img
+                        src="./assets/img/product-1-2.jpg"
+                        alt=""
+                        className="order__img"
+                      />
+                    </td>
+                    <td>
+                      <h3 className="table__title">{item?.productId?.title}</h3>
+                      <p className="table__quantity">{item?.quantity}</p>
+                    </td>
+                    <td><span className="table__price">{item?.quantity * item?.productId?.formats?.physical?.price}</span></td>
+                  </tr>
+                })
+              }
+
               <tr>
                 <td><span className="order__subtitle">Cart Total</span></td>
                 <td colSpan="2"><span className="table__price">{cart?.totalAmount}</span></td>
@@ -108,7 +146,9 @@ const Checkout = () => {
                 type="radio"
                 name="paymentMethod"
                 id="bankTransfer"
-                defaultChecked
+                value="COD"
+                checked={paymentMethod === "COD"}
+                onChange={handleMethodChange}
                 className="payment__input"
               />
               <label htmlFor="bankTransfer" className="payment__label">
@@ -120,10 +160,13 @@ const Checkout = () => {
                 type="radio"
                 name="paymentMethod"
                 id="checkPayment"
+                value="Razorpay"
+                checked={paymentMethod === "Razorpay"}
+                onChange={handleMethodChange}
                 className="payment__input"
               />
               <label htmlFor="checkPayment" className="payment__label">
-               Razorpay
+                Razorpay
               </label>
             </div>
             <div className="payment__option flex">
@@ -131,6 +174,9 @@ const Checkout = () => {
                 type="radio"
                 name="paymentMethod"
                 id="paypal"
+                value="Wallet"
+                checked={paymentMethod === "Wallet"}
+                onChange={handleMethodChange}
                 className="payment__input"
               />
               <label htmlFor="paypal" className="payment__label">
@@ -138,7 +184,7 @@ const Checkout = () => {
               </label>
             </div>
           </div>
-          <Button className="btn btn--md">Place Order</Button>
+          <Button className="btn btn--md" onClick={handlePlaceOrder}>Place Order</Button>
         </div>
       </div>
     </section>

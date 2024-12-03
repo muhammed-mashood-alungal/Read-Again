@@ -8,6 +8,7 @@ const bookRoutes = require('./Routes/booksRoutes')
 const categoryRoutes = require('./Routes/categoryRoutes')
 const authRoutes = require('./Routes/authRoutes')
 const cartRoutes = require('./Routes/cartRoutes')
+const orderRoutes = require('./Routes/orderRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -41,6 +42,9 @@ app.use('/api/books',bookRoutes)
 app.use('/api/categories',categoryRoutes)
 app.use('/api/auth',authRoutes)
 app.use('/api/cart',cartRoutes)
+app.use('/api/orders',orderRoutes)
+
+//ERROR HANDLING MIDDLEWARE
 app.use((err,req,res,next)=>{
     if(err){
         console.log(err)

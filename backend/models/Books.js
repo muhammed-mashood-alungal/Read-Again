@@ -63,6 +63,11 @@ const BookSchema = mongoose.Schema({
    isDeleted:{
     type:Boolean,
     default:false
+   },
+   stockStatus:{
+    type:String,
+    enum:["In Stock","Hurry Up","Out Of Stock"],
+    default:"In Stock"
    }
 
 },{

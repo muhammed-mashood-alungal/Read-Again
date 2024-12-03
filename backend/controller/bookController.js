@@ -4,7 +4,7 @@ const path = require('path')
 module.exports = {
     async createBook(req, res) {
         try {
-            const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
+            let { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
 
             const imagePaths = [];
             for (let i = 1; i <= 5; i++) {
@@ -13,7 +13,8 @@ module.exports = {
                     req.files[field].forEach(file => imagePaths.push(file.filename));
                 }
             }
-
+            formats= JSON.parse(formats)
+            const stockStatus = formats?.physical?.stock < 10 ? "Hurry Up" : "In Stock"
             const newBook = {
                 ISBN,
                 title,
@@ -23,10 +24,9 @@ module.exports = {
                 description,
                 publicationDate,
                 images: imagePaths,
-                formats: JSON.parse(formats)
-            };
-            console.log(newBook)
-
+                formats: formats,
+                stockStatus
+            }
             const book = await Book.create(newBook);
 
             const oldPath = path.join(__dirname, '..', `public/images/books/${book.ISBN}`);
@@ -124,7 +124,15 @@ module.exports = {
             const { bookId } = req.params
             const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
 
-
+            let stockStatus=null
+            const stock = formats.physical.stock
+            if(stock == 0){
+                stockStatus="Stock Out"
+            }else if(stock < 10){
+                stockStatus="Hurry Up"
+            }else{
+                stockStatus="In Stock"
+            }
             const newBook = {
                 ISBN,
                 title,
@@ -133,13 +141,12 @@ module.exports = {
                 genre,
                 description,
                 publicationDate,
-                formats: formats
-            };
+                formats: formats,
+                stockStatus
+            }
             console.log(newBook)
 
             const book = await Book.updateOne({ _id: bookId }, { $set: newBook }, { new: true });
-
-
             res.status(200).json({ message: "Book updated successfully", book })
         } catch (err) {
             console.log(err)
