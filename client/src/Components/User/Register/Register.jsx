@@ -13,7 +13,6 @@ import { validateRegister } from '../../../validations/registerValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOtp, setRegistrationData } from '../../../redux/Actions/userActions';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
-import Toast from '../../Toast/Toast';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

@@ -76,7 +76,7 @@ module.exports = {
     async getUserOrders(req, res) {
         try {
             const { userId } = req.params
-            const orders = await Order.find({ userId }).populate("items.bookId")
+            const orders = await Order.find({ userId }).populate("items.bookId").populate("userId")
             console.log(orders)
             res.status(200).json({ success: true, orders })
         } catch (err) {
@@ -86,8 +86,17 @@ module.exports = {
     },
     async getAllOrders(req, res) {
         try {
-            const orders = await Order.find({}).populate("items.bookId")
-            res.status(200).json({ success: true, orders })
+            let { page, limit } = req.query
+            page = parseInt(page)
+            limit = parseInt(limit)
+            let skip = (page - 1) * limit
+           
+            const orders = await Order.find({}, {
+                password: 0
+            }).skip(skip).limit(limit).populate("items.bookId").populate("userId")
+            const totalUsers = await Order.countDocuments({})
+          //  const orders = await Order.find({}).populate("items.bookId")
+            res.status(200).json({ success: true, orders ,totalUsers })
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false })
@@ -95,9 +104,9 @@ module.exports = {
     },
     async cancelOrder(req, res) {
         try {
-            
+
             const { orderId } = req.params
-            const {cancellationReason} = req.body
+            const { cancellationReason } = req.body
             console.log(cancellationReason)
             const order = await Order.findOne({ _id: orderId })
             order.orderStatus = "Canceled"
@@ -111,18 +120,18 @@ module.exports = {
                 }
             }
             await order.save()
-            res.status(200).json({success:true})
+            res.status(200).json({ success: true })
         } catch (err) {
             console.log(err)
-            res.status(400).json({message:"Something Went Wrong"})
+            res.status(400).json({ message: "Something Went Wrong" })
         }
     },
-    async requestReturnOrder(req,res){
-        try{
-            const {orderId} = req.params
-            const {returnReason}=req.body
+    async requestReturnOrder(req, res) {
+        try {
+            const { orderId } = req.params
+            const { returnReason } = req.body
             console.log(returnReason)
-            const order = await Order.findOne({_id:orderId})
+            const order = await Order.findOne({ _id: orderId })
             order.orderStatus = "Return Requested"
             order.returnReason = returnReason
             for (const item of order.items) {
@@ -133,10 +142,10 @@ module.exports = {
                 }
             }
             await order.save()
-            res.status(200).json({success:true})
-        }catch(err){
+            res.status(200).json({ success: true })
+        } catch (err) {
             console.log(err)
-            res.status(400).json({message:"Something Went Wrong"})
+            res.status(400).json({ message: "Something Went Wrong" })
         }
-    } 
+    }
 }

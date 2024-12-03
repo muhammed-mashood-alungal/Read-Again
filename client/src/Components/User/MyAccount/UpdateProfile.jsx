@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants'
-import Toast from '../../Toast/Toast';
 import {  toast } from 'react-toastify';
 import { validateUpdateProfile } from '../../../validations/accountValidation';
 import {useDispatch} from 'react-redux'

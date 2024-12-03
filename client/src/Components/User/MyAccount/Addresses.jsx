@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { validateAddress } from '../../../validations/accountValidation'
 import { toast } from 'react-toastify'
-import Toast from '../../Toast/Toast';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 import './MyAccount.css'

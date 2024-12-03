@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import { changePass } from '../../../redux/Actions/userActions';
 import { validateChangePassword } from '../../../validations/passwordValidations';
 import { toast } from 'react-toastify';
-import Toast from '../../Toast/Toast'
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState('');

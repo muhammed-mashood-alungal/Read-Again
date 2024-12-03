@@ -8,4 +8,6 @@ router.get('/:userId',getUserOrders)
 router.put('/orderId/update-order-status',updateOrderStatus)
 router.put('/:orderId/cancel-order',cancelOrder)
 router.put('/:orderId/request-return-order',requestReturnOrder)
+// router.put('/:orderId/reject-return-request')
+// router.put('/:orderId/approve-return-request')
 module.exports=router     

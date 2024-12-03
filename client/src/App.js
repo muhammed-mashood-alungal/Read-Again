@@ -24,6 +24,7 @@ import { removeAuth, setAuth } from './redux/Actions/userActions';
 import { useDispatch } from 'react-redux';
 import ForgottenPassword from './Components/User/ForgottenPassword/ForgottenPassword';
 import { ToastContainer } from 'react-toastify';
+import ListOrders from './Components/Admin/OrderManagement/ListOrders/ListOrders';
 
 function App() {
   const dispatch = useDispatch()
@@ -69,6 +70,7 @@ function App() {
         <Route path='books' element={<ListBooks />} />
         <Route path='users' element={<ListUsers />} />
         <Route path='category' element={<CategoryManagement />} />
+        <Route path='orders' element={<ListOrders />} />
       </Route>
       </Routes>
       <ToastContainer

@@ -33,15 +33,11 @@ const Sidebar = () => {
         </Link>
         </li>
         <li className="nav-item menu-items">
-        <Link className="nav-link" to="/admin/genre">
-            <span className="menu-title">Genre Managment</span>
+        <Link className="nav-link" to="/admin/orders">
+            <span className="menu-title">Order Managment</span>
         </Link>
         </li>
-        <li className="nav-item menu-items">
-        <Link className="nav-link" to="/admin/dashboard">
-            <span className="menu-title">USer Managment</span>
-        </Link>
-        </li>
+       
       </ul>
     </nav>
   );

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { axiosAdminInstance, axiosCategoryInstance, axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
 import { categoryImages } from '../../../../redux/Constants/imagesDir';
 import CropImage from '../../CropImage/CropImage';
-import './CategoryForm.css'
-import Toast from '../../../Toast/Toast'
+import './CategoryForm.css';
 import {  toast } from 'react-toastify';
 import { validateImage } from '../../../../validations/imageValidation';
 

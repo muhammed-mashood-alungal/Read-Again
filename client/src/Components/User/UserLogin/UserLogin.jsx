@@ -15,7 +15,6 @@ import { useNavigate  ,Link, useLocation} from 'react-router-dom';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Toast from '../../Toast/Toast';
 import { validateLogin } from '../../../validations/loginValidation';
 
 const UserLogin = () => {

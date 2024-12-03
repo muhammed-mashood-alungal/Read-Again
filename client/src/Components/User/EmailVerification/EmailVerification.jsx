@@ -13,7 +13,6 @@ import { createUser, getOtp } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { verifyEmail } from '../../../validations/verifyEmail'; 
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
-import Toast from '../../Toast/Toast';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

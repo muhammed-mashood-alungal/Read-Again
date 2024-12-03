@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { validateChangePass } from '../../../validations/accountValidation'
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants'
-import Toast from '../../Toast/Toast';
 import {  toast } from 'react-toastify';
 
 
