@@ -1,8 +1,9 @@
 const express= require('express')
 const { getUserOrders, updateOrderStatus, getAllOrders, placeOrder, cancelOrder, requestReturnOrder, approveReturnRequest, rejectReturnRequest, changeStatus, cancelOrderItem, returnOrderItem, approveItemReturn, rejectItemReturn } = require('../controller/orderController')
+const { isAdmin } = require('../middlewares/auth')
 const router = express.Router()
 
-router.get('/',getAllOrders)
+router.get('/',isAdmin,getAllOrders)
 router.post('/:userId/place-order',placeOrder)
 router.get('/:userId',getUserOrders)
 router.put('/:orderId/change-status/:status',changeStatus)

@@ -16,7 +16,7 @@ const AdminPage = () => {
   useEffect(()=>{
     console.log(isLoggedIn,role)
     if(isLoggedIn && role != "ADMIN"){
-      navigate('/')
+    //  navigate('/')
     }else if(!isLoggedIn){
     navigate('/admin/login')
    }

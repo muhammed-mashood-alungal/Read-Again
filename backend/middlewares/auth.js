@@ -1,28 +1,33 @@
-// const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken')
 // const User = require("../models/Users");
-
-// const isAdmin=async(req,res,next)=>{
-//     const authHeader = req.headers['authorization'];
-//     const token = authHeader && authHeader.split(' ')[1];
-
-//     if (!token){
-//         res.status(401)
-//         throw new Error("Access Denied")
-//     }
-//     try{
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//         if(decoded.role == "ADMIN"){
-//             next()
-//         }else{
-//             res.status(401)
-//             res.status(401).json({message:"UnAuthorized"})
-//         }
-//     }catch(err){
-//         if (err) {
-//             res.status(401).json({message:"UnAuthorized"})
-//         } 
-       
-//     }
+//import jwt from 'jsonwebtoken'
+module.exports =  {
+    async isAdmin(req,res,next){
+    try{
+    console.log(req.cookies)
+    const token = req.cookies.token
+    console.log("token ",token)
+    if (!token){
+        console.log("token")
+      return  res.status(401).json({message:"Access Denied"})
+    }
+   
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        console.log("decoded")
+        console.log(decoded.role)
+        if(decoded.role == "ADMIN"){
+            next()
+        }else{
+            res.status(401).json({message:"UnAuthorized dsfas"})
+        } 
+    }catch(err){
+        console.log(err)
+        if (err) {
+            res.status(401).json({message:"UnAuthorized"})
+        } 
+    }
+}
+}
     
     
 // }
