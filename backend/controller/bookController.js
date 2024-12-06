@@ -89,10 +89,10 @@ module.exports = {
             
             console.log(sort,price)  
             const priceRange= {}
-            let  find = {isDeleted : false } 
+            let  find = {isDeleted : false , "formats.physical.stock":{$gt:0}} 
             
             if(price  != "{}"){
-                console.log(price)
+            
                 price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}
             }
@@ -174,7 +174,7 @@ module.exports = {
     },
     async getJustPublishedBooks(req, res) {
         try {
-            const books = await Book.find({ isDeleted: false }).sort({ createdAt: -1 }).limit(10)
+            const books = await Book.find({ isDeleted: false ,"formats.physical.stock":{$gt:0} }).sort({ createdAt: -1 }).limit(10)
             res.status(200).json({ books: books })
         } catch (err) {
             console.log(err)
@@ -201,7 +201,6 @@ module.exports = {
     },
     async updateBookImage(req, res) {
         try {
-            console.log("update controller")
             const { bookId } = req.params
             const { oldUrl } = req.body
             console.log(req.file.filename)
@@ -214,7 +213,6 @@ module.exports = {
                 fs.unlinkSync(oldPath)
             }
             const images = [...updatingBook.images]
-            console.log("old")
             console.log(images)
             const newImages = images.map((image, index) => {
                 console.log(image, oldUrl)

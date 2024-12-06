@@ -26,7 +26,27 @@ module.exports =  {
             res.status(401).json({message:"UnAuthorized"})
         } 
     }
-}
+},
+ async userId(req,res,next){
+    try{
+        const token = req.cookies.token
+        console.log("token -----------------"+token)
+        if (!token){
+          req.userId = null
+        }
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            if(decoded.role == "USER"){
+                req.userId = decoded.id 
+                
+            }else{
+                req.userId = null
+            }
+            console.log("req.userId +++++++++",req.userId)
+            next()
+        }catch(err){
+            res.status(400).json({message:"Something Went Wrong While"})
+        }
+ }
 }
     
     

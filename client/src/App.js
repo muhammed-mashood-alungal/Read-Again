@@ -18,12 +18,12 @@ import CategoryManagement from './Components/Admin/CategoryManagment/ListCategor
 import ListUsers from './Components/Admin/UsersManagment/ListUsers/ListUsers';
 import ListBooks from './Components/Admin/BookManagement/ListBooks.jsx/ListBooks';
 import AdminLogin from './Components/Admin/AdminLogin/AdminLogin';
-import { axiosAdminInstance, axiosAuthInstance, axiosUserInstance } from './redux/Constants/axiosConstants';
+import { axiosAdminInstance, axiosAuthInstance, axiosCartInstance, axiosOrderInstance, axiosUserInstance } from './redux/Constants/axiosConstants';
 import { useEffect } from 'react';
-import { removeAuth, setAuth } from './redux/Actions/userActions';
+import { removeAuth, setAuth, setCartItemsCount } from './redux/Actions/userActions';
 import { useDispatch } from 'react-redux';
 import ForgottenPassword from './Components/User/ForgottenPassword/ForgottenPassword';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import ListOrders from './Components/Admin/OrderManagement/ListOrders/ListOrders';
 
 function App() {
@@ -40,6 +40,7 @@ function App() {
     };
     checkAuth();
 }, [dispatch]);
+
 
 
   return (

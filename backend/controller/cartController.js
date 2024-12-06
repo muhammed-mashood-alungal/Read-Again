@@ -5,6 +5,9 @@ module.exports = {
     try {
       const { itemInfo } = req.body
       const { userId } = req.params
+      if(itemInfo.quantity > 3){
+        return res.status(400).json({ success: false, message: "You can only add the same item up to 3 times." })
+      }
       const cart = await Cart.findOne({ userId })
       const productData = await Book.findOne({ _id: itemInfo.productId, isDeleted: false })
       if(productData.formats.physical.stock == 0){
@@ -17,12 +20,11 @@ module.exports = {
         return res.status(400).json({ success: false, message: "Product Not Found" })
       }
       if (!cart) {
-
         await Cart.create({
           userId: userId,
           items: itemInfo,
-          totalQuantity: 1,
-          totalAmount: productData.formats?.physical?.price
+          totalQuantity: itemInfo.quantity,
+          totalAmount: productData.formats?.physical?.price *parseInt(itemInfo.quantity) 
         })
         return res.status(200).json({ success: true })
       } else { 
@@ -31,7 +33,7 @@ module.exports = {
             itemInfo.quantity = parseInt(itemInfo.quantity)
             if (cart.items[i].quantity + itemInfo.quantity <= 3) {
               cart.items[i].quantity += itemInfo.quantity
-              cart.totalQuantity += 1
+              cart.totalQuantity += itemInfo.quantity
               cart.totalAmount += productData.formats?.physical?.price
               cart.save()
               return res.status(200).json({ success: true })
@@ -40,8 +42,8 @@ module.exports = {
             }
           }
         }
-        cart.totalQuantity += 1
-        cart.totalAmount += productData.formats?.physical?.price
+        cart.totalQuantity +=parseInt(itemInfo.quantity) 
+        cart.totalAmount += productData.formats?.physical?.price *parseInt(itemInfo.quantity) 
         cart.items.push(itemInfo)
         console.log(cart) 
         cart.save()
@@ -102,7 +104,7 @@ module.exports = {
       cart.totalAmount += priceInc
      
       console.log(cart.items[index])
-      cart.save()
+      await  cart.save()
       res.status(200).json({success:true})
     } catch (err) {
       console.log(err)
@@ -117,13 +119,31 @@ module.exports = {
       cart.totalAmount = newAmount
       cart.totalQuantity = newQuantity
       cart.items = cart.items.filter((_, idx) => idx != index)
-      console.log(cart.items)
       cart.save()
       res.status(200).json({ success: true })
     } catch (err) {
       console.log(err)
       res.status(400).json({ message: "Somthing Went Wrong while Removing Item..." })
 
+    }
+  },
+  async getCartItemsCount(req,res){
+    try{
+     const {userId} = req.params
+     if(!userId){
+      return res.status(200).json({succees:true,cartItemsCount:0})
+     }
+     console.log(userId)
+     const  cart = await Cart.findOne({userId:userId},{items:1})
+     const cartItemsCount = cart?.items?.reduce((count,item)=>{
+        return count + item.quantity
+     },0)
+     console.log(cartItemsCount)
+     res.status(200).json({succees:true,cartItemsCount})
+     
+    }catch(err){
+      console.log(err)
+      res.status(400).json({succees:false,message:"Something Went Wrong"})
     }
   }
 } 

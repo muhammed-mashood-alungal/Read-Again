@@ -1,6 +1,6 @@
 const express= require('express')
 const { addCategory, updateCategory, getAllCategories, getCategoryData, getListedCategories } = require('../controller/categoryController')
-const { listOrUnlistCategory } = require('../controller/userController')
+const { listOrUnlistCategory } = require('../controller/categoryController')
 const upload = require('../utils/multer')
 const { isAdmin } = require('../middlewares/auth')
 const router = express.Router()

@@ -6,16 +6,20 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { axiosCartInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 import './ShoppingCart.css'
+import { bookImages } from '../../../redux/Constants/imagesDir';
+import debounce from 'lodash/debounce';
+import { decCartItemCount, incCartItemCount } from '../../../redux/Actions/userActions';
 
 const ShoppingCart = () => {
-
+ const dispatch = useDispatch()
   const { userId } = useSelector(state => state.auth)
   const navigate = useNavigate()
   const [cart, setCart] = useState({})
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [isProcessing,setIsProcessing]=useState(false)
   useEffect(() => {
     if (!userId) {
       navigate("/login", { state: { cart } })
@@ -35,17 +39,24 @@ const ShoppingCart = () => {
     }
   }, [userId])
 
-  const handleQuantiyChange = async (value, index, productPrice) => {
+  const handleQuantiyChange = debounce(async (value, index, productPrice) => {
     try {
       
       const items = [...cart.items]
     
       const priceInc = (value * productPrice) - (items[index].quantity * productPrice)
       const quantityInc = value - items[index].quantity
-      console.log(priceInc)
+      console.log(quantityInc)
+      if(quantityInc > 0){
+        console.log("incr")
+       dispatch(incCartItemCount(1))
+      }else{
+        console.log("dec")
+        dispatch(decCartItemCount(-1))
+      }
      
       console.log(cart.totalAmount, value)
-      await axiosCartInstance.put(`/${userId}/update-quantity`, { value, index, priceInc })
+      const response=await axiosCartInstance.put(`/${userId}/update-quantity`, { value, index, priceInc })
       if (value > 3) {
         items[index].quantity = 3
       } else {
@@ -65,10 +76,10 @@ const ShoppingCart = () => {
         toast.error(err?.response?.data?.message)
       }
     }
-  }
+  }, 300);
   const handleRemoveFromCart = async () => {
     try {
-      console.log("removing")
+      console.log(cart.totalAmount - (cart.items[selectedIndex].quantity * cart.items[selectedIndex]?.productId?.formats?.physical?.price))
       const newAmount = cart.totalAmount - (cart.items[selectedIndex].quantity * cart.items[selectedIndex]?.productId?.formats?.physical?.price)
       const newQuantity = cart.totalQuantity - cart.items[selectedIndex].quantity
       await axiosCartInstance.put(`/${userId}/remove-item`, { index: selectedIndex, newAmount, newQuantity })
@@ -84,6 +95,7 @@ const ShoppingCart = () => {
         }
       })
       setSelectedIndex(-1)
+      dispatch(decCartItemCount(cart.items[selectedIndex].quantity))
     } catch (err) { 
       console.log(err)
       toast.error(err?.response?.data?.message)
@@ -145,7 +157,7 @@ const ShoppingCart = () => {
                       <tr key={index}>
                         <td>
                           <img
-                            src={`./assets/img/product-${index + 1}-1.jpg`}
+                            src={bookImages+item?.productId._id+"/"+item?.productId?.images[0]} 
                             alt="Product"
                             className="table__img"
                           />

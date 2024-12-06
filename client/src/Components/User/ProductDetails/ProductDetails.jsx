@@ -41,18 +41,6 @@ const ProductDetails = ({ bookData }) => {
   
 
  
-  // const handleImageClick=(index)=>{
-  //    let newArr = [...images]
-  //    console.log(newArr)
-  //    let temp = newArr[0]
-  //    newArr[0] = newArr[index]                                                                                                                                                                                                      
-  //    newArr[index]=temp
-
-  //    setImages(newArr)
-  // }
-
-
-  // Set images from bookData
   useEffect(() => {
     if (bookData.images) {
       setImages([...bookData.images]);
@@ -134,7 +122,24 @@ const ProductDetails = ({ bookData }) => {
       return <td className="in-stock">In Stock</td>;
     }
   }
-
+ 
+  const buyNow=()=>{
+    console.log(bookData?.formats?.physical?.price,quantity)
+    try{
+       const cart = {}
+       cart.totalAmount= bookData?.formats?.physical?.price * parseInt(quantity)
+       cart.quantity =quantity
+       cart.items = [{
+        productId:{...bookData},
+        offer:{},
+        quantity:quantity
+       }]
+       navigate('/checkout',{state:{cart}})
+    }catch(err){
+        console.log(err)
+        toast.error(err?.response?.data.message)
+    }
+  }
   return (
     <>
       <section className="details section--lg">
@@ -244,7 +249,7 @@ const ProductDetails = ({ bookData }) => {
               max={bookData?.formats?.physical?.stock}/>
               <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
               <button className="primary-btn" onClick={(e)=>{handleAddToCart(bookData?._id)}}>Add To Cart</button>
-              <button className="primary-btn">Buy Now</button>
+              <button className="primary-btn" onClick={buyNow}>Buy Now</button>
               <button className="primary-btn">Borrow</button>
 
 
@@ -279,6 +284,7 @@ const ProductDetails = ({ bookData }) => {
                      }
                   >{bookData?.stockStatus}</th>
                   </tr>
+                  <tr><th>Stock </th><td>{bookData?.formats?.physical?.stock}</td></tr>
                   {/* Add more rows as needed */}
                 </tbody>
               </table>

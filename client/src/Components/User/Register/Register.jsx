@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getOtp, setRegistrationData } from '../../../redux/Actions/userActions';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
 import {  toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 
 const Register = () => {

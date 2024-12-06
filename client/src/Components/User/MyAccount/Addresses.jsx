@@ -19,7 +19,7 @@ function Addresses({ userAddresses, userId }) {
   const [showModal , setShowModal]=useState(false)
 
   useEffect(()=>{
-    if(userAddresses.length ){
+    if(userAddresses?.length ){
       setAddresses(userAddresses)
     }
    

@@ -5,15 +5,18 @@ import { toast } from 'react-toastify';
 import { axiosCartInstance, axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { bookImages } from '../../../redux/Constants/imagesDir';
 
 const Checkout = () => {
   const { userId, isLoggedIn } = useSelector(state => state.auth)
   const location = useLocation()
   const cart = location?.state?.cart
+  console.log(cart)
   //const [cart,setCart]=useState({})
   const [addresses, setAddresses] = useState([])
   const [paymentMethod, setPaymentMethod] = useState("COD")
   const navigate = useNavigate()
+  const [isPlacingOrder,setIsPlacingOrder]=useState(false)
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login')
@@ -60,8 +63,8 @@ const Checkout = () => {
 
   const handlePlaceOrder = async() => {
     try {
+      setIsPlacingOrder(true)
       cart.items = cart.items.map((item) => {
-        console.log(item)
         return {
           bookId: item.productId?._id,
           quantity: item.quantity,
@@ -72,15 +75,20 @@ const Checkout = () => {
       const orderDetails = {
         items: cart.items,
         shippingCharge: 0,
-        totalAmount: cart.totalAmount,
+        totalAmount: cart.totalAmount, 
         orderStatus: "Ordered",
         paymentMethod:paymentMethod
       }
       console.log(orderDetails)
       await axiosOrderInstance.post(`/${userId}/place-order`,orderDetails)
       console.log("orderPlaced")
-      toast.success("Your Order Placed Successfully")
+
+      navigate('/')
+      setIsPlacingOrder(false)
+      toast.success("Your Order Placed Successfully.You can Track delivery status in You Order History")
+
     } catch (err) {
+      setIsPlacingOrder(false)
       console.log(err)
       toast.error(err?.response?.data?.message)
     }
@@ -107,7 +115,7 @@ const Checkout = () => {
                   return <tr>
                     <td>
                       <img
-                        src="./assets/img/product-1-2.jpg"
+                        src={bookImages+item?.productId?._id+"/"+item?.productId?.images[0]} 
                         alt=""
                         className="order__img"
                       />
@@ -185,7 +193,7 @@ const Checkout = () => {
               </label>
             </div>
           </div>
-          <Button className="btn btn--md" onClick={handlePlaceOrder}>Place Order</Button>
+          <Button className="btn btn--md" onClick={handlePlaceOrder} disabled={isPlacingOrder}>Place Order</Button>
         </div>
       </div>
     </section>

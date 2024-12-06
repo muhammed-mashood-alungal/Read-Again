@@ -56,7 +56,7 @@ const ProductList = ({books,title}) => {
                     <i className="fi fi-rs-star"></i>
                   </div>
                   <div className="product__price flex">
-                    <span className="new__price">{book?.physical?.price}</span>
+                    <span className="new__price">₹{book?.formats?.physical?.price}</span>
                   </div>
                   <span onClick={(e)=>{handleAddToCart(e,book?._id)}} className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></span>
                 </div>

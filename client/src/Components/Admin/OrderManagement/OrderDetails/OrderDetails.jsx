@@ -238,6 +238,17 @@ function OrderDetails({ selectedOrder }) {
                         <span>${order.totalAmount.toFixed(2)}</span>
                     </div>
                     <div className="shipping-info">
+                        <h3>User Information</h3>
+                        {/* <p>{selectedOrder}</p> */}
+                        <h6>{order.userId.username}</h6>
+                        <h6>{order.userId.email}</h6>
+                        <h6>{order.userId.phone ?  order.userId.phone : "Phone Not Added"}</h6>
+                    </div>
+                    <div className="shipping-info">
+                    <h3>Payment Information</h3>
+                    <h5>{order.paymentStatus}</h5>
+                    </div>
+                    <div className="shipping-info">
                         <h3>Shipping Information</h3>
                         {/* <p>{selectedOrder}</p> */}
                         <p>{order.shippingAddress}</p>

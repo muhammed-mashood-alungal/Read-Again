@@ -30,10 +30,10 @@ function OrderHistory({ orders }) {
 
     if (status == "Delivered" && !selectedOrder.isRejectedOnce) {
       return <td><button className='return-order-btn'
-      onClick={() => {
-        setSelectedItemId(itemId)
-        setIsReturning(true)
-      }}
+        onClick={() => {
+          setSelectedItemId(itemId)
+          setIsReturning(true)
+        }}
       >Request Return</button>
       </td>
     } else if (status == "Pending" ||
@@ -73,28 +73,28 @@ function OrderHistory({ orders }) {
 
   const cancelOrderItem = async (cancellationReason) => {
     try {
-      console.log(cancellationReason,selectedItemId)
-      const {data}=await axiosOrderInstance.put(`/${selectedOrder._id}/items/${selectedItemId}/cancel`, { cancellationReason  })
+      console.log(cancellationReason, selectedItemId)
+      const { data } = await axiosOrderInstance.put(`/${selectedOrder._id}/items/${selectedItemId}/cancel`, { cancellationReason })
       const newOrderData = { ...selectedOrder }
       console.log(newOrderData.items)
-      newOrderData.items = newOrderData.items?.map((item)=>{
-        return item.bookId._id == selectedItemId ? {...item,status:"Canceled",reason:cancellationReason} :item
+      newOrderData.items = newOrderData.items?.map((item) => {
+        return item.bookId._id == selectedItemId ? { ...item, status: "Canceled", reason: cancellationReason } : item
       })
-      if(data.isAllItemsCancelled){
-       newOrderData.orderStatus = "Canceled"
-       newOrderData.cancellationReason = "All Items Cancelled"
+      if (data.isAllItemsCancelled) {
+        newOrderData.orderStatus = "Canceled"
+        newOrderData.cancellationReason = "All Items Cancelled"
       }
       setSelectedOrder(newOrderData)
       setSelectedItemId(null)
     } catch (err) {
       console.log(err)
-      toast.error(err?.response?.data?.message) 
+      toast.error(err?.response?.data?.message)
     }
   }
 
   const returnOrder = async (returnReason) => {
     try {
-      if(selectedItemId){
+      if (selectedItemId) {
         return requestReturnItem(returnReason)
       }
       await axiosOrderInstance.put(`/${selectedOrder._id}/request-return-order`, { returnReason })
@@ -114,12 +114,12 @@ function OrderHistory({ orders }) {
 
   const requestReturnItem = async (returnReason) => {
     try {
-      console.log(returnReason,selectedItemId)
-      const {data}=await axiosOrderInstance.put(`/${selectedOrder._id}/items/${selectedItemId}/return`, { returnReason  })
+      console.log(returnReason, selectedItemId)
+      const { data } = await axiosOrderInstance.put(`/${selectedOrder._id}/items/${selectedItemId}/return`, { returnReason })
       const newOrderData = { ...selectedOrder }
       console.log(newOrderData.items)
-      newOrderData.items = newOrderData.items?.map((item)=>{
-        return item.bookId._id == selectedItemId ? {...item,status:"Return Requested",reason:returnReason} :item
+      newOrderData.items = newOrderData.items?.map((item) => {
+        return item.bookId._id == selectedItemId ? { ...item, status: "Return Requested", reason: returnReason } : item
       })
       // if(data.isAllItemsCancelled){
       //  newOrderData.orderStatus = "Return Requested"
@@ -129,7 +129,7 @@ function OrderHistory({ orders }) {
       setSelectedItemId(null)
     } catch (err) {
       console.log(err)
-      toast.error(err?.response?.data?.message) 
+      toast.error(err?.response?.data?.message)
     }
   }
 
@@ -151,41 +151,48 @@ function OrderHistory({ orders }) {
           onClose={() => { setIsReturning(false) }}
         />
       }
+
       {
         !isViewOrder ?
-          <div>
+
+          <div className='p-2'>
 
             <h3 className="tab__header">Your Orders</h3>
-            <div className="tab__body">
-              <table className="placed__order-table">
-                <thead>
-                  <tr>
-                    <th>Orders</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Totals</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    orders.map((order, index) => {
-                      return <tr>
-                        <td>{index + 1}</td>
-                        <td>{new Date(order.orderDate).toLocaleDateString()}</td>
-                        <td>{order.orderStatus}</td>
-                        <td>{order.totalAmount}</td>
-                        <td><span onClick={() => {
-                          setSelectedOrder(order)
-                          setIsviewOrder(true)
-                        }} className="link-button">View</span></td>
+            {
+              orders.length == 0 ? <h2 className='empty-msg'>You Have Not ordered Anything Yet..!</h2>
+                : <div className="tab__body">
+                  <table className="placed__order-table">
+                    <thead>
+                      <tr>
+                        <th>Orders</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Totals</th>
+                        <th>Actions</th>
                       </tr>
-                    })
-                  }
-                </tbody>
-              </table>
-            </div>
+                    </thead>
+                    <tbody>
+                      {
+                        orders.map((order, index) => {
+                          return <tr>
+                            <td>{index + 1}</td>
+                            <td>{new Date(order.orderDate).toLocaleDateString()}</td>
+                            <td>{order.orderStatus}</td>
+                            <td>{order.totalAmount}</td>
+                            <td><span onClick={() => {
+                              setSelectedOrder(order)
+                              setIsviewOrder(true)
+                            }} className="link-button">View</span></td>
+                          </tr>
+                        })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+
+            }
           </div>
+
           :
           <div className="my-order-details-container">
             <div className="order-header">
@@ -234,11 +241,11 @@ function OrderHistory({ orders }) {
                         <td className='cancel-order-btn'>Item canceled <br /> Reason : {item.reason}</td>
                       }
                       {
-                        item.status == "Return Requested" && 
+                        item.status == "Return Requested" &&
                         <td className='return-item-msg'>Item Requsted For Return <br /> Reason : {item.reason}</td>
                       }
                       {
-                        item.status == "Returned" && 
+                        item.status == "Returned" &&
                         <td className='return-item-msg'>Item Returned <br /> Reason : {item.reason}</td>
                       }
                     </tr>
@@ -250,16 +257,21 @@ function OrderHistory({ orders }) {
                 <strong>Total</strong>
                 <span>${selectedOrder.totalAmount.toFixed(2)}</span>
               </div>
+
               <div className="my-shipping-info">
                 <h3>Shipping Information</h3>
                 <p>{selectedOrder.shippingAddress}</p>
+              </div>
+              <div className="shipping-info">
+                <h3>Payment Information</h3>
+                <h5>{selectedOrder.paymentStatus}</h5>
               </div>
               <div>
                 {
                   isEligibleForReturn() && <button className='return-order-btn'
                     onClick={() => { setIsReturning(true) }}>Request Return </button>
                 }
-                
+
                 {
                   selectedOrder.isRejectedOnce && <p className='err-msg'>You can't Request Return Again, Becuase Your Requsest is Already Rejected By Admin</p>
                 }

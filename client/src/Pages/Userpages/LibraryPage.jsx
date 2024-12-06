@@ -8,6 +8,8 @@ import { axiosBookInstance } from '../../redux/Constants/axiosConstants'
 function LibraryPage() {
 const [justPublished,setJustPublished]=useState([])
 const [filterQuery, setFilterQuery]=useState('')
+const [searchQuery,setSearchQuery]=useState("")
+const [count,setCount]=useState(0)
   useEffect(()=>{
     const fetchProducts =async ()=>{
       try{
@@ -20,17 +22,29 @@ const [filterQuery, setFilterQuery]=useState('')
     }
     fetchProducts()
   
-  },[filterQuery])
+  },[filterQuery,count])
   
   const updateQuery=(query)=>{
-    console.log(query)
      setFilterQuery(query)
+  }
+
+  const onSearch=(name)=>{
+    if(name.trim()){
+      setJustPublished(books=>{
+        return  books.filter((book)=>{
+           return  book.title.includes(name)
+          })
+        })
+    }else{
+      setCount(count+1)
+    }
+   
   }
   return (
     <>
-    <Header/>
+    <Header />
     <Breadcrumbs/>
-    <ProductFilter onFilter={updateQuery}/>
+    <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch}/>
     <ProductList books={justPublished} title={''}/>
     <Footer/>
     </>

@@ -6,13 +6,18 @@ import {useDispatch} from 'react-redux'
 import {getOtp} from '../../../redux/Actions/userActions'
 import { useNavigate } from 'react-router-dom';
 
-function UpdateProfile({activeTab,profileData}) {
-
+function UpdateProfile({profileData}) {
   const [username, setUsername] = useState(profileData?.username)
   const [email,setEmail] = useState(profileData?.email)
   const [phone,setPhone] = useState(profileData?.phone)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  useEffect(()=>{
+   if(profileData){
+    setUsername(profileData?.username)
+    setEmail(profileData?.email)
+   }
+  },[profileData])
   const handleUpdateProfile=async(e)=>{
     try{
         e.preventDefault()
@@ -30,7 +35,7 @@ function UpdateProfile({activeTab,profileData}) {
           }else{
             try{
               await axiosUserInstance.put(`/${formData?._id}/edit`,formData)
-              toast.success("Updated Success")
+              toast.success("Updated Successfully")
             }catch(err){
               console.log(err)
             }

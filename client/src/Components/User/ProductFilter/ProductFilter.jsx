@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import './ProductFilter.css'
 import { toast } from 'react-toastify';
 import { axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
-const ProductFilter = ({ onFilter }) => {
+const ProductFilter = ({ onFilter ,setSearchQuery}) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [query, setQuery] = useState("")
+  const [search, setSearch] = useState("")
+  
   const [activeFilters, setActiveFilters] = useState({
     sort: 'Default',
     price: {},
@@ -31,6 +32,9 @@ const ProductFilter = ({ onFilter }) => {
     console.log(activeFilters)
     onFilter(`?sortBy=${activeFilters.sort}&price=${JSON.stringify(activeFilters.price)}&category=${activeFilters.category}`)
   }, [activeFilters])
+  useEffect(()=>{
+    setSearchQuery(search)
+  },[search])
 
   const sortOptions = [
     'Default',
@@ -61,7 +65,7 @@ const ProductFilter = ({ onFilter }) => {
 
   const topFilters = ['Genre', 'Format', 'Language', 'Age Group'];
   
-
+  
 
   return (
 
@@ -80,16 +84,23 @@ const ProductFilter = ({ onFilter }) => {
 
         <>
           <div className="filter-header">
-            <div className="top-filters">
+            {/* <div className="top-filters">
               {topFilters.map(filter => (
                 <button key={filter} className="chip">
                   {filter}
                 </button>
               ))}
-            </div>
-            <button className="trending-button">
+            </div> */}
+            {/* <button className="trending-button">
               Trending
-            </button>
+            </button> */}
+             <input
+              type="text"
+              value={search}
+              onChange={(e)=>{setSearch(e.target.value)}}
+              placeholder="Search For Items..."
+              className="form__input"
+            />
           </div>
 
           <div className="filters-row">

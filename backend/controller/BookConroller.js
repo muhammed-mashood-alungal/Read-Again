@@ -2,7 +2,7 @@ const Book = require("../models/Books");
 const fs = require('fs')
 const path = require('path')
 module.exports = {
-    async createBook(req, res) {
+    async createBook(req, res) { 
         try {
             const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
 

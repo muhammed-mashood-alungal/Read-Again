@@ -1,59 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import { axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import UpdateProfile from './UpdateProfile';
-import {Link} from 'react-router-dom'
 import ChangePass from './ChangePass';
 import Addresses from './Addresses';
 import OrderHistory from './OrderHistory';
-const MyAccount = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [profileData,setProfileData] =useState({})
-  const [orders,setOrders]=useState([])
-  const {isLoggedIn,userId}=useSelector(state=>state.auth)
-  const navigate = useNavigate()
-  
-  
-  const handleTabClick = (target) => {
-    setActiveTab(target);
-  };
-  useEffect(()=>{
-    if(!isLoggedIn || !userId){
-      navigate('/')
-    }
-  },[isLoggedIn])
 
-  useEffect(()=>{
-    const getProfileData =async()=> {
-      try{
-        const response = await axiosUserInstance.get(`/${userId}`)
-        setProfileData(response?.data?.userData)
-      }catch(err){
-        console.log(err)
-        toast.error(err?.response?.data?.error)
-      }
+const MyAccount = () => {
+  const [profileData, setProfileData] = useState({});
+  const [orders, setOrders] = useState([]);
+  const { isLoggedIn, userId } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTab = searchParams.get('tab') || 'dashboard'; // Default to 'dashboard'
+
+  const handleTabClick = (target) => {
+    setSearchParams({ tab: target });
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/');
     }
-    getProfileData();
-  },[])
-  useEffect(()=>{
-    const getUserOrderHistory =async()=> {
-      try{
-        const response = await axiosOrderInstance.get(`/${userId}`)
-        setOrders(response?.data?.orders)
-      }catch(err){
-        console.log(err)
-        toast.error(err?.response?.data?.error)
+  }, [isLoggedIn, userId]);
+
+  useEffect(() => {
+    const getProfileData = async () => {
+      try {
+        const response = await axiosUserInstance.get(`/${userId}`);
+        setProfileData(response?.data?.userData);
+      } catch (err) {
+       // toast.error(err?.response?.data?.error);
       }
+    };
+    if(isLoggedIn){
+      getProfileData();
     }
-    getUserOrderHistory();
-  },[])
+    
+  }, [userId,isLoggedIn,activeTab]);
+
+  useEffect(() => {
+    const getUserOrderHistory = async () => {
+      try {
+        const response = await axiosOrderInstance.get(`/${userId}`);
+        setOrders(response?.data?.orders);
+      } catch (err) {
+        console.error(err);
+       // toast.error(err?.response?.data?.error);
+      }
+    };
+    if(isLoggedIn){
+      getUserOrderHistory();
+    }
+  }, [userId]);
 
   return (
     <section className="accounts section--lg">
       <div className="accounts__container container grid">
-        
         <div className="account__tabs">
           <p
             className={`account__tab ${activeTab === 'dashboard' ? 'active-tab' : ''}`}
@@ -79,17 +85,14 @@ const MyAccount = () => {
           >
             <i className="fi fi-rs-marker"></i> My Address
           </p>
-          {
-             profileData.password && (
-              <p
-            className={`account__tab ${activeTab === 'change-password' ? 'active-tab' : ''}`}
-            onClick={() => handleTabClick('change-password')}
+          {profileData.password && (
+            <p
+              className={`account__tab ${activeTab === 'change-password' ? 'active-tab' : ''}`}
+              onClick={() => handleTabClick('change-password')}
             >
-            <i className="fi fi-rs-settings-sliders"></i> Change Password
+              <i className="fi fi-rs-settings-sliders"></i> Change Password
             </p>
-             )
-          }
-          
+          )}
           <p className="account__tab">
             <i className="fi fi-rs-exit"></i> Logout
           </p>
@@ -111,15 +114,18 @@ const MyAccount = () => {
                   </tr>
                   <tr>
                     <th>Phone Number</th>
-                    <th>{profileData?.phone  ? profileData?.phone:
-                    <>
-                    Not Added <br />
-                    <button className="link-button"
-                    onClick={() => handleTabClick('update-profile')}>
-                    Add Phone Number
-                    </button>
-                    </>
-                     }</th>
+                    <th>
+                      {profileData?.phone ? (
+                        profileData?.phone
+                      ) : (
+                        <>
+                          Not Added <br />
+                          <button className="link-button" onClick={() => handleTabClick('update-profile')}>
+                            Add Phone Number
+                          </button>
+                        </>
+                      )}
+                    </th>
                   </tr>
                 </table>
               </div>
@@ -128,27 +134,24 @@ const MyAccount = () => {
 
           {activeTab === 'orders' && (
             <div className={`tab__content ${activeTab === 'orders' ? 'active-tab' : ''}`} id="orders">
-              <OrderHistory orders={orders}/>
+              <OrderHistory orders={orders} />
             </div>
           )}
 
-        
           {activeTab === 'update-profile' && (
-             <div className={`tab__content ${activeTab === 'update-profile' ? 'active-tab' : ''}`} id="update-profile">
-             <UpdateProfile activeTab={true}  profileData={profileData}
-             />
-              </div>
-          ) }
+            <div className={`tab__content ${activeTab === 'update-profile' ? 'active-tab' : ''}`} id="update-profile">
+              <UpdateProfile  profileData={profileData} />
+            </div>
+          )}
           {activeTab === 'address' && (
-            
             <div className={`tab__content ${activeTab === 'address' ? 'active-tab' : ''}`} id="address">
-              <Addresses userId={profileData._id} userAddresses={profileData?.addresses}/>
+              <Addresses userId={profileData._id} userAddresses={profileData?.addresses} />
             </div>
           )}
 
-          {activeTab === 'change-password'  && (
+          {activeTab === 'change-password' && (
             <div className={`tab__content ${activeTab === 'change-password' ? 'active-tab' : ''}`} id="change-password">
-               <ChangePass email={profileData.email}/>
+              <ChangePass email={profileData.email} />
             </div>
           )}
         </div>

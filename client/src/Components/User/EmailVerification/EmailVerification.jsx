@@ -14,7 +14,6 @@ import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { verifyEmail } from '../../../validations/verifyEmail'; 
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
 import {  toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const EmailVerification = (props) => {
   const location = useLocation();

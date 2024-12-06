@@ -2,6 +2,8 @@ const Address = require("../models/Address")
 const Book = require("../models/Books")
 const Cart = require("../models/Cart")
 const Order = require("../models/Order")
+const jwt = require("jsonwebtoken")
+const User = require("../models/Users")
 
 module.exports = {
     async placeOrder(req, res) {
@@ -68,7 +70,7 @@ module.exports = {
     async getUserOrders(req, res) {
         try {
             const { userId } = req.params
-            const orders = await Order.find({ userId }).populate("items.bookId").populate("userId")
+            const orders = await Order.find({ userId }).sort({orderDate:-1}).populate("items.bookId").populate("userId")
             res.status(200).json({ success: true, orders })
         } catch (err) {
             console.log(err)
@@ -144,7 +146,8 @@ module.exports = {
             const {orderId} = req.params
             await Order.findOneAndUpdate({_id:orderId},{
                 $set:{
-                    orderStatus:"Returned"
+                    orderStatus:"Returned",
+                    paymentStatus:"Failed"
                 }
             })
             res.status(200).json({success:true})
@@ -159,7 +162,8 @@ module.exports = {
             await Order.findOneAndUpdate({_id:orderId},{
                 $set:{
                     isRejectedOnce:true,
-                    orderStatus:"Delivered"
+                    orderStatus:"Delivered",
+                    paymentStatus:"Success"
                 }
             })
             res.status(200).json({success:true})
@@ -204,7 +208,6 @@ module.exports = {
         try{
             console.log("returning order")
             const {orderId, itemId} = req.params
-            console.log(itemId)
             const {returnReason} = req.body
             const order = await Order.findOne({_id:orderId})
             for(let i=0 ; i< order.items.length ; i++){
@@ -238,7 +241,6 @@ module.exports = {
             const order = await Order.findOne({_id:orderId})
             for(let i=0 ; i< order.items.length ; i++){
                 if(order.items[i].bookId == itemId){
-                    console.log("Done")
                     order.items[i].status="Returned"
                     console.log()
                     const book=await Book.findOne({_id:itemId})

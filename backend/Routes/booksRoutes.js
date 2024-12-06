@@ -22,15 +22,8 @@ router.put(
   '/update-book-image/:bookId',
   isAdmin,
   upload.single('image'),
-  (err, req, res, next) => {
-    if (err) {
-      console.error(err);
-      return res.status(400).json({ error: err.message });
-    }
-    next();
-  },
   updateBookImage
 );
-router.get('/list/just-published',isAdmin,getJustPublishedBooks) 
-router.post('/list/related-books/:bookId',isAdmin,getRelatedBooks)
+router.get('/list/just-published',getJustPublishedBooks) 
+router.post('/list/related-books/:bookId',getRelatedBooks)
 module.exports=router 

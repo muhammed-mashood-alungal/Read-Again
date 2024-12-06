@@ -14,7 +14,8 @@ import { userLogin } from '../../../redux/Actions/userActions';
 import { useNavigate  ,Link, useLocation} from 'react-router-dom';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
 import {  toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHouse } from '@fortawesome/free-solid-svg-icons'
 import { validateLogin } from '../../../validations/loginValidation';
 
 const UserLogin = () => {
@@ -52,9 +53,10 @@ const UserLogin = () => {
   },[loginError])
 
   return (
-    <Container fluid className="login-register__container">
-      <Row className="justify-content-center align-items-center vh-100">
+    <Container fluid className="">
+      <Row className="justify-content-center align-items-center login-div">
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
+        
           <h3 className="text-center mb-4">Login</h3>
          
           <Form onSubmit={handleLogin}>
@@ -65,7 +67,6 @@ const UserLogin = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="form__input"
-                required
               />
             </FormGroup>
             <FormGroup>
@@ -75,7 +76,6 @@ const UserLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="form__input"
-                required
               />
             </FormGroup>
             <Button color="primary" block className="mt-3">

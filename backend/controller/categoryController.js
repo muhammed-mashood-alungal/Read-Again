@@ -1,3 +1,4 @@
+const Book = require("../models/Books");
 const Category = require("../models/Category");
 
 module.exports = {
@@ -83,5 +84,25 @@ module.exports = {
             console.log(err)
             res.status(400).json({ success: false, message: "Error while updating category" })
         }
-    }
+    },
+    async listOrUnlistCategory(req, res) {
+        try {
+          const { categoryId } = req.params
+          const category = await Category.findOne({ _id: categoryId })
+          if (!category) {
+            return res.status(404).json({ message: "No such Category Found" })
+          }
+          category.listed = !category.listed
+          await Book.updateMany({category:categoryId},{
+            $set:{
+                isDeleted : !category.listed
+            }
+          })
+          await category.save()
+          res.status(200).json({ success: true })
+        } catch (err) {
+            console.log(err)
+          res.status(500).json({ message: "Someething Went Wrong" })
+        }
+      }
 }
