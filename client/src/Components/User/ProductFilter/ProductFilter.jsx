@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import './ProductFilter.css'
 import { toast } from 'react-toastify';
 import { axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFilter , faAngleDown ,faAngleUp, faUpDown } from '@fortawesome/free-solid-svg-icons'
+
+
 const ProductFilter = ({ onFilter ,setSearchQuery}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -71,12 +75,13 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
 
     <div className="filter-container container">
       {
-        isOpen ?
-          <button onClick={() => { setIsOpen(false) }}>
-            -
-          </button> :
-          <button onClick={() => { setIsOpen(true) }}>
-            +
+       
+          <button onClick={() => { setIsOpen(!isOpen) }} className="chip">
+            
+            <FontAwesomeIcon icon={faFilter} />  Filter {
+              isOpen ?   <FontAwesomeIcon icon={faAngleUp} /> :  <FontAwesomeIcon icon={faAngleDown} />
+            }
+            
           </button>
       }
       {
@@ -99,7 +104,7 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
               value={search}
               onChange={(e)=>{setSearch(e.target.value)}}
               placeholder="Search For Items..."
-              className="form__input"
+              className="form__input mt-3"
             />
           </div>
 

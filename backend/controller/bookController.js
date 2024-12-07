@@ -91,7 +91,7 @@ module.exports = {
             const priceRange= {}
             let  find = {isDeleted : false , "formats.physical.stock":{$gt:0}} 
             
-            if(price  != "{}"){
+            if(price && price  != "{}" ){
             
                 price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}

@@ -7,19 +7,19 @@ import { axiosUserInstance } from "../redux/Constants/axiosConstants";
    const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    const passwordReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-   if(username.trim() == ""){
+   if(!username || username.trim() == ""){
      return {success:false , message : "Please Enter an Username"}
    }
    if(!usernameReg.test(username) ){
     return {success:false , message : "No Numbers or Special Charecters Allowed"}
    }
-   if(email.trim() == ""){
+   if(!email || email.trim() == ""){
     return {success:false , message : "Please Enter an Email"}
    }
    if(!emailReg.test(email)){
     return {success:false , message : "Please Enter an Valid Email Address"}
    }
-   if(password.trim() == ""){
+   if(!password || password.trim() == ""){
     return {success:false , message : "Please Enter Password"}
    }
    if(password.length < 8 ){

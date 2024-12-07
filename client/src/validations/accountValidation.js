@@ -1,7 +1,7 @@
 import { axiosUserInstance } from "../redux/Constants/axiosConstants";
 
 export async function validateUpdateProfile(formData,currentEmail){
-   const {username, email ,phone } = formData
+   const {username, email  } = formData
    const usernameReg = /^[A-Za-z\s]*$/;
    const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    const numberReg = /^\d{10}$/;
@@ -12,10 +12,7 @@ export async function validateUpdateProfile(formData,currentEmail){
     return {success:false , message : "No Numbers or Special Charecters Allowed"}
    }
    
-   console.log(phone)
-   if(phone && !numberReg.test(phone)){
-    return {success:false , message : "Phone Number Should be 10 length"}
-   }
+ 
    if(currentEmail != email){
     if(email.trim() == ""){
       return {success:false , message : "Please Enter an Email"}
@@ -68,29 +65,39 @@ export function validateChangePass(currentPass,newPass,confirmPass){
 export function validateAddress(formData){
   const {city,phoneNumbers,country,landmark,state,postalCode,district}=formData
   const numberReg = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+  let addressError = {phoneNumbers:[]}
+  let hasError = false
   if(city.trim()== ''){
-      return {success:false , message:"Please Enter a City"}
+      addressError.city="Please Enter a City"
+      hasError=true
   }
   if(landmark.trim()== ""){
-      return {success:false , message:"Please Enter a Landmark"}
+      addressError.landmark = "Please Enter a Landmark"
+      hasError=true
   }
   if(district.trim()== ""){
-      return {success:false , message:"Please Enter a district"}
+      addressError.district = "Please Enter a district"
+      hasError=true
   }
   if(state.trim()== ""){
-      return {success:false , message:"Please Enter a state"}
+      addressError.state = "Please Enter a state"
+      hasError=true
   }
   if(country.trim()== ""){
-      return {success:false , message:"Please Enter a Country"}
+     addressError.country= "Please Enter a Country"
+     hasError=true
   }
   if(postalCode.trim()== ""){
-      return {success:false , message:"Please Enter a valid Post Code"}
+     addressError.postalCode = "Please Enter a valid Post Code"
+     hasError=true
   }
   if(!numberReg.test(phoneNumbers[0])){
-      return {success:false , message:"Phone Number Should be valid"}
+      addressError.phoneNumbers[0]="Phone Number Should be valid"
+      hasError=true
   }
   if(phoneNumbers[1] && !numberReg.test(phoneNumbers[1])){
-    return {success:false , message:"Secondary Phone Number Should be valid"}
+     addressError.phoneNumbers[1]="Scondary Phone Number Should be valid"
+     hasError=true
   }
-  return {success: true }
+  return {hasError  , addressError:addressError}
 }

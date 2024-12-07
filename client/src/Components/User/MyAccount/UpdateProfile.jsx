@@ -24,8 +24,7 @@ function UpdateProfile({profileData}) {
         const formData={
           _id:profileData._id,
           username,  
-          email, 
-          phone
+          email
         }
         const result = await validateUpdateProfile(formData,profileData.email)
         if(result.success){
@@ -70,12 +69,7 @@ function UpdateProfile({profileData}) {
                   value={email}
                   onChange={(e)=>setEmail(e.target.value)}
                   />
-                  <input type="number" 
-                  placeholder="Phone Number" 
-                  className="form__input" 
-                  value={phone}
-                  onChange={(e)=>setPhone(e.target.value)}
-                  />
+                
                   <div className="form__btn">
                     <button className="primary-btn" role='submit'>Save</button>
                   </div>

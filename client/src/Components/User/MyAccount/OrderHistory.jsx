@@ -178,7 +178,7 @@ function OrderHistory({ orders }) {
                             <td>{index + 1}</td>
                             <td>{new Date(order.orderDate).toLocaleDateString()}</td>
                             <td>{order.orderStatus}</td>
-                            <td>{order.totalAmount}</td>
+                            <td>₹{order.totalAmount}</td>
                             <td><span onClick={() => {
                               setSelectedOrder(order)
                               setIsviewOrder(true)
@@ -234,7 +234,7 @@ function OrderHistory({ orders }) {
                     <tr key={item.bookId?._id}>
                       <td>{item?.bookId.title}</td>
                       <td>{item?.quantity}</td>
-                      <td>${(item?.quantity * item?.bookId?.formats?.physical?.price)}</td>
+                      <td>₹{(item?.quantity * item?.bookId?.formats?.physical?.price)}</td>
                       {itemsCancelOrReturn(item.status, item.bookId._id)}
                       {
                         item.status == "Canceled" &&
@@ -255,16 +255,23 @@ function OrderHistory({ orders }) {
 
               <div className="my-order-total">
                 <strong>Total</strong>
-                <span>${selectedOrder.totalAmount.toFixed(2)}</span>
+                <span>₹{selectedOrder.totalAmount.toFixed(2)}</span>
               </div>
 
               <div className="my-shipping-info">
                 <h3>Shipping Information</h3>
                 <p>{selectedOrder.shippingAddress}</p>
               </div>
-              <div className="shipping-info">
-                <h3>Payment Information</h3>
-                <h5>{selectedOrder.paymentStatus}</h5>
+              <div className="payment-info">
+                <hr />
+                <table>
+                  <tr>
+                    <th>Payment Information</th>
+                    <tr>{selectedOrder.paymentStatus}</tr>
+                  </tr>
+                </table>
+                {/* <h3></h3>
+                <h5>{selectedOrder.paymentStatus}</h5> */}
               </div>
               <div>
                 {

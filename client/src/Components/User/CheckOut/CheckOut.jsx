@@ -124,14 +124,14 @@ const Checkout = () => {
                       <h3 className="table__title">{item?.productId?.title}</h3>
                       <p className="table__quantity">{item?.quantity}</p>
                     </td>
-                    <td><span className="table__price">{item?.quantity * item?.productId?.formats?.physical?.price}</span></td>
+                    <td><span className="table__price">₹{item?.quantity * item?.productId?.formats?.physical?.price}</span></td>
                   </tr>
                 })
               }
 
               <tr>
                 <td><span className="order__subtitle">Cart Total</span></td>
-                <td colSpan="2"><span className="table__price">{cart?.totalAmount}</span></td>
+                <td colSpan="2"><span className="table__price">₹{cart?.totalAmount}</span></td>
               </tr>
               <tr>
                 <td><span className="order__subtitle">Shipping</span></td>
@@ -142,7 +142,7 @@ const Checkout = () => {
               <tr>
                 <td><span className="order__subtitle">Total</span></td>
                 <td colSpan="2">
-                  <span className="order__grand-total">{cart?.totalAmount}</span>
+                  <span className="order__grand-total">₹{cart?.totalAmount}</span>
                 </td>
               </tr>
             </tbody>

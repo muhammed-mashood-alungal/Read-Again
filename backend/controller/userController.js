@@ -323,25 +323,16 @@ module.exports = {
     try {
       let newData = {}
       const { userId } = req.params
-      let { email, username, phone } = req.body
+      let { email, username } = req.body
       if (email) newData.email = email
-      console.log(phone, email, userId)
+      console.log( email, userId)
       const newUserData = await User.findOneAndUpdate({ _id: userId }, {
         $set: {
           username: username,
-          email: newData.email,
-          phone:phone
+          email: newData.email
         }
       }, { new: true })
-
-      const newAddress = await Address.findOneAndUpdate({ userId: userId }, {
-        $set: { phone: phone }
-      }, { upsert: true, new: true })
-      await User.updateOne({ _id: userId }, {
-        $addToSet: {
-          "profileData.addresses": newAddress._id
-        }
-      })
+      
       res.status(200).json({ success: true })
     } catch (err) {
       console.log(err)

@@ -1,6 +1,6 @@
 
 .register-container {
-    background-color: #f0f2f5;
+    background-color: #ffffff;
   }
   
   .register {
@@ -8,6 +8,9 @@
   }
   .form__input {
     font-size: 1rem;
+  }
+  .register-div{
+    height: 88vh !important;
   }
   @media (max-width: 600px) {
     .form__input {

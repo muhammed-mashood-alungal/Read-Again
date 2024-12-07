@@ -57,7 +57,7 @@ const Register = () => {
 
   return (
     <Container fluid className="register-container">
-      <Row className="justify-content-center align-items-center vh-100">
+      <Row className="justify-content-center align-items-center register-div">
         <Col xs="10" sm="8" md="6" lg="4" className="register bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Create an Account</h3>
    
@@ -70,18 +70,16 @@ const Register = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className="form__input"
-                required
               />
             </FormGroup>
             <FormGroup>
               <input
-                type="email"
+                type="text"
                 name="email"
                 placeholder="Your Email"
                 value={formData.email}
                 onChange={handleChange}
                 className="form__input"
-                required
               />
             </FormGroup>
             <FormGroup>
@@ -92,7 +90,6 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="form__input"
-                required
               />
             </FormGroup>
             <FormGroup>
@@ -103,7 +100,6 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="form__input"
-                required
               />
             </FormGroup>
             

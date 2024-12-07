@@ -17,6 +17,9 @@ function Addresses({ userAddresses, userId }) {
   const [addressId,setAddressId]=useState("")
   const [addresses,setAddresses ]= useState([])
   const [showModal , setShowModal]=useState(false)
+  const [addressError, setAddressError]=useState({
+    city:"",landmark:"",district:"",state:"",state:"",country:"",phoneNumbers:[],postalCode:""
+  })
 
   useEffect(()=>{
     if(userAddresses?.length ){
@@ -30,6 +33,9 @@ function Addresses({ userAddresses, userId }) {
         await axiosUserInstance.post(`/${userId}/address/add`, formData)
         toast.success("Address Saved", {
           autoClose: 1000
+        })
+        setAddresses(addresses =>{
+          return [...addresses,formData]
         })
         setTimeout(() => {
           setCurrentAction("view")
@@ -62,27 +68,28 @@ function Addresses({ userAddresses, userId }) {
 
   const handleSubmit=async(e)=>{
       e.preventDefault()
+      setAddressError({})
       const formData = {
         city, phoneNumbers, country, landmark, state, postalCode, state, district
       }
       const result = validateAddress(formData)
 
-      if (result.success) {
+      if (!result.hasError) {
         if(currentAction == 'creating'){
           handleAddAddress(formData)
         }else{
           handleEditAddres(formData)
         }
         
-        toast.success("Address Saved", {
-          autoClose: 1000
-        })
+      
         setTimeout(() => {
           setCurrentAction("view")
           resetStates()
         }, 1000)
       } else {
-        toast.error(result.message)
+        //toast.error(result.message)
+        setAddressError(result.addressError)
+        console.log(addressError)
       }
    
 
@@ -162,7 +169,7 @@ function Addresses({ userAddresses, userId }) {
           <div>
            {showModal && 
            <ConfirmationModal 
-           title={`Are You Sure to Proceed ?`}
+           title={`Are You Sure to delete this Address ?`}
            onConfirm={deleteAddress} 
            onCancel={onCancel}/>
            }
@@ -214,41 +221,49 @@ function Addresses({ userAddresses, userId }) {
                 value={city}
                 onChange={(e) => { setCity(e.target.value) }}
               />
+              <p className='err-msg'>{addressError.city}</p>
               <input type="text" placeholder="Land mark , eg:near Hypermarket..."
                 className="form__input"
                 value={landmark}
                 onChange={(e) => { setLandmark(e.target.value) }}
               />
+               <p className='err-msg'>{addressError.landmark}</p>
               <input type="text" placeholder="District"
                 className="form__input"
                 value={district}
                 onChange={(e) => { setDistrict(e.target.value) }}
               />
+               <p className='err-msg'>{addressError.district}</p>
               <input type="text" placeholder="State"
                 className="form__input"
                 value={state}
                 onChange={(e) => { setState(e.target.value) }}
               />
+               <p className='err-msg'>{addressError.state}</p>
               <input type="text" placeholder="Country"
                 className="form__input"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
               />
+               <p className='err-msg'>{addressError.country}</p>
               <input type="number" placeholder="Post Code"
                 className="form__input"
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
               />
+               <p className='err-msg'>{addressError.postalCode}</p>
               <input type="text" placeholder="Phone Number"
                 className="form__input"
                 value={phoneNumbers[0]}
                 onChange={(e) => {handlePhone(e.target.value , 0)}}
               />
+               <p className='err-msg'>{addressError.phoneNumbers[0]}</p>
               <input type="text" placeholder="Phone Number"
                 className="form__input"
                 value={phoneNumbers[1]}
                 onChange={(e) => {handlePhone(e.target.value , 1)}}
               />
+               <p className='err-msg'>{addressError.phoneNumbers[1]}</p>
 
             </form>
             <button className='primary-btn' role="submit" onClick={handleSubmit}>Save</button>

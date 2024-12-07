@@ -169,7 +169,7 @@ const ShoppingCart = () => {
                           </p>
                         </td>
                         <td>
-                          <span className="table__price">{item.productId?.formats?.physical?.price}</span>
+                          <span className="table__price">₹{item.productId?.formats?.physical?.price}</span>
                         </td>
                         <td>
                           {
@@ -191,7 +191,7 @@ const ShoppingCart = () => {
                           }
                         >{item?.productId?.stockStatus}</td>
                         <td>
-                          <span className="subtotal">{item.productId?.formats?.physical?.price * item.quantity}</span>
+                          <span className="subtotal">₹{item.productId?.formats?.physical?.price * item.quantity}</span>
                         </td>
                         <td>
                           <i className="fi fi-rs-trash table__trash"

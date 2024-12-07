@@ -17,8 +17,9 @@ import {  toast } from 'react-toastify';
 
 const EmailVerification = (props) => {
   const location = useLocation();
-  const origin = location.state?.origin;
+  const org = location.state?.origin;
   const userData = location.state?.userData; 
+  const [origin,setOrigin]=useState(org || "")
   const navigate = useNavigate()
   const dispatch= useDispatch()
   const formData = useSelector(state=>state.registrationData)
@@ -39,10 +40,7 @@ const EmailVerification = (props) => {
     }
    },[])
 
-  useEffect(()=>{
-    console.log(origin)
-  },[])
-  
+ 
   
   useEffect(()=>{
     if(error || verifyError){
@@ -87,13 +85,14 @@ const EmailVerification = (props) => {
     setVerificationLoading(true)
     
     try{
+      console.log("gasdf")
       const response = await axiosUserInstance.post(`/${email}/verify-otp`, {otp})
       if(response.data.success){
         setVerificationLoading(false)
+        console.log(origin)
         if(origin == "register"){
-          createUserAndNavigate()
+         return  createUserAndNavigate()
         }else{
-          console.log(userData)
           try{
             await axiosUserInstance.put(`/${userData?._id}/edit`,userData) 
             navigate('/account')
@@ -102,9 +101,6 @@ const EmailVerification = (props) => {
              console.log(err)
              toast.error("Somthing Went Wrong ..!")
           }
-          
-          
-          
         }
         
       }

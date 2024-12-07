@@ -112,21 +112,6 @@ const MyAccount = () => {
                     <th>Email Address</th>
                     <th>{profileData?.email}</th>
                   </tr>
-                  <tr>
-                    <th>Phone Number</th>
-                    <th>
-                      {profileData?.phone ? (
-                        profileData?.phone
-                      ) : (
-                        <>
-                          Not Added <br />
-                          <button className="link-button" onClick={() => handleTabClick('update-profile')}>
-                            Add Phone Number
-                          </button>
-                        </>
-                      )}
-                    </th>
-                  </tr>
                 </table>
               </div>
             </div>
