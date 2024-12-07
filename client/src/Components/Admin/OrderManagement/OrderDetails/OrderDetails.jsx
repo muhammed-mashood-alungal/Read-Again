@@ -2,7 +2,23 @@ import React, { useState } from 'react'
 import './OrderDetails.css'
 import { axiosOrderInstance } from '../../../../redux/Constants/axiosConstants'
 import { toast } from 'react-toastify'
-import ReasonPopUp from '../../../User/MyAccount/ReasonPopUp'
+import ReasonPopUp from '../../../ReasonPopUp'
+import { 
+    CCard, 
+    CCardHeader, 
+    CCardBody, 
+    CTable, 
+    CTableHead, 
+    CTableRow, 
+    CTableHeaderCell, 
+    CTableBody, 
+    CTableDataCell,
+    CButton,
+    CBadge,
+    CRow,
+    CCol
+  } from '@coreui/react';
+
 function OrderDetails({ selectedOrder }) {
     const [order, setOrder] = useState(selectedOrder ? selectedOrder : {})
     const [isCancelling, setIsCancelling] = useState(false)
@@ -174,118 +190,142 @@ function OrderDetails({ selectedOrder }) {
         }
     }
     return (
+    <CCard className="order-details-container">
+      {isCancelling && (
+        <ReasonPopUp 
+          isOpen={true}
+          onConfirm={cancelOrder}
+          type={"Cancel"}
+          onClose={() => { setIsCancelling(false) }}
+        />
+      )}
 
-        <div>
-            <div className="order-details-container">
-                {
-                    isCancelling &&
-                    <ReasonPopUp isOpen={true}
-                        onConfirm={cancelOrder}
-                        type={"Cancel"}
-                        onClose={() => { setIsCancelling(false) }}
-                    />
-                }
-                <div className="order-header">
-                    <h2>Order Details</h2>
-                    <h3
-                        className="order-status"
-                    //  style={{ backgroundColor: getStatusColor(selectedOrder.status) }}
-                    >
-                        {order.orderStatus}
-                    </h3>
+      <CCardHeader className="d-flex justify-content-between align-items-center">
+        <h2 className="mb-0">Order Details</h2>
+        <CBadge color="info">{order.orderStatus}</CBadge>
+      </CCardHeader>
 
-                </div>
-
-                <div className="order-info">
-                    <div className="order-meta">
-                        <div>
-                            <label>Order Number</label>
-                            <p>{order._id}</p>
-                        </div>
-                        <div>
-                            <label>Order Date</label>
-                            <p>{new Date(order.orderDate).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-
-                    <table className="order-items">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Options</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {order.items.map((item) => (
-                                <tr key={item.bookId?._id}>
-                                    <td>{item?.bookId.title}</td>
-                                    <td>{item?.quantity}</td>
-                                    <td>${(item?.quantity * item?.bookId?.formats?.physical?.price)}</td>
-                                    {itemsCancelOrReturn(item.status, item.bookId._id)}
-                                    {
-                                        item.status == "Canceled" &&
-                                        <td className='cancel-order-btn'>Item canceled <br /> Reason : {item.reason}</td>
-                                    }
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    <div className="order-total">
-                        <strong>Total</strong>
-                        <span>${order.totalAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="shipping-info">
-                        <h3>User Information</h3>
-                        {/* <p>{selectedOrder}</p> */}
-                        <h6>{order.userId.username}</h6>
-                        <h6>{order.userId.email}</h6>
-                        <h6>{order.userId.phone ?  order.userId.phone : "Phone Not Added"}</h6>
-                    </div>
-                    <div className="shipping-info">
-                    <h3>Payment Information</h3>
-                    <h5>{order.paymentStatus}</h5>
-                    </div>
-                    <div className="shipping-info">
-                        <h3>Shipping Information</h3>
-                        {/* <p>{selectedOrder}</p> */}
-                        <p>{order.shippingAddress}</p>
-                    </div>
-                    <div>
-                        <br />
-                        {
-                            isEligibleForCancel() && <button className='cancel-order-btn'
-                                onClick={() => { setIsCancelling(true) }}>Cancel Order</button>
-                        }
-
-                        {
-                            order.cancellationReason && <div>
-                                <hr />
-                                <h4>Cancel Reason</h4>
-                                <p>{order.cancellationReason}</p>
-                            </div>
-                        }
-                        {
-                            order.returnReason && <div>
-                                <hr />
-                                <h4>Return Reason</h4>
-                                <p>{order.returnReason}</p>
-                            </div>
-                        }
-                        {
-                            isReturnRequested()
-                        }
-                        {
-                            showChangeOrderChange()
-                        }
-
-                    </div>
-                </div>
+      <CCardBody>
+        <CRow className="mb-4">
+          <CCol md="6">
+            <div className=" d-flex  justify-content-between">
+              <div  >
+                <strong>Order Number</strong>
+                <p>{order._id}</p>
+              </div>
+              <div>
+                <strong>Order Date</strong>
+                <p>{new Date(order.orderDate).toLocaleDateString()}</p>
+              </div>
             </div>
-        </div>
-    )
+          </CCol>
+          <CCol>
+          <div>
+              {showChangeOrderChange()} 
+              </div>
+          </CCol>
+          
+        </CRow>
+
+        <CTable striped hover responsive>
+          <CTableHead>
+            <CTableRow>
+              <CTableHeaderCell>Product</CTableHeaderCell>
+              <CTableHeaderCell>Quantity</CTableHeaderCell>
+              <CTableHeaderCell>Price</CTableHeaderCell>
+              <CTableHeaderCell>Options</CTableHeaderCell>
+            </CTableRow>
+          </CTableHead>
+          <CTableBody>
+            {order.items.map((item) => (
+              <CTableRow key={item.bookId?._id}>
+                <CTableDataCell>{item?.bookId.title}</CTableDataCell>
+                <CTableDataCell>{item?.quantity}</CTableDataCell>
+                <CTableDataCell>${(item?.quantity * item?.bookId?.formats?.physical?.price).toFixed(2)}</CTableDataCell>
+                {itemsCancelOrReturn(item.status, item.bookId._id)}
+                {item.status === "Canceled" && (
+                  <CTableDataCell className='text-danger'>
+                    Item canceled <br /> 
+                    Reason: {item.reason}
+                  </CTableDataCell>
+                )}
+              </CTableRow>
+            ))}
+          </CTableBody>
+        </CTable>
+
+        <CRow className="mb-4">
+          <CCol>
+            <div className="order-total d-flex justify-content-end">
+              <strong>Total: </strong>
+              <span className="ms-2">${order.totalAmount.toFixed(2)}</span>
+            </div>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          <CCol md="4">
+            <CCard className="mb-3">
+              <CCardHeader>User Information</CCardHeader>
+              <CCardBody>
+                <p>{order.userId.username}</p>
+                <p>{order.userId.email}</p>
+                <p>{order.userId.phone || "Phone Not Added"}</p>
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol md="4">
+            <CCard className="mb-3">
+              <CCardHeader>Payment Information</CCardHeader>
+              <CCardBody>
+                <CBadge color="info">{order.paymentStatus}</CBadge>
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol md="4">
+            <CCard className="mb-3">
+              <CCardHeader>Shipping Information</CCardHeader>
+              <CCardBody>
+                <p>{order.shippingAddress}</p>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
+        <CRow className="mt-3">
+          <CCol>
+            {isEligibleForCancel() && (
+              <CButton 
+                color="danger" 
+                onClick={() => { setIsCancelling(true) }}
+              >
+                Cancel Order
+              </CButton>
+            )}
+
+            {order.cancellationReason && (
+              <div className="mt-3">
+                <h4>Cancel Reason</h4>
+                <p>{order.cancellationReason}</p>
+              </div>
+            )}
+
+            {order.returnReason && (
+              <div className="mt-3">
+                <h4>Return Reason</h4>
+                <p>{order.returnReason}</p>
+              </div>
+            )}
+
+            {isReturnRequested()}
+          
+          </CCol>
+        </CRow>
+      </CCardBody>
+    </CCard>
+  );
 }
 
 export default OrderDetails

@@ -1,46 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Sidebar.css'
-
+import {
+  CSidebar,
+  CSidebarNav,
+  CNavItem,
+  CSidebarBrand,
+  CSidebarHeader,
+  CNavTitle,
+  CBadge,
+  CNavGroup,
+  CSidebarToggler
+} from '@coreui/react';
+import { CIcon } from '@coreui/icons-react';
+import { cilSpeedometer, cilUser, cilLibrary, cilList, cilCart, cilPuzzle, cilMenu } from '@coreui/icons';
 const Sidebar = () => {
+  const [visible, setVisible] = useState(true);
   return (
-    <nav className="sidebar sidebar-offcanvas mt-4" id="sidebar">
-      <div className="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-        <Link className="sidebar-brand brand-logo" to="/admin/dashboard">Read Again</Link>
-        <Link className="sidebar-brand brand-logo-mini" to="/admin/dashboard">
-          <img src="assets/images/logo-mini.svg" alt="logo" />
-        </Link>
-      </div>
-      <ul className="nav">
-        <li className="nav-item menu-items">
-          <Link className="nav-link" to="/admin/dashboard">
-            <span className="menu-title">Dashboard</span>
-          </Link>
-        </li>
-        <li className="nav-item menu-items">
-        <Link className="nav-link" to="/admin/users">
-            <span className="menu-title">User Managment</span>
-        </Link>
-        </li>
-        <li className="nav-item menu-items">
-        <Link className="nav-link" to="/admin/books">
-            <span className="menu-title">Books Management</span>
-        </Link>
-        </li>
-        <li className="nav-item menu-items">
-        <Link className="nav-link" to="/admin/category">
-            <span className="menu-title">Category Managment</span>
-        </Link>
-        </li>
-        <li className="nav-item menu-items">
-        <Link className="nav-link" to="/admin/orders">
-            <span className="menu-title">Order Managment</span>
-        </Link>
-        </li>
-       
-      </ul>
-    </nav>
+    <>
+    {/* Mobile Hamburger Button */}
+    <button 
+    style={{zIndex:'10000'}}
+      className="d-lg-none btn btn-link position-fixed top-0 start-0 m-2 " 
+      onClick={() => setVisible(!visible)}
+    >
+      <CIcon icon={cilMenu} size="lg" />
+    </button>
+
+    <CSidebar 
+      colorScheme="dark"
+      className="border-end overflow-hidden" 
+      visible={visible}
+      onVisibleChange={(val) => setVisible(val)}
+      responsive
+      unfoldable
+    >
+      <CSidebarHeader className="border-bottom">
+        <CSidebarBrand>
+        </CSidebarBrand>
+      </CSidebarHeader>
+      
+      <CSidebarNav>
+        <CNavTitle>Navigation</CNavTitle>
+        <CNavItem href="/admin/dashboard">
+          <CIcon customClassName="nav-icon" icon={cilSpeedometer} />
+          Dashboard
+        </CNavItem>
+        <CNavItem href="/admin/users">
+          <CIcon customClassName="nav-icon" icon={cilUser} />
+          User Management
+        </CNavItem>
+        <CNavItem href="/admin/books">
+          <CIcon customClassName="nav-icon" icon={cilLibrary} />
+          Books Management
+        </CNavItem>
+        <CNavItem href="/admin/category">
+          <CIcon customClassName="nav-icon" icon={cilList} />
+          Category Management
+        </CNavItem>
+        <CNavItem href="/admin/orders">
+          <CIcon customClassName="nav-icon" icon={cilCart} />
+          Order Management
+        </CNavItem>
+      </CSidebarNav>
+
+      {/* Optional: Sidebar Toggler for Desktop */}
+      <CSidebarToggler 
+        className="d-none d-md-flex"
+        onClick={() => setVisible(!visible)} 
+      />
+    </CSidebar>
+  </>
+  
+
   );
+  
+  
 };
 
 export default Sidebar;

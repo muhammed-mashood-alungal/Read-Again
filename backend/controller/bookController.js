@@ -90,8 +90,8 @@ module.exports = {
             console.log(sort,price)  
             const priceRange= {}
             let  find = {isDeleted : false , "formats.physical.stock":{$gt:0}} 
-            
-            if(price && price  != "{}" ){
+             
+            if( price  != "{}" ){
             
                 price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}
@@ -102,7 +102,7 @@ module.exports = {
                 allBooks = allBooks.filter((book)=>{
                   return book.category.name == category
                 })
-            }
+            } 
 
             const totalBooks = await Book.countDocuments({})
 

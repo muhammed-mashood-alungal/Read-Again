@@ -7,6 +7,8 @@ import Sidebar from '../../Components/Admin/Sidebar/Sidebar';
 import { getUserData, removeAuth, setAuth } from '../../redux/Actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosAuthInstance } from '../../redux/Constants/axiosConstants';
+import ListUsers from '../../Components/Admin/UsersManagment/ListUsers/ListUsers';
+import AdminHeader from '../../Components/Admin/AdminHeader/AdminHeader';
 
 const AdminPage = () => {
   const navigate = useNavigate()
@@ -40,17 +42,27 @@ const AdminPage = () => {
   
 
   return (
-    <Container fluid className="admin-container">
-      <Row>
-        <Col md={12}>
-         <Navbar/>
-        </Col>
-        <Row className='admin-main'>
-          <Col md={2}> <Sidebar/></Col>
-          <Col md={10}> <Outlet/> </Col>
-        </Row>
-       </Row>
-    </Container>
+    // <Container fluid className="admin-container">
+    //   <Row>
+    //     <Col md={12}>
+    //      <Navbar/>
+    //     </Col>
+    //     <Row className='admin-main'>
+    //       <Col md={2}> <Sidebar/></Col>
+    //       <Col md={10}> <Outlet/> </Col>
+    //     </Row>
+    //    </Row>
+    // </Container>
+    <div>
+    <Sidebar  />
+    <div className="wrapper d-flex flex-column min-vh-100">
+       <AdminHeader /> 
+      <div className="body flex-grow-1 mt-5">
+        <Outlet />
+      </div>
+      {/* <AppFooter /> */}
+    </div>
+  </div>
   );
 };
 

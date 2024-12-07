@@ -7,6 +7,22 @@ import './BookForm.css'
 import { bookFormValidate } from '../../../../validations/BookFormValidate';
 import { validateImage } from '../../../../validations/imageValidation';
 import {  toast } from 'react-toastify';
+import {
+  CForm,
+  CFormInput,
+  CFormSelect,
+  CFormTextarea,
+  CFormCheck,
+  CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+  CFormLabel,
+  CAlert,
+  CImage
+} from '@coreui/react';
 
 const BookForm = ({ bookDetails }) => {
   const [title, setTitle] = useState('');
@@ -30,17 +46,8 @@ const BookForm = ({ bookDetails }) => {
     ebook: { isToggled: false, price: '', fileUrl: '', fileSize: '' },
     audiobook: { isToggled: false, price: '', duration: '', fileUrl: '' },
   });
-  const [err, setErr] = useState("")
   const [isCreateForm, setIsCreateForm] = useState(true)
-  const [success, setSuccess] = useState(false)
 
-  useEffect(() => {
-    if (success) {
-      setTimeout(() => {
-        setSuccess(false)
-      }, 3000)
-    }
-  }, [success])
 
 
 
@@ -80,7 +87,7 @@ const BookForm = ({ bookDetails }) => {
           setCategories(response.data.categories)
         }
        }catch(err){
-          setErr(err?.response?.data?.message)
+          toast.error(err?.response?.data?.message)
        }
     }
     fetchCategories()
@@ -155,7 +162,6 @@ const BookForm = ({ bookDetails }) => {
     try {
 
       e.preventDefault();
-      setErr("")
       console.log(imageUrls.length)
       const bookData = {
         title, author, category, genre, description, imageUrls, publicationDate, ISBN, formats
@@ -163,7 +169,7 @@ const BookForm = ({ bookDetails }) => {
 
       const result =  bookFormValidate(bookData, !isCreateForm)
       if (!result.success) {
-        setErr(result.message)
+        toast.error(result.message)
         return
       }
       const token = localStorage.getItem("token")
@@ -175,8 +181,7 @@ const BookForm = ({ bookDetails }) => {
             Authorization: `Bearer ${token}`
           }
         })
-        setSuccess(true)
-        console.log("success")
+        toast.success("Successfully updated")
       } else {
 
         const formData = new FormData()
@@ -203,11 +208,12 @@ const BookForm = ({ bookDetails }) => {
             Authorization: `Bearer ${token}`
           }
         })
-        setSuccess(true)
+        toast.success("Updated Success")
+     //   setSuccess(true)
         console.log("success")
       }
     } catch (err) {
-      setErr(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message)
     }
   };
 
@@ -238,264 +244,284 @@ const BookForm = ({ bookDetails }) => {
 
  
   return (
-    <div>
-      {isModalOpen && <CropImage
-        isOpen={isModalOpen}
-        imageSrc={selectedImage}
-        onClose={() => setIsModalOpen(false)}
-        onCropComplete={handleCropComplete}
-      />}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          {err && <p>{err}</p>}
-          {success && <p>Success...!</p>}
-          <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="form-control"
-            placeholder="Enter Title"
-          />
-        </div>
-        <div className="form-group">
-          <label>Author</label>
-          <input
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            className="form-control"
-            placeholder="Enter Author"
-          />
-        </div>
-        <div className="form-group">
-  <label>Category</label>
-  <select
-    value={category}
-    onChange={(e) => setCategory(e.target.value)}
-    className="form-control"
-   >
-    <option value="">Select a Category</option>
-    {categories.map((cat) => (
-      <option key={cat._id} value={cat._id}>
-        {cat.name}
-      </option>
-    ))}
-  </select>
-</div>
-        <div className="form-group">
-          <label>Genre</label>
-          <input
-            type="text"
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-            className="form-control"
-            placeholder="Enter Genre"
-          />
-        </div>
-        <div className="form-group">
-          <label>Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="form-control description"
-            placeholder="Enter Description"
-          />
-        </div>
-        <div className="form-group">
-          <label>Images</label>
-          <div className="image-upload">
-            {
-              new Array(5).fill(null).map((_, index) => (
-                <div key={index} className="image-input">
-                  <input
-                    type="file"
-                    className="form-control book-image-input"
-                    onChange={(e) => { handleSetImage(index, e.target.files[0])}}
+    <CRow>
+      <CCol xs={12}>
+        <CCard>
+          <CCardHeader>
+            <strong>{bookDetails ? 'Update Book' : 'Create New Book'}</strong>
+          </CCardHeader>
+          <CCardBody>
+            <CForm onSubmit={handleSubmit}>
+              <CRow>
+                <CCol md={6}>
+                  <CFormLabel>Title</CFormLabel>
+                  <CFormInput
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter Title"
+                    className="mb-3"
                   />
-                  {imageUrls[index] && (
-                    <img
-                      src={imageUrls[index]}
-                      alt=""
-                      className='book-image'
-                    //  onClick={() => handleImageClick(images[index], index)}
-                    />
+                </CCol>
+                <CCol md={6}>
+                  <CFormLabel>Author</CFormLabel>
+                  <CFormInput
+                    type="text"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    placeholder="Enter Author"
+                    className="mb-3"
+                  />
+                </CCol>
+              </CRow>
+
+              <CRow>
+                <CCol md={6}>
+                  <CFormLabel>Category</CFormLabel>
+                  <CFormSelect
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="mb-3"
+                  >
+                    <option value="">Select a Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                </CCol>
+                <CCol md={6}>
+                  <CFormLabel>Genre</CFormLabel>
+                  <CFormInput
+                    type="text"
+                    value={genre}
+                    onChange={(e) => setGenre(e.target.value)}
+                    placeholder="Enter Genre"
+                    className="mb-3"
+                  />
+                </CCol>
+              </CRow>
+
+              <CFormLabel>Description</CFormLabel>
+              <CFormTextarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter Description"
+                rows={4}
+                className="mb-3"
+              />
+
+              <CRow>
+                <CCol md={6}>
+                  <CFormLabel>Publication Date</CFormLabel>
+                  <CFormInput
+                    type="date"
+                    value={publicationDate}
+                    onChange={(e) => setPublicationDate(e.target.value)}
+                    className="mb-3"
+                  />
+                </CCol>
+                <CCol md={6}>
+                  <CFormLabel>ISBN</CFormLabel>
+                  <CFormInput
+                    type="text"
+                    value={ISBN}
+                    onChange={(e) => setISBN(e.target.value)}
+                    placeholder="Enter ISBN"
+                    className="mb-3"
+                  />
+                </CCol>
+              </CRow>
+
+              {/* Images Upload Section */}
+              <CFormLabel>Book Images</CFormLabel>
+              <CRow className="mb-3">
+                {new Array(3).fill(null).map((_, index) => (
+                  <CCol key={index} xs={6} md={2} className="mb-2">
+                    <div className="position-relative">
+                      <CFormInput
+                        type="file"
+                        onChange={(e) => handleSetImage(index, e.target.files[0])}
+                        className="mb-2"
+                      />
+                      {imageUrls[index] && (
+                        <div className="position-relative">
+                          <CImage
+                            src={imageUrls[index]}
+                            alt={`Book Image ${index + 1}`}
+                            className="img-fluid rounded mb-2"
+                          />
+                          <CButton
+                            color="danger"
+                            size="sm"
+                            className="position-absolute top-0 end-0"
+                            onClick={() => handleImageRemove(index)}
+                          >
+                            Remove
+                          </CButton>
+                          {images[index] && (
+                            <CButton
+                              color="info"
+                              size="sm"
+                              className="position-absolute top-0 start-0 ms-2"
+                              onClick={() => handleImageClick(images[index], index)}
+                            >
+                              Crop
+                            </CButton>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </CCol>
+                ))}
+              </CRow>
+
+              {/* Book Formats Section */}
+              <CCard className="mb-3">
+                <CCardHeader>Available Formats</CCardHeader>
+                <CCardBody>
+                  {/* Physical Books */}
+                  <CFormCheck
+                    id="physicalCheck"
+                    label="Physical Books"
+                    checked={formats?.physical?.isToggled || formats.physical?.stock}
+                    onChange={() => handleToggleFormat('physical')}
+                    className="mb-3"
+                  />
+                  {formats?.physical?.isToggled && (
+                    <CRow>
+                      <CCol md={6}>
+                        <CFormLabel>Price</CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={formats.physical.price}
+                          onChange={(e) => handleFormatChange('physical', 'price', e.target.value)}
+                          placeholder="Enter Price"
+                          className="mb-3"
+                        />
+                      </CCol>
+                      <CCol md={6}>
+                        <CFormLabel>Stock</CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={formats.physical.stock}
+                          onChange={(e) => handleFormatChange('physical', 'stock', e.target.value)}
+                          placeholder="Enter Stock"
+                          className="mb-3"
+                        />
+                      </CCol>
+                    </CRow>
                   )}
-                  <div>
-                  {imageUrls[index] &&
-                    <button type="button" className='remove-btn' onClick={() => handleImageRemove(index)}>Remove</button>
-                  }
-                  {images[index] &&
-                    <button className='crop-btn' role="button" onClick={() => handleImageClick(images[index], index)}> Crop Image</button>
-                  }
-                  </div>
-                 
 
-                </div>
-              ))
-            }
+                  {/* eBook */}
+                  <CFormCheck
+                    id="ebookCheck"
+                    label="eBook"
+                    checked={formats?.ebook?.isToggled || formats.ebook?.fileUrl}
+                    onChange={() => handleToggleFormat('ebook')}
+                    className="mb-3"
+                  />
+                  {formats?.ebook?.isToggled && (
+                    <CRow>
+                      <CCol md={4}>
+                        <CFormLabel>Price</CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={formats.ebook.price}
+                          onChange={(e) => handleFormatChange('ebook', 'price', e.target.value)}
+                          placeholder="Enter Price"
+                          className="mb-3"
+                        />
+                      </CCol>
+                      <CCol md={4}>
+                        <CFormLabel>File URL</CFormLabel>
+                        <CFormInput
+                          type="text"
+                          value={formats.ebook.fileUrl}
+                          onChange={(e) => handleFormatChange('ebook', 'fileUrl', e.target.value)}
+                          placeholder="Enter File URL"
+                          className="mb-3"
+                        />
+                      </CCol>
+                      <CCol md={4}>
+                        <CFormLabel>File Size (MB)</CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={formats.ebook.fileSize}
+                          onChange={(e) => handleFormatChange('ebook', 'fileSize', e.target.value)}
+                          placeholder="Enter File Size"
+                          className="mb-3"
+                        />
+                      </CCol>
+                    </CRow>
+                  )}
 
-            {/* {images.map((image, index) => (
-            <div key={index} className="image-input">
-                <input
-                    type="file"
-                    className="form-control"
-                    onChange={(e) => { handleSetImage(index, e.target.files[0])}}
-                />
-                {imageUrls[index] && (
-                    <img 
-                        src={imageUrls[index]} 
-                        alt="" 
-                        onClick={() => handleImageClick(images[index], index)}
-                    />
-                )}
-                <button type="button" onClick={() => handleImageRemove(index)}>-</button>
-            </div>
-        ))}
-        {images.length < 5 && (
-            <button type="button" onClick={handleImageAdd}>+</button>
-        )} */}
-          </div>
+                  {/* Audiobook */}
+                  <CFormCheck
+                    id="audiobookCheck"
+                    label="Audiobook"
+                    checked={formats?.audiobook?.isToggled}
+                    onChange={() => handleToggleFormat('audiobook')}
+                    className="mb-3"
+                  />
+                  {formats.audiobook.isToggled && (
+                    <CRow>
+                      <CCol md={4}>
+                        <CFormLabel>Price</CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={formats.audiobook.price}
+                          onChange={(e) => handleFormatChange('audiobook', 'price', e.target.value)}
+                          placeholder="Enter Price"
+                          className="mb-3"
+                        />
+                      </CCol>
+                      <CCol md={4}>
+                        <CFormLabel>Duration</CFormLabel>
+                        <CFormInput
+                          type="text"
+                          value={formats.audiobook.duration}
+                          onChange={(e) => handleFormatChange('audiobook', 'duration', e.target.value)}
+                          placeholder="Enter Duration"
+                          className="mb-3"
+                        />
+                      </CCol>
+                      <CCol md={4}>
+                        <CFormLabel>File URL</CFormLabel>
+                        <CFormInput
+                          type="text"
+                          value={formats.audiobook.fileUrl}
+                          onChange={(e) => handleFormatChange('audiobook', 'fileUrl', e.target.value)}
+                          placeholder="Enter File URL"
+                          className="mb-3"
+                        />
+                      </CCol>
+                    </CRow>
+                  )}
+                </CCardBody>
+              </CCard>
 
-        </div>
-        <div className="form-group">
-          <label>Publication Date</label>
-          <input
-            type="date"
-            value={publicationDate}
-            onChange={(e) => setPublicationDate(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label>ISBN</label>
-          <input
-            type="text"
-            value={ISBN}
-            onChange={(e) => setISBN(e.target.value)}
-            className="form-control"
-            placeholder="Enter ISBN"
-          />
-        </div>
+              {/* Submit Button */}
+              <CButton color="primary" type="submit" className="w-100">
+                {bookDetails ? 'Update Book' : 'Create Book'}
+              </CButton>
+            </CForm>
+          </CCardBody>
+        </CCard>
+      </CCol>
 
-        <h5>Available Formats</h5>
-        <div className="form-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={formats?.physical?.isToggled || formats.physical?.stock}
-              onChange={() => handleToggleFormat('physical')}
-            />
-            Physical Books
-          </label>
-          {formats?.physical?.isToggled && (
-            <div className="format-details">
-              <label>Price</label>
-              <input
-                type="number"
-                value={formats.physical.price}
-                onChange={(e) => handleFormatChange('physical', 'price', e.target.value)}
-                className="form-control"
-                placeholder="Enter Price"
-              />
-              <label>Stock</label>
-              <input
-                type="number"
-                value={formats.physical.stock}
-                onChange={(e) => handleFormatChange('physical', 'stock', e.target.value)}
-                className="form-control"
-                placeholder="Enter Stock"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* eBook */}
-        <div className="form-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={formats?.ebook?.isToggled || formats.ebook?.fileUrl}
-              onChange={() => handleToggleFormat('ebook')}
-            />
-            eBook
-          </label>
-          {formats?.ebook?.isToggled && (
-            <div className="format-details">
-              <label>Price</label>
-              <input
-                type="number"
-                value={formats.ebook.price}
-                onChange={(e) => handleFormatChange('ebook', 'price', e.target.value)}
-                className="form-control"
-                placeholder="Enter Price"
-              />
-              <label>File URL</label>
-              <input
-                type="text"
-                value={formats.ebook.fileUrl}
-                onChange={(e) => handleFormatChange('ebook', 'fileUrl', e.target.value)}
-                className="form-control"
-                placeholder="Enter File URL"
-              />
-              <label>File Size (MB)</label>
-              <input
-                type="number"
-                value={formats.ebook.fileSize}
-                onChange={(e) => handleFormatChange('ebook', 'fileSize', e.target.value)}
-                className="form-control"
-                placeholder="Enter File Size"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Audiobook */}
-        <div className="form-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={formats?.audiobook?.isToggled}
-              onChange={() => handleToggleFormat('audiobook')}
-            />
-            Audiobook
-          </label>
-          {formats.audiobook.isToggled && (
-            <div className="format-details">
-              <label>Price</label>
-              <input
-                type="number"
-                value={formats.audiobook.price}
-                onChange={(e) => handleFormatChange('audiobook', 'price', e.target.value)}
-                className="form-control"
-                placeholder="Enter Price"
-              />
-              <label>Duration</label>
-              <input
-                type="text"
-                value={formats.audiobook.duration}
-                onChange={(e) => handleFormatChange('audiobook', 'duration', e.target.value)}
-                className="form-control"
-                placeholder="Enter Duration"
-              />
-              <label>File URL</label>
-              <input
-                type="text"
-                value={formats.audiobook.fileUrl}
-                onChange={(e) => handleFormatChange('audiobook', 'fileUrl', e.target.value)}
-                className="form-control"
-                placeholder="Enter File URL"
-              />
-            </div>
-          )}
-        </div>
-        <button type="submit" className="primary-btn">
-          {bookDetails ? 'Update Book' : 'Create Book'}
-        </button>
-
-      </form>
-    </div>
+      {/* CropImage Modal (assuming it's a separate component) */}
+      {isModalOpen && (
+        <CropImage
+          isOpen={isModalOpen}
+          imageSrc={selectedImage}
+          onClose={() => setIsModalOpen(false)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+    </CRow>
   );
-};
+}
 
 export default BookForm;

@@ -2,10 +2,16 @@ import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import './UserDetails.css'
+import { CCard, CCardBody } from '@coreui/react'
+import { cilArrowThickFromRight } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 function UserDetails({user}) {
     
   return (
-    <div className="category-form ">
+    <CCard>
+       <CCardBody>
+      
+       <div>
     <h1 className="card-title">User Details</h1>
     <br />
    <div>
@@ -37,12 +43,10 @@ function UserDetails({user}) {
         <th className='user-data-text'> {user.createdAt}</th>
       </tr>
     </table>
-   
-   
    </div>
-     
-   
-  </div>
+   </div>
+   </CCardBody>
+  </CCard>
   )
 }
 

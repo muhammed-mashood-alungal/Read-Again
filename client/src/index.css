@@ -88,3 +88,16 @@ code {
 button{
   cursor: pointer;
 }
+.sidebar-nav {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.sidebar-nav::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+.z-1000{
+  z-index: 1000 !important;
+}
+.sidebar-narrow-unfoldable:not(:hover){
+  width: 5rem !important;
+}

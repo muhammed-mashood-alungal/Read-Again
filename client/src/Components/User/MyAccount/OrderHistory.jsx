@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './MyAccount.css'
 import { axiosOrderInstance } from '../../../redux/Constants/axiosConstants'
-import ReasonPopUp from './ReasonPopUp'
+import ReasonPopUp from '../../ReasonPopUp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify'

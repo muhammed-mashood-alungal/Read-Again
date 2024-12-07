@@ -5,14 +5,22 @@ import CropImage from '../../CropImage/CropImage';
 import './CategoryForm.css';
 import {  toast } from 'react-toastify';
 import { validateImage } from '../../../../validations/imageValidation';
-
+import { 
+  CCard, 
+  CCardHeader, 
+  CCardBody, 
+  CForm, 
+  CFormInput, 
+  CFormLabel, 
+  CButton, 
+  CAlert 
+} from '@coreui/react';
 
 const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const [name, setName] = useState("")
   const [image, setImage] = useState(null)
   const [imageUrl , setImageUrl] = useState("")
   const [isCreateForm , setIsCreateForm] = useState(true)
-  const [err , setErr] = useState("")
   const [success , setSuccess] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -42,7 +50,6 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const handleCreateCategory = async(e) => {
     try{
       e.preventDefault()
-      setErr('')
       if(name.trim() == ""){
        
         toast.error("Enter a Category")
@@ -72,7 +79,7 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
       }
     }catch(err){
       console.log(err)
-      setErr(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message)
     }
   };
   
@@ -149,53 +156,84 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
 };
   
 
-  return (
-    <div className="category-form ">
-        <h4 className="card-title">{isCreateForm ? "Create New " : "Update "}Category</h4>
-        {isModalOpen && <CropImage
-                isOpen={isModalOpen}
-                imageSrc={selectedImage}
-                onClose={() => setIsModalOpen(false)}
-                onCropComplete={handleCropComplete}
-            />} 
-           
-        {success && <p>Success .....!</p>}
-        {err && <p className='err-msg'>{err}</p>}
-        <form onSubmit={isCreateForm ?handleCreateCategory : handleUpdateCategory}  encType='multipart/form-data'>
-          <div className="form-group">
-            <label>Name</label>
-            <input 
-              type="text"
-              name="name"
-              value={name}
-              onChange={handleInputChange}
-              className="form-control"
-              placeholder="Category name"
+return (
+  <CCard className="category-form mb-4">
+    <CCardHeader>
+      <h4 className="card-title mb-0">
+        {isCreateForm ? "Create New Category" : "Update Category"}
+      </h4>
+    </CCardHeader>
+    
+    <CCardBody>
+      {isModalOpen && <CropImage
+        isOpen={isModalOpen}
+        imageSrc={selectedImage}
+        onClose={() => setIsModalOpen(false)}
+        onCropComplete={handleCropComplete}
+      />}
+      
+     
+      <CForm onSubmit={isCreateForm ? handleCreateCategory : handleUpdateCategory} encType='multipart/form-data'>
+        <div className="mb-3">
+          <CFormLabel>Name</CFormLabel>
+          <CFormInput 
+            type="text"
+            name="name"
+            value={name}
+            onChange={handleInputChange}
+            placeholder="Category name"
+          />
+        </div>
+        
+        <div className="mb-3">
+          <CFormLabel>Image URL</CFormLabel>
+          <CFormInput
+            type="file"
+            accept='.png, .jpg, .jpeg'
+            name="image"
+            onChange={(e) => { handleSetImage(e.target.files[0])}}
+            placeholder="Image URL"
+          />
+        </div>
+        
+        <div className="mb-3">
+          {imageUrl && (
+            <div className="image-preview mb-2">
+              <img 
+                src={imageUrl} 
+                alt="Category" 
+                style={{ 
+                  maxWidth: '200px', 
+                  maxHeight: '200px', 
+                  objectFit: 'cover' 
+                }} 
               />
-          </div>
-          <div className="form-group">
-            <label>Image URL</label>
-            <input
-              type="file"
-              accept='.png, .jpg, .jpeg'
-              name="image"
-              onChange={(e) => { handleSetImage(e.target.files[0])}}
-              className="form-control"
-              placeholder="Image URL"
-            />
-          </div>
-          <div>
-             <img src={imageUrl} alt=""/>
-             {image && 
-              <button className='crop-btn' role="button"  type="button" onClick={()=>{handleSetImage(image)}}> Crop Image</button>
-             }
-          </div>
-          <button type="submit" className="primary-btn">
-            {isCreateForm ? "Create" : "Update"}
-          </button>
-        </form>
-      </div>
-  );
+            </div>
+          )}
+          
+          {image && (
+            <CButton 
+              color="info" 
+              variant="outline" 
+              type="button" 
+              onClick={() => handleSetImage(image)}
+              className="mb-2"
+            >
+              Crop Image
+            </CButton>
+          )}
+        </div>
+        
+        <CButton 
+          color="primary" 
+          type="submit"
+        >
+          {isCreateForm ? "Create" : "Update"}
+        </CButton>
+      </CForm>
+    </CCardBody>
+  </CCard>
+);
 };
 
 export default CategoryForm;

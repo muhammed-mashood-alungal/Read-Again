@@ -6,9 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import './ConfirmationModal.css'
+import { CButton } from '@coreui/react';
 function ConfirmationModal({title,message,onConfirm ,onCancel}) {
   return (
    <>
+   
+
+  
     <Dialog
         open={true}
         onClose={onCancel}
@@ -16,21 +20,24 @@ function ConfirmationModal({title,message,onConfirm ,onCancel}) {
         aria-describedby="alert-dialog-description"
         class="confirmation-modal"
       >
+        <div className='bg-dark text-white'>
         <DialogTitle id="alert-dialog-title">
         {title}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+        <DialogContent >
+          <DialogContentText id="alert-dialog-description" className='text-white'>
            {message}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <button onClick={onCancel}>Cancel</button>
-          <button className='primary-btn' onClick={onConfirm} autoFocus>
+        <CButton color="secondary" onClick={onCancel}>Cancel</CButton>
+          <CButton color="primary" onClick={onConfirm} autoFocus>
             Proceed
-          </button>
+          </CButton>
         </DialogActions>
+        </div>
       </Dialog>
+     
    </>
   )
 }

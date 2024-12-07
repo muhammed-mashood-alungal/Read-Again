@@ -143,3 +143,8 @@ export const resetCartStates=()=>{
     type:RESET_CART_STATES
   }
 }
+export const showSideBar=()=>{
+  return{
+    
+  }
+}

@@ -5,6 +5,9 @@ import { axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
 import UserDetails from '../UserDetails/UserDetails';
 import {useDispatch} from 'react-redux'
 import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
+import CIcon from '@coreui/icons-react';
+import { cilArrowThickFromRight } from '@coreui/icons';
+import { CButton, CCard, CCardBody, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CTable } from '@coreui/react';
 
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
@@ -127,17 +130,17 @@ const ListUsers = () => {
   }
   return (
     <Container className='content'>
-      {selectedUserId && 
+    <Row className="category-management">
+      {
+        !showUserData ?
+        <Col >
+        {selectedUserId && 
        <ConfirmationModal 
        title={`Confirm ${action == "BLOCK" ? "Blocking" : "Un Blocking"} this User`}
        message="Are You Sure to Proceed ?" 
        onConfirm={onConfirm} 
        onCancel={onCancel}/>
       }
-     
-    <Row className="category-management">
-      <Col md={8}>
-      
       <h4 className="title">User Management</h4>
 
       <div className="row p-3">
@@ -161,7 +164,7 @@ const ListUsers = () => {
                 <br />
               <div className="table-responsive">
                 
-                <table className="table">
+                <CTable striped> 
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -181,26 +184,24 @@ const ListUsers = () => {
                         <td>{user.email}</td>
                         <td>{user.memberShipType}</td>
                         <td>
-                          <div
-                            className="badge badge-outline-success action-btn"
+                          <CButton color="info" variant="outline"
                             onClick={() => viewUser(user._id)}
                           >
                             View
-                          </div>
+                            </CButton>
                         </td>
                         <td>
-                          <div
-                            className="badge badge-outline-danger action-btn"
+                          <CButton color="danger" variant="outline" 
                             onClick={() => user.isBlocked ?  confirmAction(user._id,"UN_BLOCK") : confirmAction(user._id,"BLOCK")}
                           >
                             {user.isBlocked ? "Unblock" : "Block"}
-                          </div>
+                          </CButton>
                         </td>
                         
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </CTable>
               </div>
               <div className="pagination">
             <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
@@ -215,18 +216,19 @@ const ListUsers = () => {
           </div>
         </div>
       </div>
-     
-       
       </Col>
-      { showUserData &&
-
-    <Col md={4} className='right-sidebar'>
-  
-    <UserDetails user={userDetails}/>
-    <p onClick={()=>{setShowUserData(false)}}>Back</p>
-      
-    </Col>
+      :
+      <Col >
+       <CButton onClick={()=>{setShowUserData(false)}}>
+       <CIcon icon={cilArrowThickFromRight} /> Go Back
+       </CButton>
+      <UserDetails user={userDetails} />
+   
+    
+      </Col>
       }
+      
+      
     </Row>
     </Container>
   );

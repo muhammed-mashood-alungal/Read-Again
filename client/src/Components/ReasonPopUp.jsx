@@ -142,6 +142,7 @@ const ReasonPopUp = ({ type , isOpen, onClose, onConfirm }) => {
               borderRadius: '4px',
               cursor: 'pointer'
             }}
+            className='text-dark'
           >
             Close
           </button>

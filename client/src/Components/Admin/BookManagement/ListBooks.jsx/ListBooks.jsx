@@ -5,13 +5,16 @@ import { bookImages, categoryImages } from '../../../../redux/Constants/imagesDi
 import BookForm from '../BookForm/BookFrom';
 import BookDetails from '../BookDetails/BookDetails';
 import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
+import { CButton, CTable } from '@coreui/react';
+import { cilArrowThickFromRight } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
 
 const ListBooks = () => {
   const [allBooks, setAllbooks] = useState([]);
   const [bookDetails , setBookDetails] =useState({})
   const [err, setErr] = useState("")
   const [isChildUpdated, setIsChildUpdated] = useState(false);
-  const [rightSide,setRightSide] = useState("create")
+  const [currentAction,setCurrrentAction] = useState("list-books")
   const [currentPage,setCurrentPage]=useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [selectedBookId, setSelectedBookId] = useState(null)
@@ -31,16 +34,16 @@ const ListBooks = () => {
   }, [currentPage]);
  
 
-  const rightSideBar=()=>{
-    if(rightSide === "create"){
-      return <BookForm/>
-    }
-    if(rightSide === "details"){
-      return <BookDetails book={bookDetails}/>  
-    }
-    if(rightSide === "update")
-      return <BookForm bookDetails={bookDetails}/>
-  }
+  // const rightSideBar=()=>{
+  //   if(rightSide === "create"){
+  //     return <BookForm/>
+  //   }
+  //   if(rightSide === "details"){
+  //     return <BookDetails book={bookDetails}/>  
+  //   }
+  //   if(rightSide === "update")
+  //     return <BookForm bookDetails={bookDetails}/>
+  // }
   const handleBookSearch=async (e)=>{
     try{
       const name = e.target.value
@@ -57,12 +60,12 @@ const ListBooks = () => {
   const viewBook = async(bookId)=>{
     console.log(bookId)
       await getBookData(bookId)
-      setRightSide("details")
+      setCurrrentAction("view")
   }
   const updateBook = async(bookId)=>{
     await getBookData(bookId)
     console.log(bookId)
-    setRightSide("update")
+    setCurrrentAction("update")
   }
   const handleBookDelete=async()=>{
     try{
@@ -100,106 +103,131 @@ const ListBooks = () => {
   const onCancel = ()=>{
      setSelectedBookId(null)
   }
-
+  console.log("Current Action:", currentAction);
   return (
     <Container className='content'>
     <Row className="category-management">
-      <Col md={8}>
-      {selectedBookId && 
-       <ConfirmationModal 
-       title={`Are You Sure to Proceed ?`}
-       onConfirm={handleBookDelete} 
-       onCancel={onCancel}/>
+      {
+         currentAction === "list-books" && <Col>
+         {selectedBookId && 
+          <ConfirmationModal 
+          title={`Are You Sure to Proceed ?`}
+          onConfirm={handleBookDelete} 
+          onCancel={onCancel}/>
+         }
+         {err && <p>{err}</p> }
+         <div className="row p-3">
+           <div className="col-12 grid-margin">
+             <div className="card category-table">
+               <div className="card-body">
+                <div className='d-flex  justify-content-between'>
+                <h4 className="table-title">All Books</h4> 
+                 <CButton onClick={()=>{setCurrrentAction("create")}} 
+                 color="success" 
+                 variant="outline">
+                  Add Product 
+                 </CButton>
+                </div>
+                
+                 <form className="nav-link mt-2 mt-md-0 d-lg-flex search">
+                     <input
+                       type="text"
+                       className="form-control mt-1"
+                       placeholder="Search Books"
+                       onChange={handleBookSearch}
+                     />
+                   </form>
+                   <br />
+                 <div className="table-responsive">
+                   
+                 <CTable striped> 
+                     <thead>
+                       <tr>
+                         <th>Image</th>
+                         <th>Title</th>
+                         <th>Author</th>
+                         <th>Category</th>
+                         <th>View</th>
+                         <th>Update</th>
+                         <th>Delete</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {allBooks.map(book => (
+                         <tr key={book._id}>
+                           <td>
+                             <img src={bookImages+book._id+"/"+book.images[0]}  alt="book-img" className="category-image" />
+                             
+                           </td>
+                           <td>{book.title}</td>
+                           <td>{book.author}</td>
+                           <td>{book?.category?.name}</td>
+                           <td>
+                            <CButton color="info" variant="outline"
+                               onClick={() => viewBook(book._id)}
+                             >
+                               View
+                             </CButton>
+                           </td>
+                           <td>
+                              <CButton color="success" variant="outline"
+                               onClick={() => updateBook(book._id)}
+                             >
+                               Update
+                             </CButton>
+                           </td>
+                           <td>
+                              <CButton color="danger" variant="outline" 
+                               onClick={() => confirmAction(book._id)}
+                             >
+                               {book.isDeleted ?  "Recover" : "Delete"} 
+                             </CButton>
+                           </td>
+                         </tr>
+                       ))}
+                     </tbody>
+                   </CTable>
+                 </div>
+                 <div className="pagination">
+               <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                 Previous
+               </button>
+               <span> Page {currentPage} of {totalPages} </span>
+               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                 Next
+               </button>
+             </div>
+               </div>
+             </div>
+           </div>
+         </div>
+         </Col>
       }
-      <h4 className="title">Books Management</h4>
-      {err && <p>{err}</p> }
-      <div className="row p-3">
-        <div className="col-12 grid-margin">
-          <div className="card category-table">
-            <div className="card-body">
-              <h4 className="table-title">All Books</h4>
-              <form className="nav-link mt-2 mt-md-0 d-lg-flex search">
-                  <input
-                    type="text"
-                    className="form-control mt-1"
-                    placeholder="Search categories"
-                    onChange={handleBookSearch}
-                  />
-                
-                </form>
-                <br />
-              <div className="table-responsive">
-                
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Image</th>
-                      <th>Title</th>
-                      <th>Author</th>
-                      <th>Category</th>
-                      <th>View</th>
-                      <th>Update</th>
-                      <th>Delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allBooks.map(book => (
-                      <tr key={book._id}>
-                        <td>
-                          <img src={bookImages+book._id+"/"+book.images[0]}  alt="book-img" className="category-image" />
-                          
-                        </td>
-                        <td>{book.title}</td>
-                        <td>{book.author}</td>
-                        <td>{book?.category?.name}</td>
-                        <td>
-                          <div
-                            className="badge badge-outline-success action-btn"
-                            onClick={() => viewBook(book._id)}
-                          >
-                            View
-                          </div>
-                        </td>
-                        <td>
-                          <div
-                            className="badge badge-outline-success action-btn"
-                            onClick={() => updateBook(book._id)}
-                          >
-                            Update
-                          </div>
-                        </td>
-                        <td>
-                          <div
-                            className="badge badge-outline-danger action-btn"
-                            onClick={() => confirmAction(book._id)}
-                          >
-                            {book.isDeleted ?  "Recover" : "Delete"} 
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="pagination">
-            <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-              Previous
-            </button>
-            <span> Page {currentPage} of {totalPages} </span>
-            <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
-              Next
-            </button>
-          </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </Col>
-    <Col md={4} >
-    <div className='right-sidebar'>
-     {rightSideBar()}
-   </div>
-    </Col>
+      {
+        currentAction == "view" && <Col>
+         <CButton onClick={()=>{setCurrrentAction("list-books")}}>
+         <CIcon icon={cilArrowThickFromRight} /> Go Back
+         </CButton>
+         <BookDetails book={bookDetails}/>
+        </Col>
+      }
+      {
+        currentAction == "update" && <Col>
+        <CButton onClick={()=>{setCurrrentAction("list-books")}}>
+        <CIcon icon={cilArrowThickFromRight} /> Go Back
+        </CButton>
+        <BookForm bookDetails={bookDetails}/>
+       </Col>
+      }
+      {
+        currentAction == "create" && <Col>
+        <CButton onClick={()=>{setCurrrentAction("list-books")}}>
+        <CIcon icon={cilArrowThickFromRight} /> Go Back
+        </CButton>
+        <BookForm />
+       </Col>
+      }
+      
     </Row>
     </Container>
   );
