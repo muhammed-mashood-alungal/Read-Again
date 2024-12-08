@@ -9,6 +9,7 @@ const categoryRoutes = require('./Routes/categoryRoutes')
 const authRoutes = require('./Routes/authRoutes')
 const cartRoutes = require('./Routes/cartRoutes')
 const orderRoutes = require('./Routes/orderRoutes')
+const couponRoutes = require('./Routes/couponsRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -43,6 +44,7 @@ app.use('/api/categories',categoryRoutes)
 app.use('/api/auth',authRoutes)
 app.use('/api/cart',cartRoutes)
 app.use('/api/orders',orderRoutes)
+app.use('/api/coupons',couponRoutes)
 
 //ERROR HANDLING MIDDLEWARE
 app.use((err,req,res,next)=>{

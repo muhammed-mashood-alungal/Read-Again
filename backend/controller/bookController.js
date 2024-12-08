@@ -233,5 +233,19 @@ module.exports = {
             console.log(err)
             res.status(400).json("Something Went Wrong While Updating Image ")
         }
+    },
+    async searchProducts(req,res){
+        try {
+
+            const {title} = req.query 
+            if(title.trim() == ""){
+                return res.status(200).json({products:[]})
+            }
+          const products=await Book.find({ title: { $regex: title, $options: "i" } })
+           console.log(products)
+           res.status(200).json({products:products})
+        } catch (error) {
+            res.status(400).json({message:"Somthing went Wrong"})
+        }
     }
 }

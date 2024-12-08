@@ -28,3 +28,7 @@ export const axiosOrderInstance = axios.create({
     baseURL:"http://localhost:5000/api/orders",
     withCredentials: true
 })
+export const axiosCouponInstance = axios.create({
+    baseURL:"http://localhost:5000/api/coupons",
+    withCredentials: true
+})
