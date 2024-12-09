@@ -11,6 +11,7 @@ const cartRoutes = require('./Routes/cartRoutes')
 const orderRoutes = require('./Routes/orderRoutes')
 const couponRoutes = require('./Routes/couponsRoutes')
 const wishlistRoutes = require('./Routes/wishlistRoutes')
+const offerRoutes = require('./Routes/offerRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -47,6 +48,9 @@ app.use('/api/cart',cartRoutes)
 app.use('/api/orders',orderRoutes)
 app.use('/api/coupons',couponRoutes)
 app.use('/api/wishlist',wishlistRoutes)
+app.use('/api/offers',offerRoutes)
+app.use('/api/razorpay',offerRoutes)
+
 
 //ERROR HANDLING MIDDLEWARE
 app.use((err,req,res,next)=>{

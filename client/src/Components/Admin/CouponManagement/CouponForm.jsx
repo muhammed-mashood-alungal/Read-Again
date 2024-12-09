@@ -36,7 +36,10 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
     const [formData, setFormData] = useState({
         code: '',
         discountValue: '',
-        limit: '',
+        maxDiscount:'',
+        maxUsage: '',
+        minimumPrice:'',
+        startDate:'',
         expirationDate: '',
         applicableTo: [],
         isActive: true
@@ -44,11 +47,9 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
 
     // Validation state
     const [validated, setValidated] = useState(false)
-    const [applicableProducts, setApplicableProducts] = useState([])
     const [searchedProduct, setSearchedProduct] = useState('')
     const [searchedProducts, setSearchedProducts] = useState([])
     const [categories,setCategories]=useState([])
-    const [applicableCategories,setApplicableCategories]=useState([])
     const [isCreateForm,setIsCreateForm]=useState(true)
     const navigate = useNavigate()
     // Populate form if editing existing coupon
@@ -57,14 +58,17 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
             setFormData({
                 code: coupon.code || '',
                 discountValue: coupon.discountValue || '',
-                limit: coupon.limit || '',
+                maxUsage: coupon.maxUsage || '',
+                minimumPrice:coupon.minimumPrice || '',
+                maxDiscount:coupon.maxDiscount || '',
                 expirationDate: coupon.expirationDate
                     ? format(new Date(coupon.expirationDate), 'yyyy-MM-dd')
                     : '',
+                startDate :coupon.startDate
+                ? format(new Date(coupon.startDate), 'yyyy-MM-dd')
+                : '',
                  isActive: coupon.isActive !== undefined ? coupon.isActive : true
             });
-            setApplicableProducts(coupon.applicableProducts || [])
-            setApplicableCategories(coupon.applicableCategories || [])
             setIsCreateForm(false)
         }
     }, [coupon]);
@@ -121,17 +125,15 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
             setValidated(true);
             return;
         }
-        if(applicableProducts.length == 0 && applicableCategories.length == 0){
-          return toast.error('Please Select Applicable Products or Categories')
-        }
         console.log(formData)
         const couponData ={
             code :formData.code,
             discountValue : formData.discountValue,
+            maxDiscount:formData.maxDiscount,
+            startDate:formData.startDate,
             expirationDate:formData.expirationDate,
-            limit:formData.limit,
-            applicableProducts:applicableProducts.map((prod)=>prod._id),
-            applicableCategories:applicableCategories.map((cat)=>cat._id)
+            maxUsage:formData.maxUsage,
+            minimumPrice:formData.minimumPrice
         }
         console.log(couponData)
         if(isCreateForm){
@@ -163,47 +165,8 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
         }
       }
 
-    const addToApplicableProducts = (product) => {
-        const isExist = applicableProducts.some((prod) => prod._id == product._id)
-        setSearchedProduct('')
-        setSearchedProducts([])
-        if (!isExist) {
 
-            setApplicableProducts([...applicableProducts, product])
-        }
-    }
-    const removeApplicablePrducts =(productId)=>{
-        setApplicableProducts((products)=>{
-          return products.filter((product)=>{
-            return product._id != productId
-          })
-        })
-    }
-
-    const addToApplicableCategories =(e)=>{
-        const {value} = e.target
-        if(!value){
-            return
-        }
-        const category = JSON.parse(e.target.value )
-        if(!category){
-            console.log("sdfas")
-            return
-        }
-        console.log(category)
-        const isExist = applicableCategories.some((cat) => cat._id == category._id)
-        if(!isExist){
-            setApplicableCategories([...applicableCategories,category])
-        }
-    }
-    const removeApplicableCategory=(categoryId)=>{
-        setApplicableCategories((categories)=>{
-            return categories.filter((category)=>{
-              return category._id != categoryId
-            })
-          })
-    }
-
+   
     return (
         <>
             <CCard>
@@ -250,19 +213,17 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
                         </CRow>
 
                         <CRow className="mb-3">
-                            <CCol md={6}>
-                                <CFormLabel>Usage Limit</CFormLabel>
+                        <CCol md={6}>
+                                <CFormLabel>Starting Date</CFormLabel>
                                 <CFormInput
-                                    type="number"
-                                    name="limit"
-                                    value={formData.limit}
+                                    type="date"
+                                    name="startDate"
+                                    value={formData.startDate}
                                     onChange={handleChange}
                                     required
-                                    min="1"
-                                    placeholder="Enter maximum usage count"
                                 />
                                 <CFormFeedback invalid>
-                                    Please provide a valid usage limit
+                                    Please select an valid date
                                 </CFormFeedback>
                             </CCol>
                             <CCol md={6}>
@@ -279,76 +240,59 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
                                 </CFormFeedback>
                             </CCol>
                         </CRow>
-
-                        <CRow className="mb-3">
-                            <CCol md={12}>
-                                <CFormLabel>Applicable Products</CFormLabel>
+                        <CRow>
+                        <CCol md={6}>
+                                <CFormLabel>Usage Limit</CFormLabel>
                                 <CFormInput
-                                    onChange={searchForProducts}
-                                    value={searchedProduct}
-                                >
-                                </CFormInput>
-
-
-                                {searchForProducts.length && <CListGroup className='position-absolute z-1000 select'>
-                                    {
-                                        searchedProducts?.map((product) => {
-                                            return <CListGroupItem value={product._id}
-                                                onClick={(e) => { addToApplicableProducts(product) }}>{product.title}</CListGroupItem>
-                                        })
-                                    }
-
-                                </CListGroup>
-                                }
-
-                                <Col>
-                                    <CListGroup>
-                                        {applicableProducts.map((product) => (
-                                            <CListGroupItem key={product._id} className="d-flex justify-content-between align-items-center">
-                                                {product.title}
-                                                <CButton
-                                                    color="danger"
-                                                    size="sm"
-                                                    onClick={()=>{removeApplicablePrducts(product._id)}}
-                                                >
-                                                <CIcon icon={cilX} size="lg" />  
-                                                </CButton>
-                                            </CListGroupItem>
-                                        ))}
-                                    </CListGroup>
-                                </Col>
-                                <Col>
-                                <CFormLabel>Applicable Categories</CFormLabel>
-                                <CFormSelect  onChange={addToApplicableCategories} >
-                                <option value="" >Select Applicable Categories</option>
-                                    {  
-                                        categories.map((category)=>{
-                                           return <option value={JSON.stringify(category)} >{category.name}</option>
-                                        })
-                                    }
-                                </CFormSelect>
-                                </Col>
-                                <Col>
-                                    <CListGroup>
-                                        {applicableCategories.map((category) => (
-                                            <CListGroupItem key={category._id} className="d-flex justify-content-between align-items-center">
-                                                {category.name}
-                                                <CButton
-                                                    color="danger"
-                                                    size="sm"
-                                                    onClick={()=>{removeApplicableCategory(category._id)}}
-                                                >
-                                                <CIcon icon={cilX} size="lg" />  
-                                                </CButton>
-                                            </CListGroupItem>
-                                        ))}
-                                    </CListGroup>
-                                </Col>
+                                    type="number"
+                                    name="maxUsage"
+                                    value={formData.maxUsage}
+                                    onChange={handleChange}
+                                    required
+                                    min="1"
+                                    placeholder="Enter maximum usage count"
+                                />
+                                <CFormFeedback invalid>
+                                    Please provide a valid usage limit
+                                </CFormFeedback>
                             </CCol>
+                            <CCol md={6}>
+                                <CFormLabel>Minimum Price</CFormLabel>
+                                <CFormInput
+                                    type="number"
+                                    name="minimumPrice"
+                                    value={formData.minimumPrice}
+                                    onChange={handleChange}
+                                    required
+                                    min="1"
+                                    placeholder="Enter maximum usage count"
+                                />
+                                <CFormFeedback invalid>
+                                    Please provide a valid Minimum Price
+                                </CFormFeedback>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                        <CCol md={6}>
+                                <CFormLabel>Maximum Discount</CFormLabel>
+                                <CFormInput
+                                    type="number"
+                                    name="maxDiscount"
+                                    value={formData.maxDiscount}
+                                    onChange={handleChange}
+                                    required
+                                    min="1"
+                                    placeholder="Enter maximum Discount Price"
+                                />
+                                <CFormFeedback invalid>
+                                    Please provide a valid Maximum Discount
+                                </CFormFeedback>
+                            </CCol>   
                         </CRow>
                         <CButton
                             color="primary"
                             type="submit"
+                            className='mt-3'
                         >
                             {coupon ? 'Update Coupon' : 'Create Coupon'}
                         </CButton>

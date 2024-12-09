@@ -26,6 +26,7 @@ import ForgottenPassword from './Components/User/ForgottenPassword/ForgottenPass
 import { toast, ToastContainer } from 'react-toastify';
 import ListOrders from './Components/Admin/OrderManagement/ListOrders/ListOrders';
 import ListCoupons from './Components/Admin/CouponManagement/ListCoupons';
+import ListOffers from './Components/Admin/OfferManagement/ListOffers/ListOffers';
 
 function App() {
   const dispatch = useDispatch()
@@ -73,6 +74,7 @@ function App() {
             <Route path='category' element={<CategoryManagement />} />
             <Route path='orders' element={<ListOrders />} />
             <Route path='coupons' element={<ListCoupons />} />
+            <Route path='offers' element={<ListOffers />} />
           </Route>
         </Routes>
         <ToastContainer

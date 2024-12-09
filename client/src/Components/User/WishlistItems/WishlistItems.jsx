@@ -90,7 +90,6 @@ const WishlistItems = () => {
       {
           wishlist?.length == 0 ?
             <h1 className='empty-msg'>Your Wishlist is Empty</h1>
-
           : <div className="table__container">
           <Table responsive className="table">
             <thead>

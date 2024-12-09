@@ -36,3 +36,7 @@ export const axiosWishlistInstance = axios.create({
     baseURL:"http://localhost:5000/api/wishlist",
     withCredentials: true
 })
+export const axiosOfferInstance = axios.create({
+    baseURL:"http://localhost:5000/api/offers",
+    withCredentials: true
+})

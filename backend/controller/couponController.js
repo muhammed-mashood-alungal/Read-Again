@@ -14,7 +14,7 @@ module.exports={
     },
     async getAllCoupons(req,res){
      try {
-        const coupons = await Coupon.find({}).populate("applicableProducts").populate("applicableCategories")
+        const coupons = await Coupon.find({})
         console.log(coupons)
         res.status(200).json({success:true,coupons:coupons})
      } catch (error) {
@@ -45,7 +45,7 @@ module.exports={
     async getCouponData(req,res){
         try {
             const {couponId} = req.params
-            const couponData = await Coupon.findOne({_id:couponId}).populate("applicableProducts").populate("applicableCategories")
+            const couponData = await Coupon.findOne({_id:couponId})
             res.status(200).json({success:true,couponData:couponData})
         } catch (error) {
             res.status(400).json({success:false,message:"Something went wrong"})

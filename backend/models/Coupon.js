@@ -9,22 +9,29 @@ const CouponSchema = mongoose.Schema({
         type:Number,
         required:true
     },
+    maxDiscount:{
+        type:Number,
+        required:true
+    },
+    startDate:{
+        type:Date,
+        required:true
+    },
     expirationDate:{
         type:Date,
         required:true
     },
-    limit:{
+    maxUsage:{
         type:Number,
         required:true
     },
-    applicableProducts:{
-        type:[mongoose.Types.ObjectId],
-        ref:"Book"
+    currentUsage:{
+        type:Number
     },
-    applicableCategories:{
-        type:[mongoose.Types.ObjectId],
-        ref:"Category"
-    },
+    minimumPrice: {
+        type: Number,
+        required:true
+      },
     isActive:{
         type:Boolean,
         default:true

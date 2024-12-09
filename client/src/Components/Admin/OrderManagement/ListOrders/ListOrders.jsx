@@ -101,7 +101,6 @@ function ListOrders() {
             <Col>
                <CButton onClick={() => { setShowOrderDetails(false) }}>
                       <CIcon icon={cilArrowThickFromRight} /> Go Back
-
                     </CButton>
               <OrderDetails selectedOrder={selectedOrder} />
               </Col>

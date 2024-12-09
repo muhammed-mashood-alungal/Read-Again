@@ -13,7 +13,7 @@ import {
   CSidebarToggler
 } from '@coreui/react';
 import { CIcon } from '@coreui/icons-react';
-import { cilSpeedometer, cilUser, cilLibrary, cilList, cilCart, cilPuzzle, cilMenu, cilTags } from '@coreui/icons';
+import { cilSpeedometer, cilUser, cilLibrary, cilList, cilCart, cilPuzzle, cilMenu, cilTags, cilGift } from '@coreui/icons';
 const Sidebar = () => {
   const [visible, setVisible] = useState(true);
   return (
@@ -65,6 +65,10 @@ const Sidebar = () => {
         <CNavItem href="/admin/coupons">
           <CIcon customClassName="nav-icon" icon={cilTags} />
           Coupon Management
+        </CNavItem>
+        <CNavItem href="/admin/offers">
+          <CIcon customClassName="nav-icon" icon={cilGift} />
+          Offer Management
         </CNavItem>
       </CSidebarNav>
 
