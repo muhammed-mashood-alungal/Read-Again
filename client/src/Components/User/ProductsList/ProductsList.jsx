@@ -5,7 +5,8 @@ import { Container, Row, Col } from 'reactstrap';
 import { bookImages } from '../../../redux/Constants/imagesDir';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../../../redux/Actions/userActions';
+import { addToCart, addToWishlist } from '../../../redux/Actions/userActions';
+import { toast } from 'react-toastify';
 const ProductList = ({books,title}) => {
 
   const {userId} = useSelector(state=>state.auth)
@@ -15,6 +16,7 @@ const ProductList = ({books,title}) => {
   const handleAddToCart=(e,bookId)=>{
   if(!userId){
     navigate('/login')
+    toast.error("Login First for Add to cart")
   }
   e.preventDefault()
   const itemInfo={
@@ -23,6 +25,16 @@ const ProductList = ({books,title}) => {
   }
   dispatch(addToCart(userId,itemInfo))
   }
+
+  const handleAddToWishlist=(e,itemId)=>{
+    if(!userId){
+      navigate('/login')
+      toast.error("Login First for Add to Wishlist")
+    }
+    e.preventDefault()
+    dispatch(addToWishlist(userId,itemId))
+  }
+
   return (
     <Container>
       <section className="products container section">
@@ -41,7 +53,7 @@ const ProductList = ({books,title}) => {
                   </Link>
                   <div className="product__actions">
                     <a href="#" className="action__btn" aria-label="Quick View"><i className="fi fi-rs-eye"></i></a>
-                    <a href="#" className="action__btn" aria-label="Add to Wishlist"><i className="fi fi-rs-heart"></i></a>
+                    <a href="#" className="action__btn" aria-label="Add to Wishlist" onClick={(e)=>{handleAddToWishlist(e,book._id)}}><i className="fi fi-rs-heart"></i></a>
                   </div>
                   <div className="product__badge ">New</div>
                 </div>

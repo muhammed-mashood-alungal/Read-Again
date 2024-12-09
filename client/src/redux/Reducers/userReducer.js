@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { axiosOrderInstance } from "../Constants/axiosConstants";
-import { ADD_TO_CART_FAILED, ADD_TO_CART_REQUEST, ADD_TO_CART_SUCCESS, CART_ITEM_COUNT_DEC, CART_ITEM_COUNT_INC, CART_ITEMS_COUNT_DEC, CART_ITEMS_COUNT_INC, CHANGE_PASS_FAILED, CHANGE_PASS_REQUEST, CHANGE_PASS_SUCCESS, CLEAR_CART_ITEMS, CLEAR_CART_ITEMS_COUNT, CREATE_USER_FAILED, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, GET_OTP_FAILED, GET_OTP_REQUEST, GET_OTP_SUCCESS, GET_USER_DATA_FAILED, GET_USER_DATA_REQUEST, GET_USER_DATA_SUCCESS, LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS, REMOVE_AUTH, REMOVE_REGISTRATION_DATA, RESET_CART_STATES, SET_AUTH, SET_CART_ITEMS_COUNT, SET_REGISTRATION_DATA} from "../Constants/userConstants";
+import { ADD_TO_CART_FAILED, ADD_TO_CART_REQUEST, ADD_TO_CART_SUCCESS, ADD_TO_WISHLIST_REQUEST, CART_ITEM_COUNT_DEC, CART_ITEM_COUNT_INC, CART_ITEMS_COUNT_DEC, CART_ITEMS_COUNT_INC, CHANGE_PASS_FAILED, CHANGE_PASS_REQUEST, CHANGE_PASS_SUCCESS, CLEAR_CART_ITEMS, CLEAR_CART_ITEMS_COUNT, CREATE_USER_FAILED, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, GET_OTP_FAILED, GET_OTP_REQUEST, GET_OTP_SUCCESS, GET_USER_DATA_FAILED, GET_USER_DATA_REQUEST, GET_USER_DATA_SUCCESS, LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS, REMOVE_AUTH, REMOVE_REGISTRATION_DATA, RESET_CART_STATES, SET_AUTH, SET_CART_ITEMS_COUNT, SET_REGISTRATION_DATA} from "../Constants/userConstants";
 import { useDispatch, useSelector } from "react-redux";
 
 export const registrationDataReducer=(state={},action)=>{
@@ -118,6 +118,19 @@ export const cartItemsCountReducer =(state={cartCount:0},action)=>{
     case CLEAR_CART_ITEMS_COUNT:
       return {...state,cartCount:0}
     default:
+      return state
+  }
+}
+
+export const addToWishlistReducer=(state={},action)=>{
+  switch(action.type){
+    case ADD_TO_WISHLIST_REQUEST:
+      return {...state, loading:true,wishlistError:null}
+    case ADD_TO_CART_SUCCESS:
+      return {...state,loading : false  , wishlistError:null}
+    case ADD_TO_CART_FAILED:
+      return {...state , loading : false , wishlistError : action.payload}
+    default :
       return state
   }
 }

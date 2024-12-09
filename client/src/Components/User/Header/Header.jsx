@@ -122,10 +122,10 @@ const Header = ({setSearchQuery}) => {
           </div>
         </div>
         <div className="header__user-actions">
-          <a href="wishlist.html" className="header__action-btn" title="Wishlist">
+        <Link to={"/wishlist"} className="header__action-btn" title="Wishlist">
             <img src="/assets/img/icon-heart.svg" alt="Wishlist" />
             {/* <span className="count">3</span> */}
-          </a>
+          </Link>
           <Link to={"/cart"} className="header__action-btn" title="Cart">
             <img src="/assets/img/icon-cart.svg" alt="Cart" />
             <span className="count">{cartCount}</span>

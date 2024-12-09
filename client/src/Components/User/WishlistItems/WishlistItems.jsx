@@ -1,72 +1,128 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Table, Button } from 'reactstrap';
+import { axiosWishlistInstance } from '../../../redux/Constants/axiosConstants';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { bookImages } from '../../../redux/Constants/imagesDir';
+import { toast } from 'react-toastify';
+import { addToCart } from '../../../redux/Actions/userActions';
+import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 
 const WishlistItems = () => {
-  // Dummy data for wishlist items
-  const wishlist = [
-    {
-      id: 1,
-      image: './assets/img/product-2-1.jpg',
-      name: "J.Crew Mercantile Women's Short-Sleeve",
-      description: "Lorem ipsum dolor sit amet consectetur.",
-      price: "$110",
-      stockStatus: "In Stock"
-    },
-    {
-      id: 2,
-      image: './assets/img/product-1-2.jpg',
-      name: "Amazon Essentials Women's Tank",
-      description: "Lorem ipsum dolor sit amet consectetur.",
-      price: "$110",
-      stockStatus: "In Stock"
-    },
-    {
-      id: 3,
-      image: './assets/img/product-7-1.jpg',
-      name: "Amazon Brand - Daily Ritual Women's Jersey",
-      description: "Lorem ipsum dolor sit amet consectetur.",
-      price: "$110",
-      stockStatus: "In Stock"
+  const {userId } = useSelector(state=>state.auth)
+  const [wishlist,setWislist]=useState([])
+  const [selectedItemId,setSelectedItemId]=useState(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    async function fetchWishlist(){
+       try{
+          const {data} = await axiosWishlistInstance.get(`/${userId}`)
+          setWislist(data.wishlist)
+       }catch(err){
+         console.log(err?.response?.data?.message)
+       }
     }
-  ];
+    if(userId){
+      fetchWishlist()
+    }else{
+      navigate('/login')
+    }
+  },[])
+
+  const handleAddToCart=async(itemId)=>{
+    try {
+      if(!userId){
+        navigate('/login')
+        toast.error("login First for add To cart")
+      }
+       const itemInfo={
+        productId : itemId,
+        quantity:1
+       }
+
+       const isSuccess = await dispatch(addToCart(userId,itemInfo))
+       console.log(isSuccess)
+       if(isSuccess) {
+       // await axiosWishlistInstance.put(`/${userId}/move-to-cart`,{itemId})
+         removeItemFromCart(itemId)
+       }
+       
+    } catch (error) {
+      console.log(error)
+      toast.error(error?.response?.data?.message)
+    }
+  }
+  const removeItemFromCart =async (itemId)=>{
+    try{
+      console.log(itemId)
+      setSelectedItemId(null)
+      if(!userId){
+        navigate('/login')
+        toast.error("login First for Remove From Wislist")
+      }
+      await axiosWishlistInstance.put(`/${userId}/remove-item`,{itemId})
+      setWislist((wishlist)=>{
+        return wishlist.filter((item)=>{
+          return item._id != itemId
+        })
+      })
+    }catch(error){
+      console.log(error)
+       toast.error(error?.response?.data?.message)
+    }
+  }
+  const onCancel =()=>{
+    setSelectedItemId(null)
+  }
 
   return (
     <section className="wishlist section--lg">
+      {
+        selectedItemId  &&
+        <ConfirmationModal
+          title={`Are You Sure to Remove This Item From Wishlist ?`}
+          onConfirm={()=>removeItemFromCart(selectedItemId)}
+          onCancel={onCancel} />
+
+      }
       <Container>
-        <div className="table__container">
+      {
+          wishlist?.length == 0 ?
+            <h1 className='empty-msg'>Your Wishlist is Empty</h1>
+
+          : <div className="table__container">
           <Table responsive className="table">
             <thead>
               <tr>
                 <th>Image</th>
                 <th>Name</th>
-                <th>Price</th>
                 <th>Stock Status</th>
-                <th>Action</th>
-                <th>Rename</th>
+                <th>Price</th>
+                <th>Add To Cart</th>
               </tr>
             </thead>
             <tbody>
-              {wishlist.map((item) => (
-                <tr key={item.id}>
+              {wishlist?.map((item) => (
+                <tr key={item._id}>
                   <td>
-                    <img src={item.image} alt={item.name} className="table__img" />
+                    <img  src={bookImages+item?._id+"/"+item?.images[0]}  className="table__img" />
                   </td>
                   <td>
-                    <h3 className="table__title">{item.name}</h3>
-                    <p className="table__description">{item.description}</p>
+                    <h3 className="table__title">{item.title}</h3>
                   </td>
                   <td>
-                    <span className="table__price">{item.price}</span>
+                    <span className="table__price">{item.stockStatus}</span>
                   </td>
                   <td>
-                    <span className="table__stock">{item.stockStatus}</span>
+                    <span className="table__stock">{item.formats?.physical?.price}</span>
                   </td>
                   <td>
-                    <Button color="primary" size="sm" className="btn--sm">
+                    <Button color="primary" size="sm" className="btn--sm" onClick={(e)=>handleAddToCart(item._id)}>
                       Add to Cart
                     </Button>
                   </td>
-                  <td>
+                  <td onClick={()=>setSelectedItemId(item._id)}>
                     <i className="fi fi-rs-trash table__trash" style={{ cursor: 'pointer' }}></i>
                   </td>
                 </tr>
@@ -74,6 +130,8 @@ const WishlistItems = () => {
             </tbody>
           </Table>
         </div>
+      }
+       
       </Container>
     </section>
   );
