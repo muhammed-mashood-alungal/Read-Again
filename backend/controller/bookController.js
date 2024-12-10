@@ -1,6 +1,8 @@
 const Book = require("../models/Books");
 const fs = require('fs')
-const path = require('path')
+const path = require('path');
+const Offer = require("../models/Offer");
+const { log } = require("console");
 module.exports = {
     async createBook(req, res) {
         try {
@@ -55,7 +57,7 @@ module.exports = {
             page = parseInt(page)
             limit = parseInt(limit)
             let skip = (page - 1) * limit
-            const allBooks = await Book.find(query).skip(skip).limit(limit).populate("category")
+            const allBooks = await Book.find(query).skip(skip).limit(limit).populate("category").populate("appliedOffer")
             const totalBooks = await Book.countDocuments({})
 
             res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
@@ -73,7 +75,7 @@ module.exports = {
             let skip = (page - 1) * limit
            
            
-            let sort =  { }
+            let sort =  {}
             if(sortBy == "Newness"){
                sort.publicationDate = 1
             }else if(sortBy == "Price: High to Low"){
@@ -96,7 +98,7 @@ module.exports = {
                 price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}
             }
-            let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category')
+            let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category').populate("appliedOffer")
             .sort(sort)
             if(category != "All"){
                 allBooks = allBooks.filter((book)=>{
@@ -105,7 +107,7 @@ module.exports = {
             } 
 
             const totalBooks = await Book.countDocuments({})
-
+            
             res.status(200).json({ success: true, books: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
@@ -137,7 +139,6 @@ module.exports = {
                 formats: formats,
                 stockStatus
             }
-            console.log(newBook)
 
             const book = await Book.updateOne({ _id: bookId }, { $set: newBook }, { new: true });
             res.status(200).json({ message: "Book updated successfully", book })
@@ -150,8 +151,9 @@ module.exports = {
         try {
 
             const { bookId } = req.params
-            const bookData = await Book.findOne({ _id: bookId }).populate("category")
-            res.status(200).json({ success: true, bookData })
+            let book = await Book.findOne({ _id: bookId }).populate("category").populate("appliedOffer")
+             console.log(book)
+            res.status(200).json({ success: true, bookData : book })
         } catch (err) {
             console.log(err)
             res.status(500).json({ message: "Somthing went wrong" })
@@ -174,7 +176,9 @@ module.exports = {
     },
     async getJustPublishedBooks(req, res) {
         try {
-            const books = await Book.find({ isDeleted: false ,"formats.physical.stock":{$gt:0} }).sort({ createdAt: -1 }).limit(10)
+            const books = await Book.find({ isDeleted: false ,"formats.physical.stock":{$gt:0} }).populate("appliedOffer")
+            .sort({ createdAt: -1 }).limit(10)
+   
             res.status(200).json({ books: books })
         } catch (err) {
             console.log(err)
@@ -190,7 +194,7 @@ module.exports = {
                 _id: { $ne: bookId },
                 $or: tags,
                 isDeleted: false
-            }).limit(8)
+            }).populate("appliedOffer").limit(8)
             console.log(books)
             res.status(200).json({ books: books })
 

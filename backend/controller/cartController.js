@@ -1,5 +1,6 @@
 const Cart = require("../models/Cart")
 const Book = require("../models/Books")
+const Offer = require("../models/Offer")
 module.exports = {
   async addToCart(req, res) {
     try {
@@ -9,7 +10,12 @@ module.exports = {
         return res.status(400).json({ success: false, message: "You can only add the same item up to 3 times." })
       }
       const cart = await Cart.findOne({ userId })
-      const productData = await Book.findOne({ _id: itemInfo.productId, isDeleted: false })
+      const productData = await Book.findOne({ _id: itemInfo.productId, isDeleted: false }).populate("appliedOffer")
+      if(productData.appliedOffer?.isActive && productData.formats?.physical?.offerPrice){
+        productData.price = productData.formats?.physical?.offerPrice 
+      }else{
+        productData.price =  productData.formats?.physical?.price
+      }
       if(productData.formats.physical.stock == 0){
         return res.status(400).json({ success: false, message: "Product is Sold Out.Try later...!" })
       }
@@ -24,17 +30,18 @@ module.exports = {
           userId: userId,
           items: itemInfo,
           totalQuantity: itemInfo.quantity,
-          totalAmount: productData.formats?.physical?.price *parseInt(itemInfo.quantity) 
+          totalAmount: productData.price *parseInt(itemInfo.quantity) 
         })
         return res.status(200).json({ success: true })
       } else { 
+        console.log("cart length +++++++++++"+cart.items.length)
         for (let i = 0; i < cart.items.length; i++) {
-          if (cart.items[i].productId == itemInfo.productId) {
+          if (cart.items[i].productId == itemInfo.productId._id) {
             itemInfo.quantity = parseInt(itemInfo.quantity)
             if (cart.items[i].quantity + itemInfo.quantity <= 3) {
               cart.items[i].quantity += itemInfo.quantity
               cart.totalQuantity += itemInfo.quantity
-              cart.totalAmount += productData.formats?.physical?.price
+              cart.totalAmount += productData.price
               cart.save()
               return res.status(200).json({ success: true })
             } else {
@@ -43,9 +50,9 @@ module.exports = {
           }
         }
         cart.totalQuantity +=parseInt(itemInfo.quantity) 
-        cart.totalAmount += productData.formats?.physical?.price *parseInt(itemInfo.quantity) 
+        cart.totalAmount += productData.price *parseInt(itemInfo.quantity) 
         cart.items.push(itemInfo)
-        console.log(cart) 
+        console.log("new pushed")
         cart.save()
         return res.status(200).json({ success: true })
       }
@@ -56,31 +63,38 @@ module.exports = {
   },
   async getCart(req, res) {
     try {
-      const { userId } = req.params
-      const cart = await Cart.findOne({ userId }).populate({ path: "items.productId" })
-      
-      console.log(cart)
+      const { userId } = req.params;
+      const cart = await Cart.findOne({ userId }).populate({ path: "items.productId" });
+  
       if (!cart) {
-        return res.status(200).json({ success: true, cart: { items: [] } })
+        return res.status(200).json({ success: true, cart: { items: [] } });
       }
- 
-      cart.items = cart.items.filter((item) => {
-        if(item.productId != null && item.productId.isDeleted == false){
-          return true
-        }
-        if(item.productId != null){
-          cart.totalQuantity = cart.totalQuantity - item.quantity
-          cart.totalAmount = cart.totalAmount - (item.quantity * item.productId.formats.physical.price)
-          console.log(cart.totalQuantity,cart.totalAmount)
-        }
-      })
-      console.log("filtered cart ++++++++++++++++++++++++")
-      console.log(cart)
-      console.log(JSON.stringify(cart, null, 2))
-      res.status(200).json({ success: true, cart: cart })
+  
+      const updatedItems = await Promise.all(
+        cart.items.map(async (item) => {
+       
+            const offer = await Offer.findOne({ _id: item?.productId?.appliedOffer });
+            if (offer) {
+              item.productId.appliedOffer = offer;
+              
+            }
+            if (!item?.productId?.isDeleted) {
+              return item; 
+            }
+          
+          cart.totalQuantity -= item.quantity;
+          cart.totalAmount -= item.quantity * (offer.isActive ? item.productId?.formats?.physical?.offerPrice : item.productId?.formats?.physical?.price);
+          return null; 
+        })
+      );
+      cart.items = updatedItems.filter((item) => item !== null);
+  
+      await cart.save(); 
+  
+      res.status(200).json({ success: true, cart });
     } catch (err) {
-      console.log(err)
-      res.status(400).json({ succees: false, message: "Something Went Wrong while fething Cart" })
+      console.log(err);
+      res.status(400).json({ success: false, message: "Something Went Wrong while fetching Cart" });
     }
   },
   async changeQuantity(req, res) {

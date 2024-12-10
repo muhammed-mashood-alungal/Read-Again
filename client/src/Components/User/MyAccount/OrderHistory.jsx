@@ -133,6 +133,13 @@ function OrderHistory({ orders }) {
     }
   }
 
+  const getPrice=(book)=>{
+    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+      return book.formats.physical.offerPrice
+    }
+    return  book.formats.physical.price
+  }
+
   return (
     <div>
       {
@@ -234,7 +241,7 @@ function OrderHistory({ orders }) {
                     <tr key={item.bookId?._id}>
                       <td>{item?.bookId.title}</td>
                       <td>{item?.quantity}</td>
-                      <td>₹{(item?.quantity * item?.bookId?.formats?.physical?.price)}</td>
+                      <td>₹{(item?.quantity * item.unitPrice)}</td>
                       {itemsCancelOrReturn(item.status, item.bookId._id)}
                       {
                         item.status == "Canceled" &&

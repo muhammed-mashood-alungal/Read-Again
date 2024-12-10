@@ -79,8 +79,8 @@ const ShoppingCart = () => {
   }, 300);
   const handleRemoveFromCart = async () => {
     try {
-      console.log(cart.totalAmount - (cart.items[selectedIndex].quantity * cart.items[selectedIndex]?.productId?.formats?.physical?.price))
-      const newAmount = cart.totalAmount - (cart.items[selectedIndex].quantity * cart.items[selectedIndex]?.productId?.formats?.physical?.price)
+    
+      const newAmount = cart.totalAmount - (cart.items[selectedIndex].quantity *  getPrice(cart.items[selectedIndex].productId))
       const newQuantity = cart.totalQuantity - cart.items[selectedIndex].quantity
       await axiosCartInstance.put(`/${userId}/remove-item`, { index: selectedIndex, newAmount, newQuantity })
       toast.success("Item Removed")
@@ -113,13 +113,22 @@ const ShoppingCart = () => {
       if(item.productId.stockStatus != "Stock Out"){
         return item
       }else{
-        cart.totalAmount = cart.totalAmount - (item.productId.formats.physical.price * item.quantity)
+       // cart.totalAmount = cart.totalAmount - (item.productId.formats.physical.price * item.quantity)
+        cart.totalAmount = cart.totalAmount - (getPrice(item.productId) * item.quantity)
         cart.totalQuantity = cart.totalQuantity - (item.quantity)
       }
     })
-    console.log(cart)
+    
     navigate('/checkout',{state:{cart}})
   }
+  const getPrice=(book)=>{
+    console.log(book?.appliedOffer?.isActive)
+    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+      return book.formats.physical.offerPrice
+    }
+    return book.formats.physical.price
+  }
+
   return (
     <section className="section--lg">
       {
@@ -169,7 +178,7 @@ const ShoppingCart = () => {
                           </p>
                         </td>
                         <td>
-                          <span className="table__price">₹{item.productId?.formats?.physical?.price}</span>
+                          <span className="table__price">₹{getPrice(item.productId)}</span>
                         </td>
                         <td>
                           {
@@ -179,7 +188,7 @@ const ShoppingCart = () => {
                           /> :
                           <input type="number" value={item.quantity} className="quantity"
                           min="1"
-                          onChange={(e) => { handleQuantiyChange(e.target.value, index, item?.productId?.formats?.physical?.price) }}
+                          onChange={(e) => { handleQuantiyChange(e.target.value, index, getPrice(item.productId)) }}
                         />
                           }
                           
@@ -191,7 +200,7 @@ const ShoppingCart = () => {
                           }
                         >{item?.productId?.stockStatus}</td>
                         <td>
-                          <span className="subtotal">₹{item.productId?.formats?.physical?.price * item.quantity}</span>
+                          <span className="subtotal">₹{getPrice(item.productId) * item.quantity}</span>
                         </td>
                         <td>
                           <i className="fi fi-rs-trash table__trash"

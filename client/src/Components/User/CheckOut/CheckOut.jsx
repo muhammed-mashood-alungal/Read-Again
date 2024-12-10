@@ -25,24 +25,7 @@ const Checkout = () => {
       toast.error("Login to access Checkout")
     }
   }, [isLoggedIn])
-  // useEffect(() => {
-  //   if (!userId) {
-  //     navigate("/login", { state: { cart } })
-  //   } else {
-  //     const fetchCartData = async () => {
-  //       try {
-  //         const { data } = await axiosCartInstance.get(`/${userId}`)
-  //         console.log(data.cart)
-  //         setCart(data.cart ? data.cart : {})
-  //       } catch (err) {
-  //         console.log(err)
-  //         navigate('/cart')
-  //         toast.error("Something Went Wrong. Please try later")
-  //       }
-  //     }
-  //     fetchCartData()
-  //   }
-  // }, [userId])
+
   useEffect(() => {
     const getProfileData = async () => {
       try {
@@ -67,12 +50,13 @@ const Checkout = () => {
     try {
       setIsPlacingOrder(true)
       cart.items = cart.items.map((item) => {
+        
         return {
           ...item,
           bookId: item.productId?._id,
           quantity: item.quantity,
-          unitPrice: item?.productId?.formats?.physical?.price,
-          totalPrice: item?.productId?.formats?.physical?.price * item.quantity
+          unitPrice: getPrice(item.productId),
+          totalPrice: getPrice(item.productId)* item.quantity
         }
       })
       const orderDetails = {
@@ -110,6 +94,13 @@ const Checkout = () => {
       console.log(err)
       toast.error(err?.response?.data?.message)
     }
+  }
+
+  const getPrice=(book)=>{
+    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+      return book.formats.physical.offerPrice
+    }
+    return  book.formats.physical.price
   }
 
 
@@ -190,7 +181,7 @@ const Checkout = () => {
                       <h3 className="table__title">{item?.productId?.title}</h3>
                       <p className="table__quantity">{item?.quantity}</p>
                     </td>
-                    <td><span className="table__price">₹{item?.quantity * item?.productId?.formats?.physical?.price}</span></td>
+                    <td><span className="table__price">₹{item?.quantity * getPrice(item.productId)}</span></td>
                   </tr>
                 })
               }

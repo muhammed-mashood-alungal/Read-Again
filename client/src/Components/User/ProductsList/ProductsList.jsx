@@ -13,14 +13,14 @@ const ProductList = ({books,title}) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   
-  const handleAddToCart=(e,bookId)=>{
+  const handleAddToCart=(e,book)=>{
   if(!userId){
     navigate('/login')
     toast.error("Login First for Add to cart")
   }
   e.preventDefault()
   const itemInfo={
-    productId:bookId,
+    productId:book,
     quantity:1
   }
   dispatch(addToCart(userId,itemInfo))
@@ -34,6 +34,17 @@ const ProductList = ({books,title}) => {
     e.preventDefault()
     dispatch(addToWishlist(userId,itemId))
   }
+  const renderProductPrice=(book)=>{
+    const formats = book.formats
+    if(formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive){
+     return <>
+      <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
+      <span className='old__price'>₹{formats?.physical?.price}</span>
+     </>
+    }else{
+     return  <span className='new__price'>₹{formats?.physical?.price}</span>
+    }
+ }
 
   return (
     <Container>
@@ -68,9 +79,9 @@ const ProductList = ({books,title}) => {
                     <i className="fi fi-rs-star"></i>
                   </div>
                   <div className="product__price flex">
-                    <span className="new__price">₹{book?.formats?.physical?.price}</span>
+                    {renderProductPrice(book)}
                   </div>
-                  <span onClick={(e)=>{handleAddToCart(e,book?._id)}} className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></span>
+                  <span onClick={(e)=>{handleAddToCart(e,book)}} className="action__btn cart__btn" aria-label="Add To Cart"><i className="fi fi-rs-shopping-bag-add"></i></span>
                 </div>
               </div>
               </Link>

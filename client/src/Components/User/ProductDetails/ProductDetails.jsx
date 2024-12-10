@@ -23,7 +23,7 @@ const ProductDetails = ({ bookData }) => {
   const navigate = useNavigate()
   useEffect(() => {
     if (bookData && bookData.formats && selectedFormat) {
-      setPrice(bookData.formats[selectedFormat]?.price);
+      setPrice(bookData.formats[selectedFormat]?.offerPrice);
     }
   }, [bookData, selectedFormat]);
 
@@ -54,6 +54,19 @@ const ProductDetails = ({ bookData }) => {
   const handleQuantityChange=(e)=>{
     setQuantity(e.target.value)
   }
+
+
+  const renderProductPrice=(book)=>{
+    const formats = book.formats
+    if(formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive){
+     return <>
+      <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
+      <span className='old__price'>₹{formats?.physical?.price}</span>
+     </>
+    }else{
+     return  <span className='new__price'>₹{formats?.physical?.price}</span>
+    }
+ }
 
   const handleMouseMove = (event) => {
     const imageZoom = event.currentTarget;
@@ -96,12 +109,12 @@ const ProductDetails = ({ bookData }) => {
     }));
   };
 
-  const handleAddToCart = (bookId) => {
+  const handleAddToCart = (book) => {
     if (!userId) {
       navigate('/login')
     }
     const itemInfo = {
-      productId: bookId,
+      productId: book._id,
       quantity: quantity
     }
     dispatch(addToCart(userId, itemInfo))
@@ -122,12 +135,19 @@ const ProductDetails = ({ bookData }) => {
       return <td className="in-stock">In Stock</td>;
     }
   }
+  const getPrice=(book)=>{
+    console.log(book?.appliedOffer)
+    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+      return book.formats.physical.offerPrice
+    }
+    return  book?.formats.physical.price
+  }
  
   const buyNow=()=>{
     console.log(bookData?.formats?.physical?.price,quantity)
     try{
        const cart = {}
-       cart.totalAmount= bookData?.formats?.physical?.price * parseInt(quantity)
+       cart.totalAmount= getPrice(bookData) * parseInt(quantity)
        cart.quantity =quantity
        cart.items = [{
         productId:{...bookData},
@@ -183,9 +203,10 @@ const ProductDetails = ({ bookData }) => {
             </p>
             <div className="details__price ">
               <div className="flex">
-                <span className="new__price">{price - (25 / 100) * price}</span>
-                <span className="old__price">{price}</span>
-                <span className="save__price">25% Off</span>
+              {renderProductPrice(bookData)}
+                {/* <span className="new__price">{bookData.formats[selectedFormat].price}</span>
+                <span className="old__price">{bookData.formats[selectedFormat].offerPrice}</span> */}
+                <span className="save__price">{bookData?.appliedOffer?.discountValue && `(${bookData?.appliedOffer?.discountValue}%)`}</span>
               </div>
               <div>
                 <div className="product__rating">
@@ -196,7 +217,6 @@ const ProductDetails = ({ bookData }) => {
                   <i className="fi fi-rs-star"></i>
                 </div>
               </div>
-
             </div>
             <p className="short__description">
               {bookData?.description}
@@ -248,7 +268,7 @@ const ProductDetails = ({ bookData }) => {
               min={1} 
               max={bookData?.formats?.physical?.stock}/>
               <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
-              <button className="primary-btn" onClick={(e)=>{handleAddToCart(bookData?._id)}}>Add To Cart</button>
+              <button className="primary-btn" onClick={(e)=>{handleAddToCart(bookData)}}>Add To Cart</button>
               <button className="primary-btn" onClick={buyNow}>Buy Now</button>
               <button className="primary-btn">Borrow</button>
 
