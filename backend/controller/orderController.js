@@ -4,6 +4,7 @@ const Cart = require("../models/Cart")
 const Order = require("../models/Order")
 const jwt = require("jsonwebtoken")
 const User = require("../models/Users")
+const { json } = require("express")
 
 module.exports = {
     async placeOrder(req, res) {
@@ -11,9 +12,10 @@ module.exports = {
             const { userId } = req.params
             const orderDetails = req.body
             const { city, landmark, district, state, country, postalCode, phoneNumbers } = await Address.findOne({ userId, isDefault: true })
-            const shippingAddress = `${city},Near ${landmark},${district},${state},${country},${postalCode},${phoneNumbers[0]} & ${phoneNumbers[1] && phoneNumbers[1]}`
-            console.log(userId, shippingAddress, orderDetails)
-            await Order.create({ userId, ...orderDetails, shippingAddress })
+            const shippingAddress = `${city},Near ${landmark},${district},${state},${country},${postalCode}
+                                     ,${phoneNumbers[0]} & ${phoneNumbers[1] && phoneNumbers[1]}`
+
+           const response =  await Order.create({ userId, ...orderDetails, shippingAddress })
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })
                 console.log(book)
@@ -37,8 +39,8 @@ module.exports = {
             }
             //consider the buynow case deleting later
             await Cart.deleteOne({ userId })
-
-            res.status(200).json({ success: true })
+            const user = await User.findOne({_id:userId})
+            res.status(200).json({ success: true ,orderId:response._id ,user})
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false, message: "Order Placing Failed Please try Again" })
@@ -276,6 +278,21 @@ module.exports = {
         }catch(err){
             console.log(err)
             res.status(400).json({success:false,message:"Something Went Wrong"})
+        }
+    },
+    async paymentSuccess(req,res){
+        try {
+            const {orderId} = req.params
+            console.log(orderId)
+            await Order.updateOne({_id:orderId},{
+                $set:{
+                    paymentStatus:"Success"
+                }
+            })
+            res.status(200).json({success:true})
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({success:fale , message :"Something Went Wrong"})
         }
     }
 }

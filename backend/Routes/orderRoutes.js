@@ -1,5 +1,5 @@
 const express= require('express')
-const { getUserOrders, updateOrderStatus, getAllOrders, placeOrder, cancelOrder, requestReturnOrder, approveReturnRequest, rejectReturnRequest, changeStatus, cancelOrderItem, returnOrderItem, approveItemReturn, rejectItemReturn } = require('../controller/orderController')
+const { getUserOrders, updateOrderStatus, getAllOrders, placeOrder, cancelOrder, requestReturnOrder, approveReturnRequest, rejectReturnRequest, changeStatus, cancelOrderItem, returnOrderItem, approveItemReturn, rejectItemReturn, paymentSuccess } = require('../controller/orderController')
 const { isAdmin } = require('../middlewares/auth')
 const router = express.Router()
 
@@ -15,4 +15,5 @@ router.put('/:orderId/items/:itemId/cancel',cancelOrderItem)
 router.put('/:orderId/items/:itemId/return',returnOrderItem)
 router.put('/:orderId/items/:itemId/approve-return',approveItemReturn)
 router.put('/:orderId/items/:itemId/reject-return',rejectItemReturn)
+router.patch('/:orderId/payment-success',paymentSuccess)
 module.exports=router     

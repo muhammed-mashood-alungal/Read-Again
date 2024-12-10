@@ -12,6 +12,7 @@ const orderRoutes = require('./Routes/orderRoutes')
 const couponRoutes = require('./Routes/couponsRoutes')
 const wishlistRoutes = require('./Routes/wishlistRoutes')
 const offerRoutes = require('./Routes/offerRoutes')
+const razorpayRoutes = require('./Routes/razorpayRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -49,16 +50,17 @@ app.use('/api/orders',orderRoutes)
 app.use('/api/coupons',couponRoutes)
 app.use('/api/wishlist',wishlistRoutes)
 app.use('/api/offers',offerRoutes)
-app.use('/api/razorpay',offerRoutes)
+app.use('/api/razorpay',razorpayRoutes)
 
 
 //ERROR HANDLING MIDDLEWARE
 app.use((err,req,res,next)=>{
     if(err){
+        
         console.log(err)
     }
 }) 
 
 app.listen(process.env.PORT,()=>{
     console.log("Server Started Succefully")
-})
+}) 

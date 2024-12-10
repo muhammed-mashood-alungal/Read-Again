@@ -1,6 +1,7 @@
-// import Razorpay from 'razorpay';
-
-// export const razorpay = new Razorpay({
-//   key_id: process.env.RAZORPAY_API_KEY,
-//   key_secret: process.env.RAZORPAY_SECRET_KEY,
-// });
+//import Razorpay from 'razorpay';
+const Razorpay = require('razorpay')
+ const razorpay = new Razorpay({
+  key_id: 'rzp_test_EXY6d7WZZXxptz',
+  key_secret:'rdW3pzmOKmMlbIYz6A7HuNiI',
+});
+module.exports = razorpay 

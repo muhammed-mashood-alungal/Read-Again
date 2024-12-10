@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Table } from 'reactstrap';
 import Addresses from '../MyAccount/Addresses';
 import { toast } from 'react-toastify';
-import { axiosCartInstance, axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosCartInstance, axiosOrderInstance, axiosRazorpayInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { bookImages } from '../../../redux/Constants/imagesDir';
+import { useRazorpay } from 'react-razorpay';
 
 const Checkout = () => {
   const { userId, isLoggedIn } = useSelector(state => state.auth)
@@ -17,6 +18,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("COD")
   const navigate = useNavigate()
   const [isPlacingOrder,setIsPlacingOrder]=useState(false)
+  const {Razorpay} = useRazorpay();
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login')
@@ -66,6 +68,7 @@ const Checkout = () => {
       setIsPlacingOrder(true)
       cart.items = cart.items.map((item) => {
         return {
+          ...item,
           bookId: item.productId?._id,
           quantity: item.quantity,
           unitPrice: item?.productId?.formats?.physical?.price,
@@ -79,19 +82,82 @@ const Checkout = () => {
         orderStatus: "Ordered",
         paymentMethod:paymentMethod
       }
-      console.log(orderDetails)
-      await axiosOrderInstance.post(`/${userId}/place-order`,orderDetails)
-      console.log("orderPlaced")
-
+      const {data} = await axiosOrderInstance.post(`/${userId}/place-order`,orderDetails)
+      
+      if(paymentMethod === 'Razorpay'){
+        try {
+          const result = await handleOnlinePayment(orderDetails.totalAmount)
+          if (result.success) {
+            console.log("orderId :" , data.orderId)
+            await axiosOrderInstance.patch(`/${data.orderId}/payment-success`)
+            toast.success("Payment Successful");
+          } else {
+            toast.error("Payment Failed. You can Retry on Order Page")
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("Payment failed, please try again.");
+        }
+      }
+      toast.success("Your Order Placed Successfully.You can Track delivery status in You Order History")
       navigate('/')
       setIsPlacingOrder(false)
-      toast.success("Your Order Placed Successfully.You can Track delivery status in You Order History")
-
+    
+    
+     
     } catch (err) {
       setIsPlacingOrder(false)
       console.log(err)
       toast.error(err?.response?.data?.message)
     }
+  }
+
+
+  const handleOnlinePayment=(amount)=>{
+    return new Promise(async(resolve,reject)=>{
+      try{
+        const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_ID;
+        const {data} = await axiosRazorpayInstance.post('/create-order',{amount:amount*100})
+        const order = data
+        console.log(order)
+        const options = {
+          key: RAZORPAY_KEY_ID,
+          amount: order.amount,
+          currency: order.currency,
+          name: "Read Again", 
+          description: "Payment for your order", 
+          order_id: order.id,
+          handler: async (response) => {
+            try {
+            await axiosRazorpayInstance.post('/verify-payment',{
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+            })
+            resolve({success:true,message:"Payment Success"})
+            } catch (err) {
+              reject({success:false , message:"Payment Failed"})
+            }
+          },
+          prefill: {
+            name:data?.user?.username, 
+            email: data?.user?.email
+            //contact: "9999999999",
+          },
+          notes: {
+            address: "Razorpay Corporate Office",
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        }
+        const rzpay = new Razorpay(options);
+        rzpay.open(options);
+      }catch(err){
+        console.log(err)
+      }
+    })
+    
   }
   return (
     <section className="checkout section--lg">

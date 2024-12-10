@@ -40,3 +40,7 @@ export const axiosOfferInstance = axios.create({
     baseURL:"http://localhost:5000/api/offers",
     withCredentials: true
 })
+export const axiosRazorpayInstance = axios.create({
+    baseURL:"http://localhost:5000/api/razorpay",
+    withCredentials: true
+})
