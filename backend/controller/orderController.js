@@ -252,7 +252,7 @@ module.exports = {
                     const book = await Book.findOne({ _id: itemId })
                     book.formats.physical.stock += order.items[i].quantity
                     await book.save()
-                    order.totalAmount = order.totalAmount - order.items[i].totalPrice
+                   
                     if (order.paymentStatus == "Success") {
                         const orderTotal = order.totalAmount
                         const itemTotal = order.items[i].totalPrice
@@ -260,7 +260,6 @@ module.exports = {
                         let amount = itemTotal
                         if (coupon) {
                             const couponData = await Coupon.findOne({ _id: coupon })
-                            
                             const percentage = couponData.discountValue
                             let orderTotalWithoutDiscount = orderTotal / (1 - percentage / 100)
                             orderTotalWithoutDiscount = orderTotalWithoutDiscount.toFixed()
@@ -284,6 +283,7 @@ module.exports = {
                         })
                     }
                     break;
+                    order.totalAmount = order.totalAmount - order.items[i].totalPrice
                 }
             }
 

@@ -17,7 +17,6 @@ module.exports = {
               const originalPrice = format.price || 0
               const offerPrice = originalPrice - (originalPrice * (newOffer.discountValue/100))
               book.formats[key].offerPrice = offerPrice.toFixed()
-              console.log()
               await book.save()
             }
            

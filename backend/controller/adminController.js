@@ -3,6 +3,8 @@ const User = require("../models/Users")
 const bcrypt = require('bcrypt')
 const { generateToken } = require("../utils/jwt")
 const jwt = require('jsonwebtoken')
+const Order = require("../models/Order")
+const Coupon = require("../models/Coupon")
 module.exports = {
   async getAllUsers(req, res) {
     try {
@@ -77,6 +79,76 @@ module.exports = {
       console.log(err)
       return res.status(401).json({ message: "Invalid Credential" })
     }
+  },
+  async getSalesReport(req,res){
+      try {
+        const {filterType} = req.params
+        const {startDate,endDate} = req.body
+
+        
+        let find = {}
+        switch(filterType){
+          case 'daily':
+            find = { orderDate: { $gte: new Date().setHours(0, 0, 0, 0) } }
+            break;
+
+          case 'weekly':
+            const weekAgo = new Date()
+            weekAgo.setDate(weekAgo.getDate() - 7)
+            find = { orderDate: { $gte: weekAgo } }
+            break;
+          case 'monthly':
+            const monthAgo = new Date()
+            monthAgo.setDate(monthAgo.getDate() - 30)
+            find = { orderDate: { $gte: monthAgo } }
+            break;
+          case 'custom':
+            const start = new Date(startDate); 
+            const end = new Date(endDate);
+            console.log(start,end,startDate,endDate)
+            find = {orderDate : {$gte : start , $lte : end}}
+            break;
+          default:
+            find
+        }
+        const orders = await Order.find({...find,orderStatus:"Delivered"}).populate("items.bookId").populate("userId")
+        //salesReport.orders = orders
+        let totalRevenue = 0
+        let totalCouponDiscount = 0
+        let totalSales = 0
+        let itemsSold = 0
+        
+        for (const order of orders) {
+            totalRevenue += order.totalAmount;
+            if(order.orderStatus == "Delivered"){
+              totalSales += 1
+              for(let item of order.items){
+                itemsSold += item.quantity
+              }
+            }
+            if (order.coupon) {
+                const coupon = await Coupon.findOne({ _id: order.coupon });
+                const percentage = coupon.discountValue;
+                const orderTotalWithoutDiscount = order.totalAmount / (1 - percentage / 100);
+                totalCouponDiscount += orderTotalWithoutDiscount.toFixed() - order.totalAmount;
+            }
+        }
+         const salesReport = {
+          filterType :filterType ,
+          totalRevenue,        
+          totalCouponDiscount,
+          totalSales,
+          itemsSold,
+          orders:[...orders],
+          startDate,
+          endDate
+        }
+        console.log(totalRevenue,totalCouponDiscount,totalSales,itemsSold)
+        res.status(200).json({success:true, salesReport})
+      } catch (error) { 
+        console.log(error)
+        res.status(400).json()
+      }
   }
 
 }

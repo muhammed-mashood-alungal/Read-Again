@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CCard,
   CCardBody,
@@ -32,31 +32,17 @@ import SalesReport from './SalesReport';
 //import { CChartLine } from '@coreui/coreui-chartjs-react';
 
 const Dashboard = () => {
-  const salesData = {
-    overallSalesCount: 1245,
-    overallOrderAmount: 156789.50,
-    overallDiscount: 15678.95,
-    chartData: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-      datasets: [
-        {
-          label: 'Sales',
-          backgroundColor: 'rgba(76, 175, 80, 0.2)',
-          borderColor: 'rgba(76, 175, 80, 1)',
-          pointBackgroundColor: 'rgba(76, 175, 80, 1)',
-          data: [65, 59, 80, 81, 56, 55]
-        },
-        {
-          label: 'Discounts',
-          backgroundColor: 'rgba(244, 67, 54, 0.2)',
-          borderColor: 'rgba(244, 67, 54, 1)',
-          pointBackgroundColor: 'rgba(244, 67, 54, 1)',
-          data: [28, 48, 40, 19, 86, 27]
-        }
-      ]
-    }
-  };
+  
 
+   useEffect(()=>{
+     const fetchOverallState=async()=>{
+        try{
+          const {data} = await axiosAdminInstance.get('/dashboard-stats')
+        }catch(err){
+            toast.error(err?.response?.data?.message)
+        }
+     }
+   },[])
 
   return (
     <CContainer>
