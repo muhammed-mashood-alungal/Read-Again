@@ -64,5 +64,33 @@ module.exports={
             console.log(error)
             res.status(400).json({success:false,message:"Something went wrong"})
         }
+    },
+    async verifyCoupon(req,res){
+        try {
+            const {coupon,amount}=req.body
+            const couponData = await Coupon.findOne({code:coupon})
+            if(!couponData){
+               return res.status(400).json({message:"Invalid Coupon Code"})
+            }
+            const currentDate = new Date()
+            console.log(couponData.isActive,couponData.expirationDate)
+            if(!couponData.isActive || new Date(couponData.expirationDate) < currentDate){
+                return res.status(400).json({message:"Coupon Expired"})
+            }
+            if(couponData.currentUsage >= coupon.maxUsage){
+                return res.status(400).json({message:"Coupon Exceed its Maximum Usage"})
+            }
+            if(amount < couponData.minimumPrice){
+                return res.status(400).json({message:`You need to purchase for minimum ${couponData.minimumPrice} for apply this coupon`})
+            }
+            const discountValue = amount - (amount * (couponData.discountValue/100))
+            const discountedPrice = Math.min(discountValue.toFixed(),couponData.maxDiscount)
+            console.log(discountedPrice)
+            res.status(200).json({success:true,discountedPrice})
+ 
+
+        } catch (error) {
+            res.status(400).json({message:"Something went Wrong"})
+        }
     }
 }

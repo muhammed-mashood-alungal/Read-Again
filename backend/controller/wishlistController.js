@@ -27,14 +27,12 @@ module.exports={
     },
     async removeItemFromWishlist(req,res){
         try{
-            console.log("+++++++++++++++++++++++++++++++++++")
             const {userId} = req.params 
             const {itemId} =req.body
 
             await Wishlist.updateOne({userId},{
                 $pull : {items:itemId}
             })
-            console.log("success")
             res.status(200).json({success:true})
 
         }catch(err){

@@ -5,6 +5,7 @@ const Order = require("../models/Order")
 const jwt = require("jsonwebtoken")
 const User = require("../models/Users")
 const { json } = require("express")
+const Coupon = require("../models/Coupon")
 
 module.exports = {
     async placeOrder(req, res) {
@@ -14,11 +15,24 @@ module.exports = {
             const { city, landmark, district, state, country, postalCode, phoneNumbers } = await Address.findOne({ userId, isDefault: true })
             const shippingAddress = `${city},Near ${landmark},${district},${state},${country},${postalCode}
                                      ,${phoneNumbers[0]} & ${phoneNumbers[1] && phoneNumbers[1]}`
-
+           
+           
+           if(orderDetails.coupon){
+            const couponData = await Coupon.findOne({code:orderDetails.coupon})
+            if(!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage){
+             return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} id No Longer Available.` })
+            }else{
+             couponData.currentUsage += 1
+             orderDetails.coupon = couponData._id
+            }
+           }else{
+            delete orderDetails.coupon
+           }
            const response =  await Order.create({ userId, ...orderDetails, shippingAddress })
+           
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })
-                console.log(book)
+                
                 if (!book) {
                     return res.status(400).json({ success: false, message: `Some Books are No Longer Available.` })
                 }

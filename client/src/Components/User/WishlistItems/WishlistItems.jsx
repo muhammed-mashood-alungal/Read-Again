@@ -75,6 +75,12 @@ const WishlistItems = () => {
   const onCancel =()=>{
     setSelectedItemId(null)
   }
+  const getPrice=(book)=>{
+    if(book?.appliedOffer && book.formats.physical.offerPrice){
+      return book.formats.physical.offerPrice
+    }
+    return  book.formats.physical.price
+  }
 
   return (
     <section className="wishlist section--lg">
@@ -114,7 +120,7 @@ const WishlistItems = () => {
                     <span className="table__price">{item.stockStatus}</span>
                   </td>
                   <td>
-                    <span className="table__stock">{item.formats?.physical?.price}</span>
+                    <span className="table__stock">{getPrice(item)}</span>
                   </td>
                   <td>
                     <Button color="primary" size="sm" className="btn--sm" onClick={(e)=>handleAddToCart(item._id)}>

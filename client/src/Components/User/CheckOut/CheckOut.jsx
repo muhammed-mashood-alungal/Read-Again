@@ -2,20 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Table } from 'reactstrap';
 import Addresses from '../MyAccount/Addresses';
 import { toast } from 'react-toastify';
-import { axiosCartInstance, axiosOrderInstance, axiosRazorpayInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosCartInstance, axiosCouponInstance, axiosOrderInstance, axiosRazorpayInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { bookImages } from '../../../redux/Constants/imagesDir';
 import { useRazorpay } from 'react-razorpay';
+import { green } from '@mui/material/colors';
 
 const Checkout = () => {
   const { userId, isLoggedIn } = useSelector(state => state.auth)
   const location = useLocation()
   const cart = location?.state?.cart
-  console.log(cart)
   //const [cart,setCart]=useState({})
   const [addresses, setAddresses] = useState([])
   const [paymentMethod, setPaymentMethod] = useState("COD")
+  const [coupon,setCoupon ]=useState('')
+  const [isCouponApplied,setIssCouponApplied]=useState(false)
+  const [totalAmount,setTotalAmount] = useState(cart.totalAmount)
   const navigate = useNavigate()
   const [isPlacingOrder,setIsPlacingOrder]=useState(false)
   const {Razorpay} = useRazorpay();
@@ -62,9 +65,10 @@ const Checkout = () => {
       const orderDetails = {
         items: cart.items,
         shippingCharge: 0,
-        totalAmount: cart.totalAmount, 
+        totalAmount: totalAmount, 
         orderStatus: "Ordered",
-        paymentMethod:paymentMethod
+        paymentMethod:paymentMethod,
+        coupon:coupon
       }
       const {data} = await axiosOrderInstance.post(`/${userId}/place-order`,orderDetails)
       
@@ -86,7 +90,7 @@ const Checkout = () => {
       toast.success("Your Order Placed Successfully.You can Track delivery status in You Order History")
       navigate('/')
       setIsPlacingOrder(false)
-    
+      
     
      
     } catch (err) {
@@ -148,7 +152,23 @@ const Checkout = () => {
         console.log(err)
       }
     })
-    
+  }
+  const handleCouponApply=async()=>{
+    try {
+      if(coupon.trim() == ""){
+        return toast.error("Enter a coupon code")
+       }
+      const {data}= await axiosCouponInstance.post('/verify-coupon',{coupon,amount:cart.totalAmount})
+      setTotalAmount(data.discountedPrice)
+      setIssCouponApplied(true)
+    } catch (error) {
+      toast.error(error?.response?.data?.message)
+    }
+  }
+  const handleCouponRemove=()=>{
+    setIssCouponApplied(false)
+    setTotalAmount(cart.totalAmount)
+    setCoupon('')
   }
   return (
     <section className="checkout section--lg">
@@ -185,7 +205,11 @@ const Checkout = () => {
                   </tr>
                 })
               }
-
+              <tr>
+               
+              
+              
+              </tr>
               <tr>
                 <td><span className="order__subtitle">Cart Total</span></td>
                 <td colSpan="2"><span className="table__price">₹{cart?.totalAmount}</span></td>
@@ -199,11 +223,34 @@ const Checkout = () => {
               <tr>
                 <td><span className="order__subtitle">Total</span></td>
                 <td colSpan="2">
-                  <span className="order__grand-total">₹{cart?.totalAmount}</span>
+                  <span className="order__grand-total">₹{totalAmount}</span>
                 </td>
               </tr>
             </tbody>
           </Table>
+          <div>
+           
+            <div className=''>
+              {
+                isCouponApplied ? <h5 style={{color:'green' }}><em>Congratulations! You have successfully applied the coupon "{coupon}"
+                 and received ₹{cart.totalAmount - totalAmount} off on your purchase.</em></h5> : <>
+                 <h5>Apply Coupon</h5>
+                 <input type="text" placeholder="Your Coupon Code"
+                className="form__input w-75"
+                value={coupon}
+                onChange={(e)=>setCoupon(e.target.value)}
+                disabled={isCouponApplied}
+              />
+                </>
+              }
+              {
+                isCouponApplied ?  <button className='primary-btn' onClick={handleCouponRemove}>Remove</button> 
+                : <button className='primary-btn' onClick={handleCouponApply}>Apply</button>
+              }
+            </div>
+          
+             
+          </div>
 
           <div className="payment__methods">
             <h3 className="checkout__title payment__title">Payment</h3>

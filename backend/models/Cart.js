@@ -10,16 +10,6 @@ const itemInfoSchema = mongoose.Schema({
         type:Number,
         required:true
     },
-    offer:{
-      offerId :{
-        type : mongoose.Types.ObjectId,
-        default:null
-      },
-      discountedPrice:{
-        type:Number,
-        required:null
-      }
-    },
     addedAt:{
        type:Date,
        default:Date.now
