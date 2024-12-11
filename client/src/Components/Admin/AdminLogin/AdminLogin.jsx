@@ -51,7 +51,7 @@ const AdminLogin = () => {
           autoClose: 1500
         })
         setTimeout(()=>{
-          navigate('/admin')
+          navigate('/admin/dashboard')
         },[1500])
        } 
     }catch(err){
