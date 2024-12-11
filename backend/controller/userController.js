@@ -6,6 +6,8 @@ const transporter = require("../utils/nodemailer");
 const bcrypt = require('bcrypt');
 const Category = require("../models/Category");
 const Address = require("../models/Address");
+const Wallet = require("../models/Wallet")
+const Transactions = require("../models/WalletTransactions")
 module.exports = {
   async sendOTP(req, res) {
     try {
@@ -404,6 +406,19 @@ module.exports = {
     }catch(err){
        console.log(err)
        res.status(400).json({message:"Somthing Went Wrong"})
+    }
+  },
+  async getUserWallet(req,res){
+    try{
+      const {userId} = req.params
+      let wallet = await Wallet.findOne({userId}).populate("userId")
+      const transactions = await Transactions.find({walletId:wallet._id}).populate("associatedOrder")
+      const walletData = wallet.toObject()
+      walletData.transactions = transactions
+      res.status(200).json({success:true , wallet : walletData})
+    }catch(err){
+     console.log(err)
+     res.status(400).json({succes:false,message:"Something went Wrong"})
     }
   }
 }

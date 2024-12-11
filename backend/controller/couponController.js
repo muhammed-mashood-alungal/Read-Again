@@ -80,9 +80,9 @@ module.exports={
             if(couponData.currentUsage >= coupon.maxUsage){
                 return res.status(400).json({message:"Coupon Exceed its Maximum Usage"})
             }
-            if(amount < couponData.minimumPrice){
-                return res.status(400).json({message:`You need to purchase for minimum ${couponData.minimumPrice} for apply this coupon`})
-            }
+            // if(amount < couponData.minimumPrice){
+            //     return res.status(400).json({message:`You need to purchase for minimum ${couponData.minimumPrice} for apply this coupon`})
+            // }
             const discountValue = amount - (amount * (couponData.discountValue/100))
             const discountedPrice = Math.min(discountValue.toFixed(),couponData.maxDiscount)
             console.log(discountedPrice)

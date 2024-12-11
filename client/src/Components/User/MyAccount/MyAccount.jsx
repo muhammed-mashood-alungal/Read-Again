@@ -7,10 +7,12 @@ import UpdateProfile from './UpdateProfile';
 import ChangePass from './ChangePass';
 import Addresses from './Addresses';
 import OrderHistory from './OrderHistory';
+import WalletPage from './WalletPage';
 
 const MyAccount = () => {
   const [profileData, setProfileData] = useState({});
   const [orders, setOrders] = useState([]);
+  const [wallet ,setWallet]=useState({})
   const { isLoggedIn, userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,7 +57,22 @@ const MyAccount = () => {
     if(isLoggedIn){
       getUserOrderHistory();
     }
-  }, [userId]);
+  }, [userId,activeTab]);
+
+  useEffect(() => {
+    const getUserWallet = async () => {
+      try {
+        const response = await axiosUserInstance.get(`/wallet/${userId}`);
+        setWallet(response?.data?.wallet);
+      } catch (err) {
+        console.error(err);
+       // toast.error(err?.response?.data?.error);
+      }
+    };
+    if(isLoggedIn){
+      getUserWallet();
+    }
+  }, [userId,activeTab]);
 
   return (
     <section className="accounts section--lg">
@@ -83,7 +100,13 @@ const MyAccount = () => {
             className={`account__tab ${activeTab === 'address' ? 'active-tab' : ''}`}
             onClick={() => handleTabClick('address')}
           >
-            <i className="fi fi-rs-marker"></i> My Address
+            <i className="fi fi-rs-marker"></i> Address 
+          </p>
+          <p
+            className={`account__tab ${activeTab === 'wallet' ? 'active-tab' : ''}`}
+            onClick={() => handleTabClick('wallet')}
+          >
+            <i className="fi fi-rs-marker"></i> Wallet 
           </p>
           {profileData.password && (
             <p
@@ -133,6 +156,12 @@ const MyAccount = () => {
               <Addresses userId={profileData._id} userAddresses={profileData?.addresses} />
             </div>
           )}
+
+         {activeTab === 'wallet' && (
+            <div className={`tab__content ${activeTab === 'wallet' ? 'active-tab' : ''}`} id="wallet">
+             <WalletPage userWallet={wallet}/>
+            </div>
+          )} 
 
           {activeTab === 'change-password' && (
             <div className={`tab__content ${activeTab === 'change-password' ? 'active-tab' : ''}`} id="change-password">

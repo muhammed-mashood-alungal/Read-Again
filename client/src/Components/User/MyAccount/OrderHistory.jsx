@@ -5,6 +5,26 @@ import ReasonPopUp from '../../ReasonPopUp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify'
+import { 
+  CCard, 
+  CCardBody, 
+  CCardHeader, 
+  CTable, 
+  CTableHead, 
+  CTableRow, 
+  CTableHeaderCell, 
+  CTableBody, 
+  CTableDataCell,
+  CButton,
+  CContainer,
+  CRow,
+  CCol,
+  CBadge
+} from '@coreui/react';
+import { cilArrowLeft } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
+
+
 function OrderHistory({ orders }) {
   const [isViewOrder, setIsviewOrder] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState({})
@@ -121,10 +141,6 @@ function OrderHistory({ orders }) {
       newOrderData.items = newOrderData.items?.map((item) => {
         return item.bookId._id == selectedItemId ? { ...item, status: "Return Requested", reason: returnReason } : item
       })
-      // if(data.isAllItemsCancelled){
-      //  newOrderData.orderStatus = "Return Requested"
-      //  newOrderData.returnReason = "All Return Requested"
-      // }
       setSelectedOrder(newOrderData)
       setSelectedItemId(null)
     } catch (err) {
@@ -133,190 +149,236 @@ function OrderHistory({ orders }) {
     }
   }
 
-  const getPrice=(book)=>{
-    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
-      return book.formats.physical.offerPrice
-    }
-    return  book.formats.physical.price
-  }
+  
+return (
+  <CContainer fluid className="p-3">
+  {isCancelling && (
+    <ReasonPopUp 
+      isOpen={true}
+      onConfirm={cancelOrder}
+      type="Cancel"
+      onClose={() => setIsCancelling(false)}
+    />
+  )}
+  {isReturing && (
+    <ReasonPopUp 
+      isOpen={true}
+      onConfirm={returnOrder}
+      type="Return"
+      onClose={() => setIsReturning(false)}
+    />
+  )}
 
-  return (
-    <div>
-      {
-        isCancelling &&
-        <ReasonPopUp isOpen={true}
-          onConfirm={cancelOrder}
-          type={"Cancel"}
-          onClose={() => { setIsCancelling(false) }}
-        />
-      }
-      {
-        isReturing &&
-        <ReasonPopUp isOpen={true}
-          onConfirm={returnOrder}
-          type={"Return"}
-          onClose={() => { setIsReturning(false) }}
-        />
-      }
+  {!isViewOrder ? (
+    <CCard className="shadow-sm">
+      <CCardHeader className="bg-white d-flex justify-content-between align-items-center">
+        <h3 className="mb-0">Your Orders</h3>
+      </CCardHeader>
+      <CCardBody>
+        {orders.length === 0 ? (
+          <CRow className="justify-content-center">
+            <CCol md={6} className="text-center">
+              <p className="text-muted">You Have Not Ordered Anything Yet..!</p>
+            </CCol>
+          </CRow>
+        ) : (
+          <CTable hover responsive>
+            <CTableHead>
+              <CTableRow>
+                <CTableHeaderCell>Orders</CTableHeaderCell>
+                <CTableHeaderCell>Date</CTableHeaderCell>
+                <CTableHeaderCell>Status</CTableHeaderCell>
+                <CTableHeaderCell>Totals</CTableHeaderCell>
+                <CTableHeaderCell>Actions</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {orders.map((order, index) => (
+                <CTableRow key={order._id}>
+                  <CTableDataCell>{index + 1}</CTableDataCell>
+                  <CTableDataCell>
+                    {new Date(order.orderDate).toLocaleDateString()}
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <CBadge color="info">{order.orderStatus}</CBadge>
+                  </CTableDataCell>
+                  <CTableDataCell>₹{order.totalAmount}</CTableDataCell>
+                  <CTableDataCell>
+                    <CButton 
+                      color="primary" 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setIsviewOrder(true);
+                      }}
+                    >
+                      View
+                    </CButton>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
+        )}
+      </CCardBody>
+    </CCard>
+  ) : (
+    <CCard className="shadow-sm">
+      <CCardHeader className="bg-white d-flex align-items-center">
+        <CButton 
+          color="light" 
+          className="me-3" 
+          onClick={() => setIsviewOrder(false)}
+        >
+          <CIcon icon={cilArrowLeft} />
+        </CButton>
+        <div className="d-flex justify-content-between w-100 align-items-center">
+          <h2 className="mb-0">Order Details</h2>
+          <CBadge color="info">{selectedOrder.orderStatus}</CBadge>
+        </div>
+      </CCardHeader>
+      <CCardBody>
+        <CRow className="mb-4">
+          <CCol md={6}>
+            <strong>Order Number</strong>
+            <p>{selectedOrder._id}</p>
+          </CCol>
+          <CCol md={6} className="text-end">
+            <strong>Order Date</strong>
+            <p>{new Date(selectedOrder.orderDate).toLocaleDateString()}</p>
+          </CCol>
+        </CRow>
 
-      {
-        !isViewOrder ?
+        <CTable responsive hover>
+          <CTableHead>
+            <CTableRow>
+              <CTableHeaderCell>Product</CTableHeaderCell>
+              <CTableHeaderCell>Quantity</CTableHeaderCell>
+              <CTableHeaderCell>Price</CTableHeaderCell>
+              <CTableHeaderCell>Status</CTableHeaderCell>
+            </CTableRow>
+          </CTableHead>
+          <CTableBody>
+            {selectedOrder.items.map((item) => (
+              <CTableRow key={item.bookId?._id}>
+                <CTableDataCell>{item?.bookId.title}</CTableDataCell>
+                <CTableDataCell>{item?.quantity}</CTableDataCell>
+                <CTableDataCell>₹{(item?.quantity * item.unitPrice)}</CTableDataCell>
+                {itemsCancelOrReturn(item.status,item?.bookId?._id)}
+                {item.status === "Canceled" && (
+                  <CTableDataCell color='danger'>
+                    
+                    Canceled: {item.reason}</CTableDataCell>
+                 
+                  )}
+                   {item.status === "Return Requested" && (
+                    <CTableDataCell color='warning'>
+                      Return Requested: {item.reason}
+                      </CTableDataCell>
+                 
+                  )}
+                  {item.status === "Returned" && (
+                    <CTableDataCell color="success">
+                      Returned: {item.reason}
+                    </CTableDataCell>
+                  )}
+                  {item.status === "Returned" && (
+                    <CTableDataCell color="success">
+                      Returned: {item.reason}
+                    </CTableDataCell>
+                  )}
+                {/* <CTableDataCell>
+                  {item.status === "Canceled" && (
+                    <CBadge color="danger">
+                      Canceled: {item.reason}
+                    </CBadge>
+                  )}
+                  {item.status === "Return Requested" && (
+                    <CBadge color="warning">
+                      Return Requested: {item.reason}
+                    </CBadge>
+                  )}
+                  {item.status === "Returned" && (
+                    <CBadge color="success">
+                      Returned: {item.reason}
+                    </CBadge>
+                  )}
+                </CTableDataCell> */}
+              </CTableRow>
+            ))}
+          </CTableBody>
+        </CTable>
 
-          <div className='p-2'>
+        <CRow className="mt-4">
+          <CCol md={6}>
+            <h3>Shipping Information</h3>
+            <p>{selectedOrder.shippingAddress}</p>
+          </CCol>
+          <CCol md={6} className="text-end">
+            <h3>Total Amount</h3>
+            <p className="h4 text-primary">₹{selectedOrder.totalAmount.toFixed(2)}</p>
+          </CCol>
+        </CRow>
 
-            <h3 className="tab__header">Your Orders</h3>
-            {
-              orders.length == 0 ? <h2 className='empty-msg'>You Have Not ordered Anything Yet..!</h2>
-                : <div className="tab__body">
-                  <table className="placed__order-table">
-                    <thead>
-                      <tr>
-                        <th>Orders</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Totals</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {
-                        orders.map((order, index) => {
-                          return <tr>
-                            <td>{index + 1}</td>
-                            <td>{new Date(order.orderDate).toLocaleDateString()}</td>
-                            <td>{order.orderStatus}</td>
-                            <td>₹{order.totalAmount}</td>
-                            <td><span onClick={() => {
-                              setSelectedOrder(order)
-                              setIsviewOrder(true)
-                            }} className="link-button">View</span></td>
-                          </tr>
-                        })
-                      }
-                    </tbody>
-                  </table>
-                </div>
+        <CRow className="mt-4">
+          <CCol>
+            <h3>Payment Information</h3>
+            <CBadge color="info">{selectedOrder.paymentStatus}</CBadge>
+          </CCol>
+        </CRow>
 
-            }
-          </div>
-
-          :
-          <div className="my-order-details-container">
-            <div className="order-header">
-              <FontAwesomeIcon icon={faArrowLeft} onClick={() => {
-                setIsviewOrder(false)
-              }} />
-              <h2>Order Details</h2>
-              <h3
-                className="my-order-status"
-              //  style={{ backgroundColor: getStatusColor(selectedOrder.status) }}
+        <CRow className="mt-4">
+          <CCol>
+            {isEligibleForReturn() && (
+              <CButton 
+                color="danger" 
+                className="me-2"
+                onClick={() => setIsReturning(true)}
               >
-                {selectedOrder.orderStatus}
-              </h3>
+                Request Return
+              </CButton>
+            )}
 
-            </div>
+            {isEligibleForCancel() && (
+              <CButton 
+                color="danger" 
+                onClick={() => setIsCancelling(true)}
+              >
+                Cancel Order
+              </CButton>
+            )}
 
-            <div className="my-order-info">
-              <div className="my-order-meta">
-                <div>
-                  <label>Order Number</label>
-                  <p>{selectedOrder._id}</p>
-                </div>
-                <div>
-                  <label>Order Date</label>
-                  <p>{new Date(selectedOrder.orderDate).toLocaleDateString()}</p>
-                </div>
-              </div>
+            {selectedOrder.isRejectedOnce && (
+              <p className="text-danger mt-2">
+                You can't Request Return Again, Because Your Request is Already Rejected By Admin
+              </p>
+            )}
+          </CCol>
+        </CRow>
 
-              <table className="my-order-items">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedOrder.items.map((item, index) => (
-                    <tr key={item.bookId?._id}>
-                      <td>{item?.bookId.title}</td>
-                      <td>{item?.quantity}</td>
-                      <td>₹{(item?.quantity * item.unitPrice)}</td>
-                      {itemsCancelOrReturn(item.status, item.bookId._id)}
-                      {
-                        item.status == "Canceled" &&
-                        <td className='cancel-order-btn'>Item canceled <br /> Reason : {item.reason}</td>
-                      }
-                      {
-                        item.status == "Return Requested" &&
-                        <td className='return-item-msg'>Item Requsted For Return <br /> Reason : {item.reason}</td>
-                      }
-                      {
-                        item.status == "Returned" &&
-                        <td className='return-item-msg'>Item Returned <br /> Reason : {item.reason}</td>
-                      }
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {selectedOrder.cancellationReason && (
+          <CRow className="mt-4">
+            <CCol>
+              <h4>Cancellation Reason</h4>
+              <p>{selectedOrder.cancellationReason}</p>
+            </CCol>
+          </CRow>
+        )}
 
-              <div className="my-order-total">
-                <strong>Total</strong>
-                <span>₹{selectedOrder.totalAmount.toFixed(2)}</span>
-              </div>
-
-              <div className="my-shipping-info">
-                <h3>Shipping Information</h3>
-                <p>{selectedOrder.shippingAddress}</p>
-              </div>
-              <div className="payment-info">
-                <hr />
-                <table>
-                  <tr>
-                    <th>Payment Information</th>
-                    <tr>{selectedOrder.paymentStatus}</tr>
-                  </tr>
-                </table>
-                {/* <h3></h3>
-                <h5>{selectedOrder.paymentStatus}</h5> */}
-              </div>
-              <div>
-                {
-                  isEligibleForReturn() && <button className='return-order-btn'
-                    onClick={() => { setIsReturning(true) }}>Request Return </button>
-                }
-
-                {
-                  selectedOrder.isRejectedOnce && <p className='err-msg'>You can't Request Return Again, Becuase Your Requsest is Already Rejected By Admin</p>
-                }
-                <br />
-                {
-                  isEligibleForCancel() && <button className='cancel-order-btn'
-                    onClick={() => { setIsCancelling(true) }}>Cancel Order</button>
-                }
-                {
-                  selectedOrder.cancellationReason && <div>
-                    <hr />
-                    <h4>Cancel Reason</h4>
-                    <p>{selectedOrder.cancellationReason}</p>
-                  </div>
-                }
-                {
-                  selectedOrder.returnReason && <div>
-                    <hr />
-                    <h4>Return Reason</h4>
-                    <p>{selectedOrder.returnReason}</p>
-                  </div>
-                }
-
-
-              </div>
-            </div>
-          </div>
-      }
-    </div>
-
-  )
+        {selectedOrder.returnReason && (
+          <CRow className="mt-4">
+            <CCol>
+              <h4>Return Reason</h4>
+              <p>{selectedOrder.returnReason}</p>
+            </CCol>
+          </CRow>
+        )}
+      </CCardBody>
+    </CCard>
+  )}
+</CContainer>
+);
 }
 
 export default OrderHistory
