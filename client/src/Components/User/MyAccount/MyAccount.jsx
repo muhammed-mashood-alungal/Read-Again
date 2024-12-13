@@ -15,9 +15,11 @@ const MyAccount = () => {
   const [wallet ,setWallet]=useState({})
   const { isLoggedIn, userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const [currentOrderPage,setCurrentOrderPage]=useState(1)
+  const [totalPages,setTotalPages]=useState(1)
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const activeTab = searchParams.get('tab') || 'dashboard'; // Default to 'dashboard'
+  const limit = 10 
+  const activeTab = searchParams.get('tab') || 'dashboard';
 
   const handleTabClick = (target) => {
     setSearchParams({ tab: target });
@@ -47,8 +49,13 @@ const MyAccount = () => {
   useEffect(() => {
     const getUserOrderHistory = async () => {
       try {
-        const response = await axiosOrderInstance.get(`/${userId}`);
-        setOrders(response?.data?.orders);
+        // const response = await axiosOrderInstance.get(`/${userId}`);
+        // setOrders(response?.data?.orders);
+
+          const { data } = await axiosOrderInstance.get(`/${userId}/?page=${currentOrderPage}&limit=${limit}`)
+          setOrders(data.orders)
+          let pages = Math.ceil(data?.totalOrders / limit)
+          setTotalPages(pages)
       } catch (err) {
         console.error(err);
        // toast.error(err?.response?.data?.error);
@@ -57,7 +64,7 @@ const MyAccount = () => {
     if(isLoggedIn){
       getUserOrderHistory();
     }
-  }, [userId,activeTab]);
+  }, [userId,activeTab,currentOrderPage]);
 
   useEffect(() => {
     const getUserWallet = async () => {
@@ -142,7 +149,7 @@ const MyAccount = () => {
 
           {activeTab === 'orders' && (
             <div className={`tab__content ${activeTab === 'orders' ? 'active-tab' : ''}`} id="orders">
-              <OrderHistory orders={orders} />
+              <OrderHistory orders={orders} setCurrentOrderPage={setCurrentOrderPage} currentOrderPage={currentOrderPage} totalPages={totalPages}/>
             </div>
           )}
 

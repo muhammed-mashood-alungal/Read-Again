@@ -7,7 +7,7 @@ const Banner = () => {
         <div className="home__content">
           <span className="home__subtitle">Get New Book</span>
           <h1 className="home__title">
-            Books are unique<span>Portable Magic</span>
+            Books are unique<span> Portable Magic</span>
           </h1>
           <p className="home__description">
             Save more with coupons & up to 20% off

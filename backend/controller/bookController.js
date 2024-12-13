@@ -193,7 +193,8 @@ module.exports = {
             const books = await Book.find({
                 _id: { $ne: bookId },
                 $or: tags,
-                isDeleted: false
+                isDeleted: false,
+                "formats.physical.stock":{$gt:0}
             }).populate("appliedOffer").limit(8)
             console.log(books)
             res.status(200).json({ books: books })

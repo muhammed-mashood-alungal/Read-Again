@@ -159,7 +159,8 @@ const Checkout = () => {
         return toast.error("Enter a coupon code")
        }
       const {data}= await axiosCouponInstance.post('/verify-coupon',{coupon,amount:cart.totalAmount})
-      setTotalAmount(data.discountedPrice)
+      //console.log(data.discountedPrice)
+      setTotalAmount(x=>x-data.discountedPrice)
       setIssCouponApplied(true)
     } catch (error) {
       toast.error(error?.response?.data?.message)

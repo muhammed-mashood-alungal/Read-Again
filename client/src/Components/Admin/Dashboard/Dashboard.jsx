@@ -27,21 +27,25 @@ import {
   cilFilter 
 } from '@coreui/icons';
 import Chart from './Chart';
+
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
 import SalesReport from './SalesReport';
+import { toast } from 'react-toastify';
 //import { CChartLine } from '@coreui/coreui-chartjs-react';
 
 const Dashboard = () => {
   
-
+   const [overall,setOverall] = useState({})
    useEffect(()=>{
      const fetchOverallState=async()=>{
         try{
-          const {data} = await axiosAdminInstance.get('/dashboard-stats')
+          const {data} = await axiosAdminInstance.get('/overall-stats')
+          setOverall(data.overall)
         }catch(err){
             toast.error(err?.response?.data?.message)
         }
      }
+     fetchOverallState()
    },[])
 
   return (
@@ -60,7 +64,7 @@ const Dashboard = () => {
               <CIcon icon={cilCart} size="xl" className="me-3 text-primary" />
               <div>
                 <div className="text-medium-emphasis">Overall Sales Count</div>
-                <div className="fs-4 fw-semibold">{salesData.overallSalesCount}</div>
+                <div className="fs-4 fw-semibold">{overall.salesCount}</div>
               </div>
             </CCardBody>
           </CCard>
@@ -70,8 +74,8 @@ const Dashboard = () => {
             <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilDollar} size="xl" className="me-3 text-success" />
               <div>
-                <div className="text-medium-emphasis">Total Order Amount</div>
-                <div className="fs-4 fw-semibold">${salesData.overallOrderAmount.toLocaleString()}</div>
+                <div className="text-medium-emphasis">Total Orders</div>
+                <div className="fs-4 fw-semibold">{overall.orderCount}</div>
               </div>
             </CCardBody>
           </CCard>
@@ -81,8 +85,8 @@ const Dashboard = () => {
             <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilChartLine} size="xl" className="me-3 text-warning" />
               <div>
-                <div className="text-medium-emphasis">Total Discount</div>
-                <div className="fs-4 fw-semibold">${salesData.overallDiscount.toLocaleString()}</div>
+                <div className="text-medium-emphasis">Total Users</div>
+                <div className="fs-4 fw-semibold">{overall.userCount}</div>
               </div>
             </CCardBody>
           </CCard>

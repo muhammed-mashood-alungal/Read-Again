@@ -22,7 +22,7 @@ import {
     CListGroup,
     CListGroupItem
 } from '@coreui/react';
-import { format } from 'date-fns';
+import { endOfDay, format } from 'date-fns';
 import { axiosBookInstance, axiosCategoryInstance, axiosCouponInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
 import { Col } from 'reactstrap';
@@ -105,17 +105,7 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
         // }));
     };
 
-    const searchForProducts = async (e) => {
-        try {
-            const value = e.target.value
-            setSearchedProduct(value)
-            const { data } = await axiosBookInstance.get(`/search/?title=${value}`)
-            setSearchedProducts(data.products)
-        } catch (err) {
-            console.log(err)
-            toast.error("Something Went Wrong")
-        }
-    }
+   
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -124,6 +114,12 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
         if (form.checkValidity() === false) {
             setValidated(true);
             return;
+        }
+        const now = new Date()
+        if((formData.startDate >= formData.expirationDate) ||
+         !formData.startDate || !formData.expirationDate ||
+          formData.expirationDate < now ){
+           return  toast.error("Enter a valid Starting and Ending Date")
         }
         console.log(formData)
         const couponData ={
@@ -141,7 +137,7 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
         }else{
             updateCoupon(couponData)
         }
-        toast.success('Saved Successfully')
+        
     };
 
 
@@ -150,6 +146,7 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
         console.log(couponData)
         await axiosCouponInstance.post('/',{couponData})
         navigate('/admin/coupons')
+        toast.success('Saved Successfully')
       }catch({response}){
         console.log(response)
         toast.error(response?.data?.message)
@@ -159,6 +156,7 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
     const updateCoupon=async(newCouponData)=>{
         try{
           await axiosCouponInstance.put(`/${coupon._id}`,{newCouponData})
+          toast.success('Saved Successfully')
         }catch({response}){
           console.log(response)
           toast.error(response?.data?.message)

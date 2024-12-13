@@ -146,13 +146,13 @@ const handleCustomSalesReport=async()=>{
           <CCol sm={6} md={3}>
             <div className="border p-3 rounded text-center">
               <h6 className="text-medium-emphasis">Total Revenue</h6>
-              <h4 className="text-primary">${salesReport.totalRevenue.toFixed(2)}</h4>
+              <h4 className="text-primary">₹{salesReport.totalRevenue.toFixed(2)}</h4>
             </div>
           </CCol>
           <CCol sm={6} md={3}>
             <div className="border p-3 rounded text-center">
               <h6 className="text-medium-emphasis">Total Coupon Discount</h6>
-              <h4 className="text-danger">${salesReport.totalCouponDiscount?.toFixed(2)}</h4>
+              <h4 className="text-danger">₹{salesReport.totalCouponDiscount?.toFixed(2)}</h4>
             </div>
           </CCol>
           <CCol sm={6} md={3}>
@@ -202,7 +202,7 @@ const handleCustomSalesReport=async()=>{
                 <CTableDataCell>
                     {new Date(order.orderDate).toLocaleDateString()}
                  </CTableDataCell>
-                <CTableDataCell>${order.totalAmount.toFixed(2)}</CTableDataCell>
+                <CTableDataCell>₹{order.totalAmount.toFixed(2)}</CTableDataCell>
                 <CTableDataCell>
                   {order.coupon ? (
                     <CBadge color="success">Coupon Applied</CBadge>

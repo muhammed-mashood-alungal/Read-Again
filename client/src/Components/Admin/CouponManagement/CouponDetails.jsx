@@ -44,7 +44,19 @@ const CouponDetails = ({ coupon }) => {
             <CTableRow>
               <CTableHeaderCell>Usage Limit</CTableHeaderCell>
               <CTableDataCell className="text-end">
-                {coupon.limit}
+                {coupon.maxUsage}
+              </CTableDataCell>
+            </CTableRow>
+            <CTableRow>
+              <CTableHeaderCell>Minimum Purchase</CTableHeaderCell>
+              <CTableDataCell className="text-end">
+                {coupon.minimumPrice}
+              </CTableDataCell>
+            </CTableRow>
+            <CTableRow>
+              <CTableHeaderCell>Maximum Discount</CTableHeaderCell>
+              <CTableDataCell className="text-end">
+                {coupon.maxDiscount}
               </CTableDataCell>
             </CTableRow>
             <CTableRow>

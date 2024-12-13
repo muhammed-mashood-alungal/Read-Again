@@ -221,7 +221,7 @@ const ProductDetails = ({ bookData }) => {
             <p className="short__description">
               {bookData?.description}
             </p>
-            <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p>
+            {/* <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p> */}
             <ul className="products__list">
               <li className="list__item flex">
                 <i className="fi-rs-crown"></i>Gift Wrapping Available
@@ -232,10 +232,7 @@ const ProductDetails = ({ bookData }) => {
               <li className="list__item flex">
                 <i className="fi-rs-credit-card"></i> {"Cash on Delivery available"}
               </li>
-
             </ul>
-
-
             <span className="details__size-title">Available Formats</span>
             <div className="details__size flex">
 

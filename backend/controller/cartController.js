@@ -36,7 +36,8 @@ module.exports = {
       } else { 
         console.log("cart length +++++++++++"+cart.items.length)
         for (let i = 0; i < cart.items.length; i++) {
-          if (cart.items[i].productId == itemInfo.productId._id) {
+          
+          if (cart.items[i].productId == itemInfo.productId) {
             itemInfo.quantity = parseInt(itemInfo.quantity)
             if (cart.items[i].quantity + itemInfo.quantity <= 3) {
               cart.items[i].quantity += itemInfo.quantity
@@ -56,7 +57,6 @@ module.exports = {
         cart.save()
         return res.status(200).json({ success: true })
       }
-
     } catch (err) {
       console.log(err)
     }
@@ -69,26 +69,26 @@ module.exports = {
       if (!cart) {
         return res.status(200).json({ success: true, cart: { items: [] } });
       }
-  
+      let totalAmount = 0
       const updatedItems = await Promise.all(
         cart.items.map(async (item) => {
-       
             const offer = await Offer.findOne({ _id: item?.productId?.appliedOffer });
             if (offer) {
               item.productId.appliedOffer = offer;
-              
+              totalAmount += item.productId.formats.physical.offerPrice
+            }else{
+              totalAmount += item.productId.formats.physical.price
             }
             if (!item?.productId?.isDeleted) {
               return item; 
             }
-          
-          cart.totalQuantity -= item.quantity;
-          cart.totalAmount -= item.quantity * (offer.isActive ? item.productId?.formats?.physical?.offerPrice : item.productId?.formats?.physical?.price);
-          return null; 
+             cart.totalQuantity -= item.quantity;
+          // cart.totalAmount -= item.quantity * (offer.isActive ? item.productId?.formats?.physical?.offerPrice : item.productId?.formats?.physical?.price);
+              return null; 
         })
       );
       cart.items = updatedItems.filter((item) => item !== null);
-  
+      cart.totalAmount  = totalAmount
       await cart.save(); 
   
       res.status(200).json({ success: true, cart });

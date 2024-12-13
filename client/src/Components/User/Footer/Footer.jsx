@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Logo and Contact Section */}
         <div className="footer__content">
           <a href="index.html" className="footer__logo">
-            <img src="./assets/img/logo.svg" alt="Logo" className="footer__logo-img" />
+            <img src="./assets/img/logo.jpg" alt="Logo" className="footer__logo-img" />
           </a>
           <h4 className="footer__subtitle">Contact</h4>
           <p className="footer__description">

@@ -98,9 +98,19 @@ module.exports = {
     },
     async getUserOrders(req, res) {
         try {
+            let { page, limit } = req.query
+            page = parseInt(page)
+            limit = parseInt(limit)
+            let skip = (page - 1) * limit
+
             const { userId } = req.params
-            const orders = await Order.find({ userId }).sort({ orderDate: -1 }).populate("items.bookId").populate("userId")
-            res.status(200).json({ success: true, orders })
+            const orders = await Order.find({ userId }).sort({ orderDate: -1 }).skip(skip)
+            .limit(limit)
+            .populate("items.bookId")
+            .populate("userId")
+
+            const totalOrders = await Order.countDocuments({userId})
+            res.status(200).json({ success: true, orders ,totalOrders})
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false })
@@ -113,11 +123,9 @@ module.exports = {
             limit = parseInt(limit)
             let skip = (page - 1) * limit
 
-            const orders = await Order.find({}, {
-                password: 0
-            }).skip(skip).limit(limit).populate("items.bookId").populate("userId")
-            const totalUsers = await Order.countDocuments({})
-            res.status(200).json({ success: true, orders, totalUsers })
+            const orders = await Order.find({}).sort({ orderDate: -1 }).skip(skip).limit(limit).populate("items.bookId").populate("userId")
+            const totalOrders = await Order.countDocuments({})
+            res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false })
@@ -137,6 +145,13 @@ module.exports = {
                 const book = await Book.findOne({ _id: item.bookId });
                 if (book) {
                     book.formats.physical.stock += item.quantity;
+                    if(book.formats.physical.stock <= 0){
+                        book.stockStatus = "Out Of Stock"
+                    }else if(book.formats.physical.stock <= 10){
+                        book.stockStatus = "Hurry Up"
+                    }else{
+                         book.stockStatus = "In Stock"
+                    }
                     await book.save();
                 }
             }
@@ -198,8 +213,8 @@ module.exports = {
 
             for (const item of order.items) {
                 item.status = "Returned";
-                
             }
+            
 
             if (order.paymentStatus == "Success") {
                 const amount = order.totalAmount

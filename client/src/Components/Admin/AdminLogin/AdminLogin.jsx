@@ -27,7 +27,7 @@ const AdminLogin = () => {
   useEffect(()=>{
     console.log(isLoggedIn,role)
      if(isLoggedIn && role === "ADMIN"){
-       navigate('/admin')
+       navigate('/admin/dashboard')
      }else if(!isLoggedIn){
       navigate('/admin/login')
      }else{

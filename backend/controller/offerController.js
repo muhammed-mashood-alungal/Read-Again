@@ -71,7 +71,16 @@ module.exports = {
       offer.isActive = !offer.isActive
       if(!offer.isActive){
         offer.expirationDate = new Date()
-        console.log(offer.expirationDate)
+        
+        const offeredBooks = await Book.find({appliedOffer : offer._id})
+        for(let book of offeredBooks){
+          const formatsKeys =  Object.keys(book.formats)
+        for(let key of formatsKeys ){
+          book.formats[key].offerPrice = null
+          book.appliedOffer= null
+        }
+        book.save()
+        }
       }
       await offer.save()
       res.status(200).json({ success: true })
@@ -87,13 +96,12 @@ module.exports = {
       const offerData =  await Offer.findOneAndUpdate({ _id: offerId }, {
         $set: { ...newOfferData }
       },{returnDocument: 'before'})
-
-     if(offerData.discountValue != newOfferData.discountValue){
+      console.log(newOfferData)
        if(newOfferData.applicableTo == "CATEGORY"){
         for(let categoryId of newOfferData.applicableCategories){
          const books = await Book.find({category:categoryId}).populate("appliedOffer")
          for(let book of books){
-           book.appliedOffer = newOffer._id
+           book.appliedOffer = offerId
            const formatsKeys =  Object.keys(book.formats)
            for(let key of formatsKeys ){
              const format = book.formats[key]
@@ -109,7 +117,7 @@ module.exports = {
      }else if(newOfferData.applicableTo == "PRODUCT"){
          for(let productId of newOfferData.applicableProducts){
            const book = await Book.findOne({_id : productId})
-           book.appliedOffer = newOfferData._id 
+           book.appliedOffer = offerId
            const formatsKeys =  Object.keys(book.formats)
            for(let key of formatsKeys ){
              const format = book.formats[key]
@@ -120,7 +128,6 @@ module.exports = {
            }
            book.save()
          }
-     }
      }
      
       res.status(200).json({ success: true })

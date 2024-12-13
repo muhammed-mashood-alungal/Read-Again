@@ -76,10 +76,10 @@ const WishlistItems = () => {
     setSelectedItemId(null)
   }
   const getPrice=(book)=>{
-    if(book?.appliedOffer && book.formats.physical.offerPrice){
+    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
       return book.formats.physical.offerPrice
     }
-    return  book.formats.physical.price
+    return book.formats.physical.price
   }
 
   return (

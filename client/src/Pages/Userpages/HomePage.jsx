@@ -52,7 +52,7 @@ function HomePage() {
       </Suspense>
       
       
-      <Showcase/>
+      {/* <Showcase/> */}
       <Footer/>
    </>
   )

@@ -123,7 +123,16 @@ function OfferForm({offer}) {
                 toast.error("Please Select applicable Categries")
                 return
             }
-            
+        }
+        const today = new Date()
+        const startDate = new Date(formData.startDate)
+        today.setHours(0,0,0,0)
+        if(startDate < today){
+            return toast.error("Please Select a Valid Start Date")
+        }
+        if ( new Date(formData.expirationDate) < new Date(formData.startDate)) {
+            toast.error("Please Select a Valid Expiration Date");
+            return;
         }
       
         console.log(formData.applicableTo)

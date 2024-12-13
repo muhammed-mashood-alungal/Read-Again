@@ -10,60 +10,73 @@ import { toast } from 'react-toastify';
 import CouponDetails from './CouponDetails';
 
 function ListCoupons() {
-    const [currentAction , setCurrrentAction ]=useState("list-coupons")
-    const [selectedCoupenId,setSelectedCouponId]=useState(null)
-    const [coupons ,setCoupens]=useState([])
-    const [couponData,setCouponData]=useState({})
+  const [currentAction, setCurrrentAction] = useState("list-coupons")
+  const [selectedCoupenId, setSelectedCouponId] = useState(null)
+  const [coupons, setCoupens] = useState([])
+  const [currentPage,setCurrentPage] = useState(1)
+  const [couponData, setCouponData] = useState({})
+  const [totalPages,setTotalPages]=useState(1)
+  const limit = 10
 
-    useEffect(()=>{
-       async function fetchCoupens(){
-         try{
-            const {data} = await axiosCouponInstance.get('/')
-            setCoupens(data.coupons)
-         }catch(err){
-           toast.error(err?.response?.data?.message)
-         }
-       }
-       fetchCoupens()
-    },[])
+  useEffect(() => {
+    async function fetchCoupens() {
+      try {
+        const response = await axiosCouponInstance.get(`/?page=${currentPage}&limit=${limit}}`)
+      let pages = Math.ceil(response?.data?.totalCoupons / limit)
+      setTotalPages(pages)
+      setCoupens(response?.data?.coupons)
+      } catch (err) {
+        toast.error(err?.response?.data?.message)
+      }
+    }
+    fetchCoupens()
+  }, [])
 
-    const handleCouponListing=async()=>{
-         try {
-            setSelectedCouponId(null)
-            console.log(selectedCoupenId)
-            await axiosCouponInstance.put(`/handle-activation/${selectedCoupenId}`)
-            console.log(selectedCoupenId)
-            setCoupens((coupons)=>{
-                return coupons.map((coupon)=>{
-                    return coupon._id == selectedCoupenId ? {...coupon,isActive:!coupon.isActive} : coupon
-                })
-            })
-            
-        } catch (error) {
-             toast.error(error?.response?.data?.message)
-        }
-    }
+  const handleCouponListing = async () => {
+    try {
+      setSelectedCouponId(null)
+      console.log(selectedCoupenId)
+      await axiosCouponInstance.put(`/handle-activation/${selectedCoupenId}`)
+      console.log(selectedCoupenId)
+      setCoupens((coupons) => {
+        return coupons.map((coupon) => {
+          return coupon._id == selectedCoupenId ? { ...coupon, isActive: !coupon.isActive } : coupon
+        })
+      })
 
-    const onCancel=()=>{
-        setSelectedCouponId(null)
+    } catch (error) {
+      toast.error(error?.response?.data?.message)
     }
-    const handleSearch=()=>{
-        ///search 
+  }
+
+  const onCancel = () => {
+    setSelectedCouponId(null)
+  }
+  const handleSearch = async (e) => {
+    try {
+      const name = e.target.value
+      const response = await axiosCouponInstance.get(`/?page=${currentPage}&limit=${limit}&name=${name}`)
+      let pages = Math.ceil(response?.data?.totalCoupons / limit)
+      setTotalPages(pages)
+      setCoupens(response?.data?.coupons)
+    } catch (err) {
+      console.log(err)
     }
-    const handleCoupenAdd=()=>{
-        //
-    }
-    const confirmAction=(coupondId)=>{
-        setSelectedCouponId(coupondId)
-    }
-    const showUpdateForm=(couponData)=>{
-        setCouponData(couponData)
-        setCurrrentAction("update-coupon")
-    }
-    const viewCouponData=(couponData)=>{
-         setCouponData(couponData)
-         setCurrrentAction("view-coupon")
-    }
+  }
+  const handleCoupenAdd = () => {
+    //
+  }
+  const confirmAction = (coupondId) => {
+    setSelectedCouponId(coupondId)
+  }
+  const showUpdateForm = (couponData) => {
+    setCouponData(couponData)
+    setCurrrentAction("update-coupon")
+  }
+  const viewCouponData = (couponData) => {
+    setCouponData(couponData)
+    setCurrrentAction("view-coupon")
+  }
 
   return (
     <Container className='content'>
@@ -99,12 +112,13 @@ function ListCoupons() {
                     <br />
                     <div className="table-responsive">
 
-                    <CTable striped> 
+                      <CTable striped>
                         <thead>
                           <tr>
                             <th>Coupon Code</th>
                             <th>Discount Value</th>
-                            <th>Limit</th>
+                            <th>Current Usage</th>
+                            <th>Max Usage</th>
                             <th>Status</th>
                             <th>View</th>
                             <th>Update</th>
@@ -114,13 +128,14 @@ function ListCoupons() {
                         <tbody>
                           {coupons.map(coupon => (
                             <tr key={coupon._id}>
-                            
+
                               <td>{coupon.code}</td>
-                              <td>{coupon.discountValue}</td>
-                              <td>{coupon.limit}</td>
-                              <td>{coupon.isActive ? "Active" :"Expired"}</td>
+                              <td>{coupon.discountValue}%</td>
+                              <td>{coupon.currentUsage}</td>
+                              <td>{coupon.maxUsage}</td>
+                              <td>{coupon.isActive ? "Active" : "Expired"}</td>
                               <td>
-                              <CButton color="info" variant="outline"
+                                <CButton color="info" variant="outline"
                                   onClick={() => viewCouponData(coupon)}
                                 >
                                   View
@@ -134,7 +149,7 @@ function ListCoupons() {
                                 </CButton>
                               </td>
                               <td>
-                               <CButton color="danger" variant="outline"
+                                <CButton color="danger" variant="outline"
                                   onClick={() => confirmAction(coupon._id)}
                                 >
                                   {coupon.isActive ? "Deactivate" : "Activate"}
@@ -145,6 +160,15 @@ function ListCoupons() {
                         </tbody>
                       </CTable>
                     </div>
+                    <div className="pagination">
+               <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                 Previous
+               </button>
+               <span> Page {currentPage} of {totalPages} </span>
+               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                 Next
+               </button>
+             </div>
                   </div>
                 </div>
               </div>
@@ -155,14 +179,14 @@ function ListCoupons() {
 
 
                 {currentAction == "view-coupon" && <>
-                    <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
-                      <CIcon icon={cilArrowThickFromRight} /> Go Back
-                    </CButton>
-                    <CouponDetails coupon={couponData} onChildUpdate={handleCoupenAdd} />
-                  </>
-                 }
-                 {
-                    currentAction == 'update-coupon' && <>
+                  <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
+                    <CIcon icon={cilArrowThickFromRight} /> Go Back
+                  </CButton>
+                  <CouponDetails coupon={couponData} onChildUpdate={handleCoupenAdd} />
+                </>
+                }
+                {
+                  currentAction == 'update-coupon' && <>
                     <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
                       <CIcon icon={cilArrowThickFromRight} /> Go Back
                     </CButton>
@@ -170,7 +194,7 @@ function ListCoupons() {
                   </>
                 }
                 {
-                    currentAction == 'create-coupon' && <>
+                  currentAction == 'create-coupon' && <>
                     <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
                       <CIcon icon={cilArrowThickFromRight} /> Go Back
                     </CButton>

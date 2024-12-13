@@ -1,61 +1,80 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {Link, useLocation} from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getUserData, removeAuth, setCartItemsCount } from '../../../redux/Actions/userActions';
-import { axiosAuthInstance, axiosCartInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosAuthInstance, axiosBookInstance, axiosCartInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
-const Header = ({setSearchQuery}) => {
+import { CListGroup, CListGroupItem } from '@coreui/react';
+import { bookImages } from '../../../redux/Constants/imagesDir';
+const Header = ({ setSearchQuery }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const {isLoggedIn,userId} = useSelector(state=>state.auth)
-  const {cartCount} = useSelector(state=>state.cartItemsCount)
-  const [activeTab ,setActiveTab]=useState("Home")
-  const [search ,setSearch]=useState("")
+  const { isLoggedIn, userId } = useSelector(state => state.auth)
+  const { cartCount } = useSelector(state => state.cartItemsCount)
+  const [activeTab, setActiveTab] = useState("Home")
+  const [search, setSearch] = useState("")
+  const [searchedProducts, setSearchedProducts] = useState([])
+  const [searchedProduct,setSearchedProduct]=useState('')
   const dispatch = useDispatch()
   const location = useLocation()
-  useEffect(()=>{
-    async function fetchCartItemsCount(){
-   try{
-    const {data} = await axiosCartInstance.get(`/${userId}/cart-items-count`)
-    console.log(data)
-    dispatch(setCartItemsCount(data.cartItemsCount))
-   }catch(err){
-    console.log(err)
-     toast.error(err?.response?.data?.message)
-   }
-   }
-   if(userId){
-    fetchCartItemsCount()
-   }
-  
-  },[dispatch,userId])
+  const navigate = useNavigate()
+  useEffect(() => {
+    async function fetchCartItemsCount() {
+      try {
+        const { data } = await axiosCartInstance.get(`/${userId}/cart-items-count`)
+        console.log(data)
+        dispatch(setCartItemsCount(data.cartItemsCount))
+      } catch (err) {
+        console.log(err)
+        toast.error(err?.response?.data?.message)
+      }
+    }
+    if (userId) {
+      fetchCartItemsCount()
+    }
 
- const handleLogOut=async()=>{
-  try {
-    const response = await axiosAuthInstance.get('/logout');
-    dispatch(removeAuth());
-  } catch (error) {
-    console.error("Logout failed", error.response?.data || error.message);
+  }, [dispatch, userId])
+
+  const handleLogOut = async () => {
+    try {
+      const response = await axiosAuthInstance.get('/logout');
+      dispatch(removeAuth());
+    } catch (error) {
+      console.error("Logout failed", error.response?.data || error.message);
+    }
   }
- }
- useEffect(() => {
-  const path = location.pathname;
-  if (path === '/') setActiveTab("Home");
-  else if (path === '/library') setActiveTab("Library");
-  else if (path === '/account') setActiveTab("Account");
-  else if (path === '/register') setActiveTab("SignUp");
-  else if (path === '/login') setActiveTab("Login");
-}, [location.pathname]);
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/') setActiveTab("Home");
+    else if (path === '/library') setActiveTab("Library");
+    else if (path === '/account') setActiveTab("Account");
+    else if (path === '/register') setActiveTab("SignUp");
+    else if (path === '/login') setActiveTab("Login");
+  }, [location.pathname]);
 
- 
- return (
+  const searchForProducts = async (e) => {
+    try {
+        const value = e.target.value
+        setSearchedProduct(value)
+        
+        const { data } = await axiosBookInstance.get(`/search/?title=${value}`)
+        setSearchedProducts(data.products)
+    } catch (err) {
+        console.log(err)
+        toast.error("Something Went Wrong")
+    }
+}
+
+
+
+  return (
     <header className="header">
-  
+
 
       <nav className="nav container">
         <a href="index.html" className="nav__logo">
           <img
             className="nav__logo-img"
-            src="/assets/img/logo.svg"
+            src="/assets/img/logo.jpg"
             alt="website logo"
           />
         </a>
@@ -71,58 +90,73 @@ const Header = ({setSearchQuery}) => {
           <ul className="nav__list">
             <li className="nav__item">
               <Link to={'/'} className={`nav__link no-underline ${activeTab == "Home" && "active-link"}`}
-                onClick={()=>setActiveTab("Home")}>
+                onClick={() => setActiveTab("Home")}>
                 Home
-              </Link>  
+              </Link>
             </li>
             <li className="nav__item">
               <Link to={'/library'} className={`nav__link no-underline ${activeTab == "Library" && "active-link"}`}
-                onClick={()=>setActiveTab("Library")}>
+                onClick={() => setActiveTab("Library")}>
                 Library
               </Link>
             </li>
-            { isLoggedIn && <li className="nav__item">
-                <Link to='/account' className={`nav__link no-underline ${activeTab == "Account" && "active-link"}`}
-                 onClick={()=>setActiveTab("Account")}>
-                 Account
-                </Link>
-                </li>}
-              { !isLoggedIn && <li className="nav__item">
-                <Link to='/register' className={`nav__link no-underline ${activeTab == "SignUp" && "active-link"}`}
-                 onClick={()=>setActiveTab("SignUp")}>
+            {isLoggedIn && <li className="nav__item">
+              <Link to='/account' className={`nav__link no-underline ${activeTab == "Account" && "active-link"}`}
+                onClick={() => setActiveTab("Account")}>
+                Account
+              </Link>
+            </li>}
+            {!isLoggedIn && <li className="nav__item">
+              <Link to='/register' className={`nav__link no-underline ${activeTab == "SignUp" && "active-link"}`}
+                onClick={() => setActiveTab("SignUp")}>
                 Sign up
-                </Link>
-                </li>}
-                {!isLoggedIn && <li className="nav__item">
-                <Link to='/login' className={`nav__link no-underline ${activeTab == "Login" && "active-link"}`}
-                onClick={()=>setActiveTab("Login")}>
-                Log In 
-                </Link>
-                </li>}
-              {
-                isLoggedIn && <li className="nav__item">
+              </Link>
+            </li>}
+            {!isLoggedIn && <li className="nav__item">
+              <Link to='/login' className={`nav__link no-underline ${activeTab == "Login" && "active-link"}`}
+                onClick={() => setActiveTab("Login")}>
+                Log In
+              </Link>
+            </li>}
+            {
+              isLoggedIn && <li className="nav__item">
                 <Link onClick={handleLogOut} className="nav__link no-underline">
-                Log Out
+                  Log Out
                 </Link>
-                </li>
-              }
-              
+              </li>
+            }
+
           </ul>
           <div className="header__search">
             <input
               type="text"
-              value={search}
-              onChange={(e)=>{setSearch(e.target.value)}}
+              value={searchedProduct}
+              onChange={searchForProducts}
               placeholder="Search For Items..."
               className="form__input"
+
             />
-            <button className="search__btn">
+            {searchedProducts.length > 0 && (
+              <CListGroup className='position-absolute z-1000 select w-100'>
+                {searchedProducts.map((product) => (
+                  <CListGroupItem
+                    key={product._id}
+                    onClick={() => navigate(`/book-details/${product._id}`)}
+                  >
+                             <img src={bookImages+product._id+"/"+product.images[0]}  alt="book-img" style={{width:'30px'}} />
+
+                    {product.title}
+                  </CListGroupItem>
+                ))}
+              </CListGroup>
+            )}
+            {/* <button className="search__btn">
               <img src="/assets/img/search.png" alt="search icon" />
-            </button>
+            </button> */}
           </div>
         </div>
         <div className="header__user-actions">
-        <Link to={"/wishlist"} className="header__action-btn" title="Wishlist">
+          <Link to={"/wishlist"} className="header__action-btn" title="Wishlist">
             <img src="/assets/img/icon-heart.svg" alt="Wishlist" />
             {/* <span className="count">3</span> */}
           </Link>

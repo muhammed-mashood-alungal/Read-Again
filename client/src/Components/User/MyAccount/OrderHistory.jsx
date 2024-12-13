@@ -25,7 +25,7 @@ import { cilArrowLeft } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 
 
-function OrderHistory({ orders }) {
+function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalPages }) {
   const [isViewOrder, setIsviewOrder] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState({})
   const [isCancelling, setIsCancelling] = useState(false)
@@ -221,6 +221,15 @@ return (
             </CTableBody>
           </CTable>
         )}
+        <div className="pagination">
+               <button onClick={() => setCurrentOrderPage(currentOrderPage - 1)} disabled={currentOrderPage === 1}>
+                 Previous
+               </button>
+               <span style={{color:'black'}}> Page {currentOrderPage} of {totalPages} </span>
+               <button onClick={() => setCurrentOrderPage(currentOrderPage + 1)} disabled={currentOrderPage === totalPages}>
+                 Next
+               </button>
+             </div>
       </CCardBody>
     </CCard>
   ) : (

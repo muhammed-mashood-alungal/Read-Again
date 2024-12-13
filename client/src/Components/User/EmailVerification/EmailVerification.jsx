@@ -23,6 +23,7 @@ const EmailVerification = (props) => {
   const navigate = useNavigate()
   const dispatch= useDispatch()
   const formData = useSelector(state=>state.registrationData)
+  const {isLoggedIn} = useSelector(state=>state.auth)
   const [email,setEmail] = useState("")
   const {loading ,error} = useSelector(state=>state.getOtp)
   const [verificationLoading ,setVerificationLoading] = useState(false)
@@ -39,6 +40,12 @@ const EmailVerification = (props) => {
      setEmail(userData?.email)
     }
    },[])
+
+   useEffect(()=>{
+    if(isLoggedIn){
+      navigate('/')
+    }
+   },[isLoggedIn])
 
  
   
@@ -72,7 +79,7 @@ const EmailVerification = (props) => {
     setSended(false)
     setOtp("")
   } 
-  },[timer,loading])
+  },[timer])
 
 
  
@@ -85,7 +92,6 @@ const EmailVerification = (props) => {
     setVerificationLoading(true)
     
     try{
-      console.log("gasdf")
       const response = await axiosUserInstance.post(`/${email}/verify-otp`, {otp})
       if(response.data.success){
         setVerificationLoading(false)
@@ -141,19 +147,7 @@ const EmailVerification = (props) => {
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Verify Email</h3>
           {((loading || verificationLoading) == true) && <p>Loading....</p>}
-          {/* {verifyError && <p>{verifyError}</p>} */}
           <Form onSubmit={verifyOtp}>
-            {/* <FormGroup>
-              <input
-                type="email"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="form__input"
-                required
-                disabled={sended}
-              />
-            </FormGroup> */}
             <FormGroup>
               <input
                 type="text"
@@ -164,15 +158,21 @@ const EmailVerification = (props) => {
                 required
               />
             </FormGroup>
-
+           
             <div className='space-between mt-3'>
-              { <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={ sended ? verifyOtp : resendOtp}>
+              <div>
+              <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={ sended ? verifyOtp : resendOtp}>
                            {sended ? "Register" : "Resend"}
-                       </Link>
-              }
+              </Link>
+              </div>
+              <div >
+                <span> Resend in : {sended && timer > -1  && <p>{timer}</p> }</span>
+             
+              </div>
+           
             <div>
             <Link onClick={()=>{navigate(-1)}} >Back</Link><br />
-            {sended && timer > -1  && <p>{timer}</p> }
+           
             </div>
             </div>
             

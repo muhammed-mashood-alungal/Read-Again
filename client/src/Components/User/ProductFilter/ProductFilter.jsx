@@ -4,12 +4,20 @@ import { toast } from 'react-toastify';
 import { axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilter , faAngleDown ,faAngleUp, faUpDown } from '@fortawesome/free-solid-svg-icons'
+import { useSearchParams } from 'react-router-dom';
 
 
 const ProductFilter = ({ onFilter ,setSearchQuery}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState("")
+  const [searchParams, setSearchParams] = useSearchParams();
   
+    const queryCategory = searchParams.get('category') 
+    useEffect(()=>{
+      if(queryCategory){
+        setActiveFilters({...activeFilters,category:queryCategory})
+      }
+    },[])
   const [activeFilters, setActiveFilters] = useState({
     sort: 'Default',
     price: {},
@@ -53,11 +61,11 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
 
   const priceRanges = [
     ['All', {}],
-    ['$0.00 - $100.00', { $lt: 100 }],
-    ['$100.00 - $250.00', { $gt: 100, $lt: 250 }],
-    ['$250.00 - $500.00', { $gt: 250, $lt: 500 }],
-    ['$500.00 - $1000.00', { $gt: 500, $lt: 1000 }],
-    ['$1000.00+', { $gt: 1000 }]
+    ['₹0.00 - ₹100.00', { $lt: 100 }],
+    ['₹100.00 - ₹250.00', { $gt: 100, $lt: 250 }],
+    ['₹250.00 - ₹500.00', { $gt: 250, $lt: 500 }],
+    ['₹500.00 - ₹1000.00', { $gt: 500, $lt: 1000 }],
+    ['₹1000.00+', { $gt: 1000 }]
   ];
   
 

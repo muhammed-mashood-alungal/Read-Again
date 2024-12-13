@@ -20,7 +20,7 @@ function ListOrders() {
       try {
         const { data } = await axiosOrderInstance.get(`/?page=${currentPage}&limit=${limit}`)
         setOrders(data.orders)
-        let pages = Math.ceil(data?.totalUsers / limit)
+        let pages = Math.ceil(data?.totalOrders / limit)
         setTotalPages(pages)
       } catch (err) {
         console.log(err)

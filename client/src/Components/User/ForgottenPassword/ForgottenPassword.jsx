@@ -13,6 +13,7 @@ import { createUser, getOtp } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
 import { verifyEmail } from '../../../validations/verifyEmail'; 
+import { toast } from 'react-toastify';
 
 const ForgottenPassword = (props) => {
   
@@ -67,12 +68,12 @@ const ForgottenPassword = (props) => {
           setForgetPassEmail(email)
            navigate('/forgotten-password/change-password')
         }
-       
       }
     }catch(err){
       console.log(err.response)
       setVerificationLoading(false)
-      setVerifyError(err.response.data.message)
+      toast.error(err?.response?.data?.message)
+      //setVerifyError(err.response.data.message)
     }
     
   };
@@ -96,15 +97,14 @@ const ForgottenPassword = (props) => {
   }
  
   const sendOtp =async (e)=>{
-    setVerifyError('')
     e.preventDefault()
     
     if(!email ||email.trim() == "" || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) ){
-      setVerifyError("Enter a valid Email Address")
+      toast.error("Enter a valid Email Address")
       return
     }
     if(await verifyEmail(email)){
-      setVerifyError("Invalid Credential")
+      toast.error("Invalid Credential")
       return
     }
     
@@ -120,8 +120,7 @@ const ForgottenPassword = (props) => {
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Verify Email</h3>
           {((loading || verificationLoading) == true) && <p>Loading....</p>}
-          {error && <p>{error}</p>}
-          {verifyError && <p>{verifyError}</p>}
+          
           <Form onSubmit={verifyOtp}>
             <FormGroup>
               <input

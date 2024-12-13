@@ -147,8 +147,20 @@ module.exports = {
         res.status(200).json({success:true, salesReport})
       } catch (error) { 
         console.log(error)
-        res.status(400).json()
+        res.status(400).json({message:"Somthing Went Wrong"})
       }
+  },
+  async getOverallStates(req,res){
+    try{
+      const orderCount = await Order.countDocuments({})
+      const salesCount = await Order.countDocuments({orderStatus:"Delivered"})
+      const userCount = await User.countDocuments({})
+      console.log(orderCount,salesCount,userCount)
+      res.status(200).json({overall:{orderCount,salesCount,userCount}})
+    }catch(err){
+      console.log(err)
+      res.status(400).json({message:"Somthing Went Wrong"})
+    }
   }
 
 }
