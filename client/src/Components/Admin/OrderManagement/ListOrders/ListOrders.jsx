@@ -7,6 +7,7 @@ import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 import { CButton, CTable } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilArrowThickFromRight } from '@coreui/icons';
+import { useNavigate } from 'react-router-dom';
 function ListOrders() {
   const [orders, setOrders] = useState([])
   const [showOrderDetails, setShowOrderDetails] = useState(false)
@@ -15,6 +16,7 @@ function ListOrders() {
   const [selectedOrder, setSelectedOrder] = useState({})
   const [showModal, setShowModal] = useState(false)
   const limit = 10
+  const navigate = useNavigate()
   useEffect(() => {
     async function fetchAllOrders() {
       try {
@@ -31,7 +33,7 @@ function ListOrders() {
   }, [currentPage])
   return (
     <Container className='content'>
-
+     
       <Row className="category-management">
         {
           !showOrderDetails ?
@@ -68,8 +70,9 @@ function ListOrders() {
                                   <td>{order.totalAmount}</td>
                                   <td>
                                     <CButton onClick={() => {
-                                      setSelectedOrder(order)
-                                      setShowOrderDetails(true)
+                                     // setSelectedOrder(order)
+                                     // setShowOrderDetails(true)
+                                     navigate('/admin/orders/view', {state:{selectedOrder : order}})
                                     }}
                                      color="info" variant="outline"
                                     >View</CButton>
@@ -93,8 +96,6 @@ function ListOrders() {
                   </div>
                 </div>
               </div>
-
-
             </Col>
             :
             <>

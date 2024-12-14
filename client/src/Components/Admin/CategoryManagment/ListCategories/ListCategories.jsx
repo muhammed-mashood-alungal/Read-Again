@@ -9,6 +9,7 @@ import { CButton, CTable } from '@coreui/react';
 import { toast } from 'react-toastify';
 import CIcon from '@coreui/icons-react';
 import { cilArrowThickFromRight } from '@coreui/icons';
+import { useNavigate } from 'react-router-dom';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -17,6 +18,7 @@ const CategoryManagement = () => {
   const [isChildUpdated, setIsChildUpdated] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [currentAction, setCurrrentAction] = useState("list-categories")
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchCategories() {
@@ -83,10 +85,9 @@ const CategoryManagement = () => {
 
 
   return (
-    <Container className='content'>
+    <Container className='content'>  
       <Row className="category-management">
-        {
-          currentAction == "list-categories" ? <Col >
+         <Col>
             {selectedCategoryId &&
               <ConfirmationModal
                 title={`Are You Sure to Proceed ?`}
@@ -99,7 +100,7 @@ const CategoryManagement = () => {
                   <div className="card-body">
                     <div className='d-flex  justify-content-between'>
                       <h4 className="table-title">All Categories</h4>
-                      <CButton onClick={() => { setCurrrentAction("create") }}
+                      <CButton onClick={() => {navigate('/admin/category/form') }}
                         color="success"
                         variant="outline">
                         Add Category
@@ -112,11 +113,6 @@ const CategoryManagement = () => {
                         placeholder="Search categories"
                         onChange={handleSearch}
                       />
-                      <button
-                        className="primary-btn"
-                      >
-                        Search
-                      </button>
                     </form>
                     <br />
                     <div className="table-responsive">
@@ -144,7 +140,7 @@ const CategoryManagement = () => {
                               <td>{category.updatedAt}</td>
                               <td>
                                 <CButton color="success" variant="outline"
-                                  onClick={() => showUpdateForm(category._id)}
+                                  onClick={() => navigate('/admin/category/form',{state:{categoryData:category}})}
                                 >
                                   Update
                                 </CButton>
@@ -166,30 +162,6 @@ const CategoryManagement = () => {
               </div>
             </div>
           </Col>
-            : <Col >
-              <div>
-
-
-                {categoryData ?
-                  <>
-                    <CButton onClick={() => { setCurrrentAction("list-categories") }}>
-                      <CIcon icon={cilArrowThickFromRight} /> Go Back
-                    </CButton>
-                    <CategoryForm categoryData={categoryData} onChildUpdate={handleChildUpdate} />
-                  </>
-                  :
-                  <>
-                    <CButton onClick={() => { setCurrrentAction("list-categories") }}>
-                      <CIcon icon={cilArrowThickFromRight} /> Go Back
-                    </CButton>
-                    <CategoryForm onChildUpdate={handleChildUpdate} />
-                  </>
-                }
-              </div>
-            </Col>
-        }
-
-
       </Row>
     </Container>
   );

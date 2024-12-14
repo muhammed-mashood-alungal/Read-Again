@@ -12,15 +12,19 @@ import {
     CTableDataCell,
     CTableHead,
     CTableHeaderCell,
-    CTableRow
+    CTableRow,
+    CContainer
 } from '@coreui/react';
 import { format } from 'date-fns';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { axiosOfferInstance } from '../../../../redux/Constants/axiosConstants';
+import { cilArrowThickFromRight } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
 
-function ViewOffer({offer}) {
-    //const [offer, setOffer] = useState(null);
+function ViewOffer({}) {
+    const location = useLocation()
+    const offer = location?.state?.offer
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const navigate = useNavigate();
@@ -51,6 +55,10 @@ function ViewOffer({offer}) {
     // }
 
     return (
+        <CContainer className='mt-5'>
+            <CButton onClick={()=>{navigate('/admin/offers')}}>
+                   <CIcon icon={cilArrowThickFromRight} /> Go Back
+         </CButton>
         <CRow>
             <CCol xs={12}>
                 <CCard>
@@ -160,6 +168,7 @@ function ViewOffer({offer}) {
                 </CCard>
             </CCol>
         </CRow>
+        </CContainer>
     );
 }
 

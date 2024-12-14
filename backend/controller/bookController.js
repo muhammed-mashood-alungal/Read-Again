@@ -89,12 +89,10 @@ module.exports = {
                 sort.title = -1
             }
             
-            console.log(sort,price)  
-            const priceRange= {}
+            console.log(sort,price) 
             let  find = {isDeleted : false , "formats.physical.stock":{$gt:0}} 
              
             if( price  != "{}" ){
-            
                 price = JSON.parse(price)
                 find ={...find,"formats.physical.price":price}
             }
@@ -111,10 +109,10 @@ module.exports = {
             res.status(200).json({ success: true, books: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
-            res.status(500).json({ message: "Somthing went wrong" })
+            res.status(500).json({ message: "Something went wrong" })
         }
     },
-    async editBook(req, res) {
+    async editBook(req, res) { 
         try {
             const { bookId } = req.params
             const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;

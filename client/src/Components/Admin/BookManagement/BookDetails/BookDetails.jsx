@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './BookDetails.css'
 import { bookImages } from '../../../../redux/Constants/imagesDir'
 import {
@@ -15,7 +15,8 @@ import {
   CCardImage,
   CBadge,
   CListGroup,
-  CListGroupItem
+  CListGroupItem,
+  CButton
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { 
@@ -25,12 +26,18 @@ import {
   cilTag, 
   cilBarcode,
   cilInfo, 
-  cilDollar
+  cilDollar,
+  cilArrowThickFromRight
 } from '@coreui/icons';
-const BookDetails = ({ book }) => {
-
+const BookDetails = ({ }) => {
+  const location = useLocation()
+  const book = location?.state?.book
+  const navigate = useNavigate()
   return (
-    <CContainer>
+    <CContainer className='mt-5'>
+        <CButton onClick={()=>{navigate('/admin/books')}}>
+              <CIcon icon={cilArrowThickFromRight} /> Go Back
+        </CButton>
       <CRow>
         <CCol md={4}>
           <CCard className="mb-4">

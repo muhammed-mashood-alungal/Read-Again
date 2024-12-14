@@ -20,19 +20,21 @@ import {
     CModalFooter,
     CBadge,
     CListGroup,
-    CListGroupItem
+    CListGroupItem,
+    CContainer
 } from '@coreui/react';
 import { endOfDay, format } from 'date-fns';
 import { axiosBookInstance, axiosCategoryInstance, axiosCouponInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
 import { Col } from 'reactstrap';
-import { cilX } from '@coreui/icons';
+import { cilArrowThickFromRight, cilX } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
-function CouponForm({ isCreate, coupon, onSubmit }) {
-    // Initial state for form
+function CouponForm({ isCreate, onSubmit }) {
+    const location = useLocation()
+    const coupon = location?.state?.coupon
     const [formData, setFormData] = useState({
         code: '',
         discountValue: '',
@@ -167,6 +169,10 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
    
     return (
         <>
+        <CContainer className='mt-5'>
+             <CButton onClick={()=>{navigate('/admin/coupons')}}>
+                    <CIcon icon={cilArrowThickFromRight} /> Go Back
+                </CButton>
             <CCard>
                 <CCardHeader>
                     {coupon ? 'Update Coupon' : 'Create New Coupon'}
@@ -297,6 +303,7 @@ function CouponForm({ isCreate, coupon, onSubmit }) {
                     </CForm>
                 </CCardBody>
             </CCard>
+            </CContainer>
         </>
     );
 }

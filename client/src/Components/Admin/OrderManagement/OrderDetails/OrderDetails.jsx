@@ -16,13 +16,20 @@ import {
     CButton,
     CBadge,
     CRow,
-    CCol
+    CCol,
+    CContainer
   } from '@coreui/react';
+import { useLocation, useNavigate } from 'react-router-dom'
+import { cilArrowThickFromRight } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 
-function OrderDetails({ selectedOrder }) {
+function OrderDetails({  }) {
+    const location = useLocation()
+    const selectedOrder = location.state.selectedOrder
     const [order, setOrder] = useState(selectedOrder ? selectedOrder : {})
     const [isCancelling, setIsCancelling] = useState(false)
     const [selectedItemId, setSelectedItemId] = useState(null)
+    const navigate = useNavigate()
     const isEligibleForCancel = () => {
         if (order.orderStatus == "Pending" ||
             order.orderStatus == "Ordered"
@@ -190,6 +197,10 @@ function OrderDetails({ selectedOrder }) {
         }
     }
     return (
+      <CContainer className='mt-5'>
+         <CButton onClick={()=>{navigate('/admin/orders')}}>
+                <CIcon icon={cilArrowThickFromRight} /> Go Back
+            </CButton>
     <CCard className="order-details-container">
       {isCancelling && (
         <ReasonPopUp 
@@ -325,6 +336,7 @@ function OrderDetails({ selectedOrder }) {
         </CRow>
       </CCardBody>
     </CCard>
+    </CContainer>
   );
 }
 

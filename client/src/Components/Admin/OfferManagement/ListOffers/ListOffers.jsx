@@ -9,6 +9,7 @@ import { axiosCouponInstance, axiosOfferInstance } from '../../../../redux/Const
 import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 import OfferForm from '../OfferForm/OfferForm';
 import ViewOffer from '../ViewOffer/ViewOffer';
+import { useNavigate } from 'react-router-dom';
 
 
 function ListOffers() {
@@ -16,6 +17,7 @@ function ListOffers() {
     const [selectedOfferId,setSelectedOfferId]=useState(null)
     const [offers ,setOffers]=useState([])
     const [offerData,setOfferData]=useState({})
+    const navigate= useNavigate()
 
     useEffect(()=>{
        async function fetchOffers(){
@@ -70,8 +72,7 @@ function ListOffers() {
     return (
         <Container className='content'>
           <Row className="category-management">
-            {
-              currentAction == "list-offers" ? <Col >
+             <Col >
                 {selectedOfferId &&
                   <ConfirmationModal
                     title={`Are You Sure to Proceed ?`}
@@ -84,7 +85,7 @@ function ListOffers() {
                       <div className="card-body">
                         <div className='d-flex  justify-content-between'>
                           <h4 className="table-title">All Offers</h4>
-                          <CButton onClick={() => { setCurrrentAction("create-offer") }}
+                          <CButton onClick={() => {navigate('/admin/offers/form')}}
                             color="success"
                             variant="outline">
                             Add Offer
@@ -123,14 +124,18 @@ function ListOffers() {
                                   <td>{offer.isActive ? "Active" :"Expired"}</td>
                                   <td>
                                   <CButton color="info" variant="outline"
-                                      onClick={() => viewOfferData(offer)}
+                                      onClick={ ()=>{
+                                        navigate('/admin/offers/view',{state:{offer:offer}})
+                                      }}
                                     >
                                       View
                                     </CButton>
                                   </td>
                                   <td>
                                     <CButton color="success" variant="outline"
-                                      onClick={() => showUpdateForm(offer)}
+                                      onClick={ ()=>{
+                                        navigate('/admin/offers/form',{state:{offer:offer}})
+                                      }}
                                     >
                                       Update
                                     </CButton>
@@ -152,36 +157,6 @@ function ListOffers() {
                   </div>
                 </div>
               </Col>
-                : <Col >
-                  <div>
-    
-    
-                    {currentAction == "view-offer" && <>
-                        <CButton onClick={() => { setCurrrentAction("list-offers") }}>
-                          <CIcon icon={cilArrowThickFromRight} /> Go Back
-                        </CButton>
-                        <ViewOffer offer={offerData} onChildUpdate={handleCoupenAdd} />
-                      </>
-                     }
-                     {
-                        currentAction == 'update-offer' && <>
-                        <CButton onClick={() => { setCurrrentAction("list-offers") }}>
-                          <CIcon icon={cilArrowThickFromRight} /> Go Back
-                        </CButton>
-                        <OfferForm onChildUpdate={handleCoupenAdd} offer={offerData} />
-                      </>
-                    }
-                    {
-                        currentAction == 'create-offer' && <>
-                        <CButton onClick={() => { setCurrrentAction("list-offers") }}>
-                          <CIcon icon={cilArrowThickFromRight} /> Go Back
-                        </CButton>
-                        <OfferForm onChildUpdate={handleCoupenAdd} />
-                      </>
-                    }
-                  </div>
-                </Col>
-            }
           </Row>
         </Container>
       )

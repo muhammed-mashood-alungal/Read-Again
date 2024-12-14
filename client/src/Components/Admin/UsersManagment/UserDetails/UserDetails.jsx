@@ -1,52 +1,65 @@
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './UserDetails.css'
-import { CCard, CCardBody } from '@coreui/react'
+import { CButton, CCard, CCardBody, CContainer, CTable, CTableBody, CTableDataCell, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { cilArrowThickFromRight } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-function UserDetails({user}) {
-    
+function UserDetails({}) {
+    const location = useLocation()
+    const navigate = useNavigate()
+    const user = location?.state?.user
+    if(!user){
+      navigate('/admin/users')
+    }
   return (
+    <CContainer className='mt-5'>
+       <CButton onClick={()=>{navigate('/admin/users')}}>
+                    <CIcon icon={cilArrowThickFromRight} /> Go Back
+       </CButton>
     <CCard>
        <CCardBody>
-      
        <div>
-    <h1 className="card-title">User Details</h1>
+    <h3 className="card-title">User Details</h3>
     <br />
    <div>
-    <div>
-    <h4>{user.username}</h4>
-    <h5>{user.email}</h5>
-    </div>
-    
-    <hr />
-    <table>
-      <tr>
-        <th>Phone </th>
-        <th className='user-data-text'>{user.phone ? user.phone : "Not Added"}</th>
-      </tr>
-      <tr>
-        <th>Address </th>
-        <th className='user-data-text'>{user.address ? user.address : "Not Added"}</th>
-      </tr>
-      <tr>
-        <th>Membership </th>
-        <th className='user-data-text'>{user.memberShipType}</th>
-      </tr>
-      <tr>
-        <th>Is Blocked </th>
-        <th className='user-data-text'>{user.isBlocked ?  "YES": "NO"}</th>
-      </tr>
-      <tr>
-        <th>Joined Data </th>
-        <th className='user-data-text'> {user.createdAt}</th>
-      </tr>
-    </table>
+    <CTable striped hover responsive>
+              <CTableBody>
+                <CTableRow>
+                  <CTableHeaderCell>Username</CTableHeaderCell>
+                  <CTableDataCell className="text-end">{user.username}</CTableDataCell>
+                </CTableRow>
+                <CTableRow>
+                  <CTableHeaderCell>Email</CTableHeaderCell>
+                  <CTableDataCell className="text-end">
+                    {user.email}%
+                  </CTableDataCell>
+                </CTableRow>
+                <CTableRow>
+                  <CTableHeaderCell>Member Ship</CTableHeaderCell>
+                  <CTableDataCell className="text-end">
+                    {user.memberShipType}
+                  </CTableDataCell>
+                </CTableRow>
+                <CTableRow>
+                  <CTableHeaderCell>is Blocked</CTableHeaderCell>
+                  <CTableDataCell className="text-end">
+                    {user.isBlocked ? "True" : "False"}
+                  </CTableDataCell>
+                </CTableRow>
+                <CTableRow>
+                  <CTableHeaderCell>Joined Data</CTableHeaderCell>
+                  <CTableDataCell className="text-end">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </CTableDataCell>
+                </CTableRow>
+              </CTableBody>
+            </CTable>
    </div>
    </div>
    </CCardBody>
   </CCard>
+  </CContainer>
   )
 }
 

@@ -21,10 +21,17 @@ import {
   CRow,
   CFormLabel,
   CAlert,
-  CImage
+  CImage,
+  CContainer
 } from '@coreui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import CIcon from '@coreui/icons-react';
+import { cilArrowThickFromRight } from '@coreui/icons';
 
-const BookForm = ({ bookDetails }) => {
+const BookForm = ({  }) => {
+  const location =useLocation()
+  const bookDetails = location.state.bookDetails
+  console.log(bookDetails)
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [category, setCategory] = useState('');
@@ -38,7 +45,8 @@ const BookForm = ({ bookDetails }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [ISBN, setISBN] = useState('');
   const [categories , setCategories] = useState([])
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([])
+  const navigate = useNavigate()
 
 
   const [formats, setFormats] = useState({
@@ -168,13 +176,12 @@ const BookForm = ({ bookDetails }) => {
       }
 
       const result =  bookFormValidate(bookData, !isCreateForm)
-      if (!result.success) {
+      if (!result.success){
         toast.error(result.message)
         return
       }
       const token = localStorage.getItem("token")
       if (!isCreateForm) {
-
         console.log(token)
         await axiosBookInstance.put(`/${bookDetails._id}/edit`, bookData, {
           headers: {
@@ -182,6 +189,7 @@ const BookForm = ({ bookDetails }) => {
           }
         })
         toast.success("Successfully updated")
+        navigate('/admin/books')
       } else {
 
         const formData = new FormData()
@@ -208,9 +216,9 @@ const BookForm = ({ bookDetails }) => {
             Authorization: `Bearer ${token}`
           }
         })
-        toast.success("Updated Success")
-     //   setSuccess(true)
-        console.log("success")
+        navigate('/admin/books')
+        toast.success("Saved Successfully")
+       
       }
     } catch (err) {
       toast.error(err?.response?.data?.message)
@@ -244,8 +252,13 @@ const BookForm = ({ bookDetails }) => {
 
  
   return (
+    <CContainer className='mt-5'>
+      
     <CRow>
       <CCol xs={12}>
+      <CButton onClick={()=>{navigate('/admin/books')}}>
+                   <CIcon icon={cilArrowThickFromRight} /> Go Back
+      </CButton>
         <CCard>
           <CCardHeader>
             <strong>{bookDetails ? 'Update Book' : 'Create New Book'}</strong>
@@ -521,6 +534,7 @@ const BookForm = ({ bookDetails }) => {
         />
       )}
     </CRow>
+    </CContainer>
   );
 }
 

@@ -9,15 +9,27 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CBadge
+  CBadge,
+  CContainer,
+  CButton
 } from '@coreui/react';
 import { format } from 'date-fns';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { cilArrowThickFromRight } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
 
-const CouponDetails = ({ coupon }) => {
-  // Determine coupon status
+const CouponDetails = ({ }) => {
+ const location= useLocation()
+ const coupon = location.state.coupon
+ const navigate = useNavigate()
 
 
   return (
+    <CContainer className='mt-5' >
+       <CButton onClick={()=>{navigate('/admin/coupons')}}>
+              <CIcon icon={cilArrowThickFromRight} /> Go Back
+          </CButton>
+  
     <CCard className="mb-4">
       <CCardHeader className="d-flex justify-content-between align-items-center">
         <h5 className="m-0">Coupon Details</h5>
@@ -83,6 +95,7 @@ const CouponDetails = ({ coupon }) => {
         </CTable>
       </CCardBody>
     </CCard>
+    </CContainer>
   );
 };
 

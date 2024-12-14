@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 import './MyAccount.css'
+import { CCardBody, CCol, CRow, CTable, CTableBody, CTableDataCell, CTableHeaderCell, CTableRow } from '@coreui/react';
 function Addresses({ userAddresses, userId }) {
   const [currentAction , setCurrentAction] = useState("view")
   const [city, setCity] = useState("")
@@ -34,6 +35,7 @@ function Addresses({ userAddresses, userId }) {
         toast.success("Address Saved", {
           autoClose: 1000
         })
+        console.log(formData)
         setAddresses(addresses =>{
           return [...addresses,formData]
         })
@@ -43,6 +45,7 @@ function Addresses({ userAddresses, userId }) {
         }, 1000)
      
     } catch (err) {
+      console.log(err)
       toast.error(err?.response?.message)
     }
 
@@ -190,11 +193,43 @@ function Addresses({ userAddresses, userId }) {
               <label htmlFor="idDefault" className="default_label">
                   Delivery Address
               </label>
-                  <address className="address">
-                    {address?.city}, {address?.landmark} <br />
-                    {address?.state}, {address?.country} <br />
-                    {address?.postalCode} <br />
-                    {address?.phoneNumbers[0]} , {address?.phoneNumbers[1]}
+             
+                  <address className="address mt-3">
+                     <CTable  hover responsive>
+                      <CTableBody>
+                                <CTableRow>
+                                  <CTableHeaderCell>City</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">234234</CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell>Coupon Code</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">{address?.city}</CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell> Land Mark</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">{address?.landmark} </CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell>State</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">{address?.state}</CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell>Country</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">{address?.country} </CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell>Postal Code</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">{address?.postalCode}</CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell>Phone</CTableHeaderCell>
+                                  <CTableDataCell className="text-end"> {address?.phoneNumbers[0] } {address?.phoneNumbers[1] && address?.phoneNumbers[1]}</CTableDataCell>
+                                </CTableRow>
+                                
+
+                      </CTableBody>
+                     </CTable>
+                    
                   </address>
                  
                   <button className="link-button" onClick={()=>{setEditingMode(address)}}>Edit</button> 
@@ -257,19 +292,20 @@ function Addresses({ userAddresses, userId }) {
                 value={phoneNumbers[0]}
                 onChange={(e) => {handlePhone(e.target.value , 0)}}
               />
-               <p className='err-msg'>{addressError.phoneNumbers[0]}</p>
+               <p className='err-msg'>{addressError?.phoneNumbers && addressError?.phoneNumbers[0]}</p>
               <input type="text" placeholder="Phone Number"
                 className="form__input"
                 value={phoneNumbers[1]}
                 onChange={(e) => {handlePhone(e.target.value , 1)}}
               />
-               <p className='err-msg'>{addressError.phoneNumbers[1]}</p>
+               <p className='err-msg'>{addressError?.phoneNumbers && addressError?.phoneNumbers[1]}</p>
 
             </form>
             <button className='primary-btn' role="submit" onClick={handleSubmit}>Save</button>
             <button className='secondary-btn' onClick={
               ()=>{
                 setCurrentAction("view")
+                resetStates()
               }
             }>Cancel</button>
           </div>
@@ -285,47 +321,55 @@ function Addresses({ userAddresses, userId }) {
                 value={city}
                 onChange={(e) => { setCity(e.target.value) }}
               />
+              <p className='err-msg'>{addressError.city}</p>
               <input type="text" placeholder="Land mark , eg:near Hypermarket..."
                 className="form__input"
                 value={landmark}
                 onChange={(e) => { setLandmark(e.target.value) }}
               />
+                <p className='err-msg'>{addressError.landmark}</p>
               <input type="text" placeholder="District"
                 className="form__input"
                 value={district}
                 onChange={(e) => { setDistrict(e.target.value) }}
               />
+              <p className='err-msg'>{addressError.district}</p>
               <input type="text" placeholder="State"
                 className="form__input"
                 value={state}
                 onChange={(e) => { setState(e.target.value) }}
               />
+               <p className='err-msg'>{addressError.state}</p>
               <input type="text" placeholder="Country"
                 className="form__input"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
               />
+                <p className='err-msg'>{addressError.country}</p>
               <input type="number" placeholder="Post Code"
                 className="form__input"
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
               />
+              <p className='err-msg'>{addressError.postalCode}</p>
               <input type="text" placeholder="Phone Number"
                 className="form__input"
                 value={phoneNumbers[0]}
                 onChange={(e) => {handlePhone(e.target.value , 0)}}
               />
+               <p className='err-msg'>{addressError?.phoneNumbers && addressError?.phoneNumbers[0]}</p>
               <input type="text" placeholder="Phone Number"
                 className="form__input"
                 value={phoneNumbers[1]}
                 onChange={(e) => {handlePhone(e.target.value , 1)}}
               />
-
+               <p className='err-msg'>{addressError?.phoneNumbers && addressError?.phoneNumbers[1]}</p>
             </form>
             <button className='primary-btn' role="submit" onClick={handleSubmit}>Save</button>
             <button className='secondary-btn' onClick={
               ()=>{
                 setCurrentAction("view")
+                resetStates()
               }
             }>Cancel</button>
           </div>

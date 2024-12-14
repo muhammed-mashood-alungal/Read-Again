@@ -8,6 +8,7 @@ import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 import { CButton, CTable } from '@coreui/react';
 import { cilArrowThickFromRight } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
+import { useNavigate } from 'react-router-dom';
 
 const ListBooks = () => {
   const [allBooks, setAllbooks] = useState([]);
@@ -19,7 +20,7 @@ const ListBooks = () => {
   const [totalPages, setTotalPages] = useState(1)
   const [selectedBookId, setSelectedBookId] = useState(null)
   const limit=10
-
+  const navigate = useNavigate()
   useEffect(() => {
    const fetchBooks =async()=>{
     console.log(currentPage,limit)
@@ -122,7 +123,7 @@ const ListBooks = () => {
                <div className="card-body">
                 <div className='d-flex  justify-content-between'>
                 <h4 className="table-title">All Books</h4> 
-                 <CButton onClick={()=>{setCurrrentAction("create")}} 
+                 <CButton onClick={()=>{navigate('/admin/books/add',{state:{type:"create"}})}} 
                  color="success" 
                  variant="outline">
                   Add Product 
@@ -164,14 +165,14 @@ const ListBooks = () => {
                            <td>{book?.category?.name}</td>
                            <td>
                             <CButton color="info" variant="outline"
-                               onClick={() => viewBook(book._id)}
+                               onClick={() =>navigate('/admin/books/view',{state:{book:book}})}
                              >
                                View
                              </CButton>
                            </td>
                            <td>
                               <CButton color="success" variant="outline"
-                               onClick={() => updateBook(book._id)}
+                               onClick={()=>{navigate('/admin/books/add',{state:{type:"update",bookDetails:book}})}} 
                              >
                                Update
                              </CButton>
@@ -203,31 +204,7 @@ const ListBooks = () => {
          </div>
          </Col>
       }
-      {
-        currentAction == "view" && <Col>
-         <CButton onClick={()=>{setCurrrentAction("list-books")}}>
-         <CIcon icon={cilArrowThickFromRight} /> Go Back
-         </CButton>
-         <BookDetails book={bookDetails}/>
-        </Col>
-      }
-      {
-        currentAction == "update" && <Col>
-        <CButton onClick={()=>{setCurrrentAction("list-books")}}>
-        <CIcon icon={cilArrowThickFromRight} /> Go Back
-        </CButton>
-        <BookForm bookDetails={bookDetails}/>
-       </Col>
-      }
-      {
-        currentAction == "create" && <Col>
-        <CButton onClick={()=>{setCurrrentAction("list-books")}}>
-        <CIcon icon={cilArrowThickFromRight} /> Go Back
-        </CButton>
-        <BookForm />
-       </Col>
-      }
-      
+    
     </Row>
     </Container>
   );

@@ -12,17 +12,19 @@ import {
     CRow,
     CFormFeedback,
     CListGroup,
-    CListGroupItem
+    CListGroupItem,
+    CContainer
 } from '@coreui/react';
 import { format, formatDate } from 'date-fns';
 import { axiosBookInstance, axiosCategoryInstance, axiosOfferInstance } from '../../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
-import { cilX } from '@coreui/icons';
+import { cilArrowThickFromRight, cilX } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-function OfferForm({offer}) {
-    // Initial state for form
+function OfferForm({}) {
+    const location = useLocation()
+    const offer = location?.state?.offer
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -219,6 +221,10 @@ function OfferForm({offer}) {
 
     return (
         <>
+        <CContainer className='mt-5'>
+             <CButton onClick={()=>{navigate('/admin/offers')}}>
+                                <CIcon icon={cilArrowThickFromRight} /> Go Back
+              </CButton>
             <CCard>
                 <CCardHeader>
                     {isEditMode ? 'Update Offer' : 'Create New Offer'}
@@ -442,6 +448,7 @@ function OfferForm({offer}) {
                     </CForm>
                 </CCardBody>
             </CCard>
+            </CContainer>
         </>
     );
 }

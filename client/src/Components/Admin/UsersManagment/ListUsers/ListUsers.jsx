@@ -8,6 +8,7 @@ import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 import CIcon from '@coreui/icons-react';
 import { cilArrowThickFromRight } from '@coreui/icons';
 import { CButton, CCard, CCardBody, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CTable } from '@coreui/react';
+import { useNavigate } from 'react-router-dom';
 
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
@@ -20,7 +21,7 @@ const ListUsers = () => {
   const [totalPages, setTotalPages] = useState(1)
   const dispatch = useDispatch()
   const limit=10
-
+   const navigate = useNavigate()
   useEffect(() => {
    const fetchUsers =async()=>{
     
@@ -131,8 +132,6 @@ const ListUsers = () => {
   return (
     <Container className='content'>
     <Row className="category-management">
-      {
-        !showUserData ?
         <Col >
         {selectedUserId && 
        <ConfirmationModal 
@@ -178,14 +177,13 @@ const ListUsers = () => {
                     {users.map(user => (
                       <tr key={user._id}>
                         <td>
-                          {/* <img src={user.image} alt="Category" className="category-image" /> */}
                           <span>{user.username}</span>
                         </td>
                         <td>{user.email}</td>
                         <td>{user.memberShipType}</td>
                         <td>
                           <CButton color="info" variant="outline"
-                            onClick={() => viewUser(user._id)}
+                            onClick={() =>navigate('/admin/users/view',{state:{user:user}})}
                           >
                             View
                             </CButton>
@@ -217,16 +215,6 @@ const ListUsers = () => {
         </div>
       </div>
       </Col>
-      :
-      <Col >
-       <CButton onClick={()=>{setShowUserData(false)}}>
-       <CIcon icon={cilArrowThickFromRight} /> Go Back
-       </CButton>
-      <UserDetails user={userDetails} />
-   
-    
-      </Col>
-      }
       
       
     </Row>

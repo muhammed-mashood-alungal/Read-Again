@@ -28,6 +28,15 @@ import ListOrders from './Components/Admin/OrderManagement/ListOrders/ListOrders
 import ListCoupons from './Components/Admin/CouponManagement/ListCoupons';
 import ListOffers from './Components/Admin/OfferManagement/ListOffers/ListOffers';
 import Dashboard from './Components/Admin/Dashboard/Dashboard';
+import BookForm from './Components/Admin/BookManagement/BookForm/BookFrom';
+import BookDetails from './Components/Admin/BookManagement/BookDetails/BookDetails';
+import UserDetails from './Components/Admin/UsersManagment/UserDetails/UserDetails';
+import CategoryForm from './Components/Admin/CategoryManagment/CategoryForm/CategoryForm';
+import OrderDetails from './Components/Admin/OrderManagement/OrderDetails/OrderDetails';
+import CouponDetails from './Components/Admin/CouponManagement/CouponDetails';
+import CouponForm from './Components/Admin/CouponManagement/CouponForm';
+import ViewOffer from './Components/Admin/OfferManagement/ViewOffer/ViewOffer';
+import OfferForm from './Components/Admin/OfferManagement/OfferForm/OfferForm';
 
 function App() {
   const dispatch = useDispatch()
@@ -72,11 +81,20 @@ function App() {
           <Route path='/admin' element={<AdminPage />}>
            <Route path='dashboard' element={<Dashboard/>} />
             <Route path='books' element={<ListBooks />} />
+            <Route path='books/add' element={<BookForm/>} />
+            <Route path='books/view' element={<BookDetails/>} />
             <Route path='users' element={<ListUsers />} />
+            <Route path='users/view' element={<UserDetails />} />
             <Route path='category' element={<CategoryManagement />} />
+            <Route path='category/form' element={<CategoryForm/>} />
             <Route path='orders' element={<ListOrders />} />
+            <Route path='orders/view' element={<OrderDetails />} />
             <Route path='coupons' element={<ListCoupons />} />
+            <Route path='coupons/view' element={<CouponDetails />} />
+            <Route path='coupons/form' element={<CouponForm />} />
             <Route path='offers' element={<ListOffers />} />
+            <Route path='offers/view' element={<ViewOffer />} />
+            <Route path='offers/form' element={<OfferForm />} />
           </Route>
         </Routes>
         <ToastContainer

@@ -8,6 +8,7 @@ import { CButton, CTable } from '@coreui/react';
 import { axiosCouponInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
 import CouponDetails from './CouponDetails';
+import { useNavigate } from 'react-router-dom';
 
 function ListCoupons() {
   const [currentAction, setCurrrentAction] = useState("list-coupons")
@@ -17,6 +18,7 @@ function ListCoupons() {
   const [couponData, setCouponData] = useState({})
   const [totalPages,setTotalPages]=useState(1)
   const limit = 10
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchCoupens() {
@@ -81,8 +83,7 @@ function ListCoupons() {
   return (
     <Container className='content'>
       <Row className="category-management">
-        {
-          currentAction == "list-coupons" ? <Col >
+  <Col >
             {selectedCoupenId &&
               <ConfirmationModal
                 title={`Are You Sure to Proceed ?`}
@@ -95,7 +96,7 @@ function ListCoupons() {
                   <div className="card-body">
                     <div className='d-flex  justify-content-between'>
                       <h4 className="table-title">All Coupons</h4>
-                      <CButton onClick={() => { setCurrrentAction("create-coupon") }}
+                      <CButton onClick={() => { navigate('/admin/coupons/form')}}
                         color="success"
                         variant="outline">
                         Add Coupon
@@ -136,14 +137,14 @@ function ListCoupons() {
                               <td>{coupon.isActive ? "Active" : "Expired"}</td>
                               <td>
                                 <CButton color="info" variant="outline"
-                                  onClick={() => viewCouponData(coupon)}
+                                  onClick={() =>  navigate('/admin/coupons/view',{state:{coupon:coupon}})}
                                 >
                                   View
                                 </CButton>
                               </td>
                               <td>
                                 <CButton color="success" variant="outline"
-                                  onClick={() => showUpdateForm(coupon)}
+                                  onClick={() => navigate('/admin/coupons/form',{state:{coupon:coupon}})}
                                 >
                                   Update
                                 </CButton>
@@ -174,38 +175,6 @@ function ListCoupons() {
               </div>
             </div>
           </Col>
-            : <Col >
-              <div>
-
-
-                {currentAction == "view-coupon" && <>
-                  <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
-                    <CIcon icon={cilArrowThickFromRight} /> Go Back
-                  </CButton>
-                  <CouponDetails coupon={couponData} onChildUpdate={handleCoupenAdd} />
-                </>
-                }
-                {
-                  currentAction == 'update-coupon' && <>
-                    <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
-                      <CIcon icon={cilArrowThickFromRight} /> Go Back
-                    </CButton>
-                    <CouponForm onChildUpdate={handleCoupenAdd} coupon={couponData} />
-                  </>
-                }
-                {
-                  currentAction == 'create-coupon' && <>
-                    <CButton onClick={() => { setCurrrentAction("list-coupons") }}>
-                      <CIcon icon={cilArrowThickFromRight} /> Go Back
-                    </CButton>
-                    <CouponForm onChildUpdate={handleCoupenAdd} />
-                  </>
-                }
-              </div>
-            </Col>
-        }
-
-
       </Row>
     </Container>
   )

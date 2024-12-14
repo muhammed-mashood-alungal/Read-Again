@@ -36,13 +36,12 @@ const EmailVerification = (props) => {
     if(origin == "register"){
      setEmail(formData?.email)
     }else{
-      console.log(userData)
      setEmail(userData?.email)
     }
    },[])
 
    useEffect(()=>{
-    if(isLoggedIn){
+    if(isLoggedIn && origin == "register"){
       navigate('/')
     }
    },[isLoggedIn])
@@ -159,20 +158,20 @@ const EmailVerification = (props) => {
               />
             </FormGroup>
            
-            <div className='space-between mt-3'>
+            <div className='space-between mt-4 p-2'>
               <div>
-              <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={ sended ? verifyOtp : resendOtp}>
-                           {sended ? "Register" : "Resend"}
-              </Link>
+              <Link onClick={()=>{navigate(-1)}} className='no-underline'>Back</Link>
+              
               </div>
               <div >
-                <span> Resend in : {sended && timer > -1  && <p>{timer}</p> }</span>
-             
+                <span className='text-secondary'> Resend in : {sended && timer > -1  && timer }</span>
               </div>
            
             <div>
-            <Link onClick={()=>{navigate(-1)}} >Back</Link><br />
            
+            <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={ sended ? verifyOtp : resendOtp}>
+                           {sended ? "Register" : "Resend"}
+              </Link>
             </div>
             </div>
             

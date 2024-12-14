@@ -10,9 +10,6 @@ import { CButton } from '@coreui/react';
 function ConfirmationModal({title,message,onConfirm ,onCancel}) {
   return (
    <>
-   
-
-  
     <Dialog
         open={true}
         onClose={onCancel}

@@ -13,10 +13,16 @@ import {
   CFormInput, 
   CFormLabel, 
   CButton, 
-  CAlert 
+  CAlert, 
+  CContainer
 } from '@coreui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import CIcon from '@coreui/icons-react';
+import { cilArrowThickFromRight } from '@coreui/icons';
 
-const CategoryForm = ({categoryData ,onChildUpdate}) => {
+const CategoryForm = ({ onChildUpdate}) => {
+  const location = useLocation()
+  const categoryData= location?.state?.categoryData
   const [name, setName] = useState("")
   const [image, setImage] = useState(null)
   const [imageUrl , setImageUrl] = useState("")
@@ -24,9 +30,9 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
   const [success , setSuccess] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  
+  const navigate = useNavigate()
   useEffect(()=>{
-    if(categoryData.name){
+    if(categoryData?.name){
       setIsCreateForm(false)
       setName(categoryData.name)
       setImageUrl(categoryImages+categoryData.image)
@@ -51,7 +57,6 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
     try{
       e.preventDefault()
       if(name.trim() == ""){
-       
         toast.error("Enter a Category")
         return
       }
@@ -157,6 +162,10 @@ const CategoryForm = ({categoryData ,onChildUpdate}) => {
   
 
 return (
+  <CContainer className='mt-5'>
+    <CButton onClick={()=>{navigate('/admin/category')}}>
+        <CIcon icon={cilArrowThickFromRight} /> Go Back
+    </CButton>
   <CCard className="category-form mb-4">
     <CCardHeader>
       <h4 className="card-title mb-0">
@@ -233,6 +242,7 @@ return (
       </CForm>
     </CCardBody>
   </CCard>
+  </CContainer>
 );
 };
 
