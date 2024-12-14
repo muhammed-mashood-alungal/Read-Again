@@ -66,20 +66,7 @@ const MyAccount = () => {
     }
   }, [userId,activeTab,currentOrderPage]);
 
-  useEffect(() => {
-    const getUserWallet = async () => {
-      try {
-        const response = await axiosUserInstance.get(`/wallet/${userId}`);
-        setWallet(response?.data?.wallet);
-      } catch (err) {
-        console.error(err);
-       // toast.error(err?.response?.data?.error);
-      }
-    };
-    if(isLoggedIn){
-      getUserWallet();
-    }
-  }, [userId,activeTab]);
+  
 
   return (
     <section className="accounts section--lg">
@@ -166,7 +153,7 @@ const MyAccount = () => {
 
          {activeTab === 'wallet' && (
             <div className={`tab__content ${activeTab === 'wallet' ? 'active-tab' : ''}`} id="wallet">
-             <WalletPage userWallet={wallet}/>
+             <WalletPage/>
             </div>
           )} 
 

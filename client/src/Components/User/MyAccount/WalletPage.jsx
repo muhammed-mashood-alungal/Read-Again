@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   CCard, 
   CCardBody, 
@@ -23,12 +23,32 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilWallet, cilPlus, cilCreditCard } from '@coreui/icons';
+import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-const WalletPage = ({userWallet}) => {
+const WalletPage = ({}) => {
   const [isAddMoneyModal, setIsAddMoneyModal] = useState(false);
   const [isWithdrawModal, setIsWithdrawModal] = useState(false);
   const [amount, setAmount] = useState('');
-  const [wallet, setWallet] = useState(userWallet)
+  const [wallet, setWallet] = useState({})
+  const {userId} = useSelector(state=>state.auth)
+
+   useEffect(() => {
+      const getUserWallet = async () => {
+        try {
+          const response = await axiosUserInstance.get(`/wallet/${userId}`);
+          setWallet(response?.data?.wallet);
+        } catch (err) {
+           toast.error(err?.response?.data?.message);
+        }
+      }
+        getUserWallet();
+   
+    }, [userId]);
+
+
   const handleAddMoney = () => {
    ///
   };

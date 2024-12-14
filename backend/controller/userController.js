@@ -346,15 +346,15 @@ module.exports = {
       const addressData = req.body
       const { userId } = req.params
       const addresses = await Address.findOne({userId})
+      let newAddress
       if(!addresses){
-        console.log("firlst")
-        await Address.create({ ...addressData, userId ,isDefault:true })
+        newAddress =await Address.create({ ...addressData, userId ,isDefault:true })
       }else{
-        console.log("sdfasdf")
-        await Address.create({ ...addressData, userId })
-      }
+        newAddress = await Address.create({ ...addressData, userId })
+      } 
+      console.log(newAddress,newAddress._id)
       
-      res.status(200).json({ success: true })
+      res.status(200).json({ success: true  , newAddress : newAddress})
     } catch (err) {
       console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong While adding Address" })

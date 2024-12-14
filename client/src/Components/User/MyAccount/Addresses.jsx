@@ -31,13 +31,13 @@ function Addresses({ userAddresses, userId }) {
 
   const handleAddAddress = async (formData) => {
     try {
-        await axiosUserInstance.post(`/${userId}/address/add`, formData)
+        const {data} = await axiosUserInstance.post(`/${userId}/address/add`, formData)
         toast.success("Address Saved", {
           autoClose: 1000
         })
-        console.log(formData)
+        const newAddress = data.newAddress
         setAddresses(addresses =>{
-          return [...addresses,formData]
+          return [...addresses,newAddress]
         })
         setTimeout(() => {
           setCurrentAction("view")
@@ -169,7 +169,7 @@ function Addresses({ userAddresses, userId }) {
     <>
       {
         currentAction === "view" &&(
-          <div>
+          <div className='address-div'>
            {showModal && 
            <ConfirmationModal 
            title={`Are You Sure to delete this Address ?`}
@@ -199,15 +199,15 @@ function Addresses({ userAddresses, userId }) {
                       <CTableBody>
                                 <CTableRow>
                                   <CTableHeaderCell>City</CTableHeaderCell>
-                                  <CTableDataCell className="text-end">234234</CTableDataCell>
-                                </CTableRow>
-                                <CTableRow>
-                                  <CTableHeaderCell>Coupon Code</CTableHeaderCell>
                                   <CTableDataCell className="text-end">{address?.city}</CTableDataCell>
                                 </CTableRow>
                                 <CTableRow>
                                   <CTableHeaderCell> Land Mark</CTableHeaderCell>
                                   <CTableDataCell className="text-end">{address?.landmark} </CTableDataCell>
+                                </CTableRow>
+                                <CTableRow>
+                                  <CTableHeaderCell>District</CTableHeaderCell>
+                                  <CTableDataCell className="text-end">{address?.district}</CTableDataCell>
                                 </CTableRow>
                                 <CTableRow>
                                   <CTableHeaderCell>State</CTableHeaderCell>
@@ -223,7 +223,7 @@ function Addresses({ userAddresses, userId }) {
                                 </CTableRow>
                                 <CTableRow>
                                   <CTableHeaderCell>Phone</CTableHeaderCell>
-                                  <CTableDataCell className="text-end"> {address?.phoneNumbers[0] } {address?.phoneNumbers[1] && address?.phoneNumbers[1]}</CTableDataCell>
+                                  <CTableDataCell className="text-end"> {address?.phoneNumbers[0] } {`${address?.phoneNumbers[1] ? ", "+ address?.phoneNumbers[1] : ""}`}</CTableDataCell>
                                 </CTableRow>
                                 
 
@@ -235,6 +235,8 @@ function Addresses({ userAddresses, userId }) {
                   <button className="link-button" onClick={()=>{setEditingMode(address)}}>Edit</button> 
                   <button className="delete-btn" onClick={()=>{
                     setAddressId(address._id)
+
+                    console.log(address)
                     setShowModal(true)}}>Delete</button>
                 <hr />
                 </div>
