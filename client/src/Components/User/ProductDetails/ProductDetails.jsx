@@ -30,23 +30,23 @@ const ProductDetails = ({ bookData }) => {
  
 
 
-  useEffect(() => {
-    if (bookData.images) {
-      console.log(bookData.images)
-      setImages([...bookData.images])
-    }
-  }, [bookData])
-  
-  
-  
+  // useEffect(() => {
+  //   if (bookData.images) {
+  //     console.log("useEffet")
+  //     console.log(bookData.images)
+  //     setImages([...bookData.images])
+  //   }
+  // }, [bookData])
 
- 
   useEffect(() => {
     if (bookData.images) {
-      setImages([...bookData.images]);
+      const imageUrls = bookData.images.map((image)=>{
+        return image.secure_url
+      })
+      setImages(imageUrls);
       setZoom((prevZoom) => ({
         ...prevZoom,
-        backgroundImage: `url(${bookImages + bookData._id + "/" + bookData.images[0]})`,
+        backgroundImage: `url(${bookData?.images[0]?.secure_url})`,
       }));
     }
   }, [bookData]);
@@ -100,12 +100,12 @@ const ProductDetails = ({ bookData }) => {
     let temp = newArr[0];
     newArr[0] = newArr[index];
     newArr[index] = temp;
-    setImages(newArr);
-
+    setImages([...newArr]);
+    console.log(newArr)
   
     setZoom((prevZoom) => ({
       ...prevZoom,
-      backgroundImage: `url(${bookImages + bookData._id + "/" + newArr[0]})`,
+      backgroundImage: `url(${newArr[0]})`,
     }));
   };
 
@@ -177,7 +177,7 @@ const ProductDetails = ({ bookData }) => {
               onMouseOut={handleMouseOut}
             >
               <img
-                src={bookImages + bookData?._id + "/" + images[0]}
+               src={images[0]}
                 alt="Product"
                 className="details__img Zoomable"
               />
@@ -186,7 +186,7 @@ const ProductDetails = ({ bookData }) => {
             <div className="details__small-images grid">
               {images.length != 0 && images.map((image, i) => {
                 return images[i + 1] && <img
-                  src={bookImages + bookData?._id + "/" + images[i + 1]}
+                  src={images[i+1]}
                   className="details__small-img"
                   onClick={() => { handleImageClick(i + 1) }}
                 />

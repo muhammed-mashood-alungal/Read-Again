@@ -29,7 +29,14 @@ const BookSchema = mongoose.Schema({
     type:String,
     required:true
    },
-   images:[String],
+   images:[{
+    secure_url:{
+        type:String
+    },
+    public_id:{
+        type:String
+    }
+   }],
    formats:{
     physical:{
         price:{

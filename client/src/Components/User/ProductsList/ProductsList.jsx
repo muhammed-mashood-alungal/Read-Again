@@ -59,8 +59,8 @@ const ProductList = ({books,title}) => {
               <div className="product__item">
                 <div className="product__banner">
                   <Link to={`/book-details/${book._id}`} className="product__images">
-                     <img src={bookImages+book._id +"/" + book.images[0]} alt={book.title} className="product__img default" />
-                     <img src={bookImages+book._id +"/" + book.images[1]} alt={book.title} className="product__img hover" />
+                     <img src={book.images[0].secure_url} alt={book.title} className="product__img default" />
+                     <img src={book.images[1].secure_url} alt={book.title} className="product__img hover" />
                   </Link>
                   <div className="product__actions">
                     <a href="#" className="action__btn" aria-label="Quick View"><i className="fi fi-rs-eye"></i></a>

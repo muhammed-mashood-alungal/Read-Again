@@ -6,8 +6,6 @@ import BookForm from '../BookForm/BookFrom';
 import BookDetails from '../BookDetails/BookDetails';
 import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 import { CButton, CTable } from '@coreui/react';
-import { cilArrowThickFromRight } from '@coreui/icons';
-import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
 
 const ListBooks = () => {
@@ -18,6 +16,7 @@ const ListBooks = () => {
   const [currentPage,setCurrentPage]=useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [selectedBookId, setSelectedBookId] = useState(null)
+  
   const limit=10
   const navigate = useNavigate()
   useEffect(() => {
@@ -34,16 +33,7 @@ const ListBooks = () => {
   }, [currentPage]);
  
 
-  // const rightSideBar=()=>{
-  //   if(rightSide === "create"){
-  //     return <BookForm/>
-  //   }
-  //   if(rightSide === "details"){
-  //     return <BookDetails book={bookDetails}/>  
-  //   }
-  //   if(rightSide === "update")
-  //     return <BookForm bookDetails={bookDetails}/>
-  // }
+
   const handleBookSearch=async (e)=>{
     try{
       const name = e.target.value
@@ -57,16 +47,6 @@ const ListBooks = () => {
     }
   }
 
-  const viewBook = async(bookId)=>{
-    console.log(bookId)
-      await getBookData(bookId)
-      setCurrrentAction("view")
-  }
-  const updateBook = async(bookId)=>{
-    await getBookData(bookId)
-    console.log(bookId)
-    setCurrrentAction("update")
-  }
   const handleBookDelete=async()=>{
     try{
       const token = localStorage.getItem("token")
@@ -156,7 +136,7 @@ const ListBooks = () => {
                        {allBooks.map(book => (
                          <tr key={book._id}>
                            <td>
-                             <img src={bookImages+book._id+"/"+book.images[0]}  alt="book-img" className="category-image" />
+                             <img src={book?.images[0]?.secure_url}  alt="book-img" className="category-image" />
                              
                            </td>
                            <td>{book.title}</td>
@@ -203,7 +183,6 @@ const ListBooks = () => {
          </div>
          </Col>
       }
-    
     </Row>
     </Container>
   );

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import path from 'path-browserify';
 import { axiosAdminInstance, axiosBookInstance, axiosCategoryInstance } from '../../../../redux/Constants/axiosConstants';
 import CropImage from '../../CropImage/CropImage'
-import { bookImages } from '../../../../redux/Constants/imagesDir';
 import './BookForm.css'
 import { bookFormValidate } from '../../../../validations/BookFormValidate';
 import { validateImage } from '../../../../validations/imageValidation';
@@ -20,13 +18,13 @@ import {
   CCol,
   CRow,
   CFormLabel,
-  CAlert,
   CImage,
   CContainer
 } from '@coreui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import { cilArrowThickFromRight } from '@coreui/icons';
+import  LoadingComponent from '../../../LoadingComponent/LoadingComponent';
 
 const BookForm = ({  }) => {
   const location =useLocation()
@@ -45,7 +43,7 @@ const BookForm = ({  }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [ISBN, setISBN] = useState('');
   const [categories , setCategories] = useState([])
-  const [selectedLanguages, setSelectedLanguages] = useState([])
+  const [loading,setLoading]=useState(false)
   const navigate = useNavigate()
 
 
@@ -72,10 +70,10 @@ const BookForm = ({  }) => {
       setFormats(bookDetails.formats || formats);
       setIsCreateForm(false)
       setImageUrls(bookDetails.images.map(imageName => {
-        return bookImages + bookDetails._id + "/" + imageName
+        return imageName.secure_url
       }))
     }
-  }, [bookDetails]);
+  }, [bookDetails])
 
   useEffect(() => {
     console.log(imageUrls)
@@ -118,15 +116,16 @@ const BookForm = ({  }) => {
     newImages[selectedImageIndex] = croppedImage;
     setImages(newImages);
     if (isCreateForm) {
-      console.log("createForm")
       const newImageUrls = [...imageUrls];
       newImageUrls[selectedImageIndex] = URL.createObjectURL(croppedImage);
       setImageUrls(newImageUrls);
+      
       setIsModalOpen(false);
     } else {
       try{
-        setIsModalOpen(false);
-        const oldUrl = path.basename(imageUrls[selectedImageIndex])
+        setIsModalOpen(false)
+        setLoading(true)
+        const oldUrl = imageUrls[selectedImageIndex]
         console.log(oldUrl)
         const newImages = [...images];
         newImages[selectedImageIndex] = croppedImage
@@ -140,14 +139,12 @@ const BookForm = ({  }) => {
         formData.append("image", croppedImage)
         const response = await axiosBookInstance.put(`/update-book-image/${bookDetails._id}`,formData)
         setImageUrls(response.data.newImages.map(imageName => {
-          return bookImages + bookDetails._id + "/" + imageName
+          return imageName.secure_url
         }))
-        
-        
+        setLoading(false)
       }catch(err){
         console.log(err)
       }
-      
     }
 
   };
@@ -207,7 +204,7 @@ const BookForm = ({  }) => {
         if (images.length > 0) {
           images.forEach((image, index) => {
             console.log(image)
-            formData.append(`image-${index + 1}`, image);
+            formData.append(`images`, image);
           })
         }
 
@@ -229,7 +226,9 @@ const BookForm = ({  }) => {
   const handleImageRemove = (index) => {
     setImageUrls(imageUrls.filter((_, i) => i !== index))
     setImages(images.filter((_, i) => i !== index));
-  };
+  }
+
+
   const handleSetImage = (index, file) => {
     if(!validateImage(file)){
       toast.error("Make sure the image is either .png , .jpg or .jpeg")
@@ -252,12 +251,17 @@ const BookForm = ({  }) => {
 
  
   return (
+    <>
     <CContainer className='mt-5'>
+      {
+        loading && <LoadingComponent/>
+      }
       
     <CRow>
+    
       <CCol xs={12}>
       <CButton onClick={()=>{navigate('/admin/books')}}>
-                   <CIcon icon={cilArrowThickFromRight} /> Go Back
+          <CIcon icon={cilArrowThickFromRight} /> Go Back
       </CButton>
         <CCard>
           <CCardHeader>
@@ -365,14 +369,6 @@ const BookForm = ({  }) => {
                             alt={`Book Image ${index + 1}`}
                             className="img-fluid rounded mb-2"
                           />
-                          <CButton
-                            color="danger"
-                            size="sm"
-                            className="position-absolute top-0 end-0"
-                            onClick={() => handleImageRemove(index)}
-                          >
-                            Remove
-                          </CButton>
                           {images[index] && (
                             <CButton
                               color="info"
@@ -535,6 +531,7 @@ const BookForm = ({  }) => {
       )}
     </CRow>
     </CContainer>
+    </>
   );
 }
 

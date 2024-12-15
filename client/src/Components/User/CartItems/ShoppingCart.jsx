@@ -166,7 +166,7 @@ const ShoppingCart = () => {
                       <tr key={index}>
                         <td>
                           <img
-                            src={bookImages+item?.productId._id+"/"+item?.productId?.images[0]} 
+                            src={item?.productId?.images[0].secure_url} 
                             alt="Product"
                             className="table__img"
                           />

@@ -143,7 +143,7 @@ const Header = ({ setSearchQuery }) => {
                     key={product._id}
                     onClick={() => navigate(`/book-details/${product._id}`)}
                   >
-                             <img src={bookImages+product._id+"/"+product.images[0]}  alt="book-img" style={{width:'30px'}} />
+                             <img src={product.images[0].secure_url}  alt="book-img" style={{width:'30px'}} />
 
                     {product.title}
                   </CListGroupItem>

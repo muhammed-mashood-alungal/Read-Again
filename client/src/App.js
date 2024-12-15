@@ -37,7 +37,6 @@ import CouponDetails from './Components/Admin/CouponManagement/CouponDetails';
 import CouponForm from './Components/Admin/CouponManagement/CouponForm';
 import ViewOffer from './Components/Admin/OfferManagement/ViewOffer/ViewOffer';
 import OfferForm from './Components/Admin/OfferManagement/OfferForm/OfferForm';
-import Sample from './Components/Sample';
 
 function App() {
   const dispatch = useDispatch()
@@ -61,7 +60,6 @@ function App() {
       <div className="App">
         <Routes>
           <Route path='/' element={<HomePage />} />
-          <Route path='/sample' element={<Sample />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/admin/login' element={<AdminLogin />} />

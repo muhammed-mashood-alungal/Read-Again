@@ -43,7 +43,7 @@ const BookDetails = ({ }) => {
           <CCard className="mb-4">
             <CCardImage 
               orientation="top" 
-              src={bookImages+book._id+"/"+book.images[0]}
+              src={book?.images[0]?.secure_url}
               alt={book?.title || 'Book Cover'}
             />
             <CCardBody>
@@ -65,7 +65,7 @@ const BookDetails = ({ }) => {
                 {book.images.slice(1).map((imageName, index) => (
                   <img
                     key={index}
-                    src={bookImages+book._id+"/"+book.images[index+1]}
+                    src={book?.images[index+1]?.secure_url}
                     alt={`Book Image ${index + 2}`}
                     style={{ 
                       width: '100px', 

@@ -18,7 +18,11 @@ function deleteImage(publicId) {
       if (error) {
         return;
       }
-    });
+      if(result){
+        console.log("result:"+result)
+      }
+    })
+   
   }
   
   module.exports ={handleUpload , deleteImage}

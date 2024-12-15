@@ -111,7 +111,7 @@ const WishlistItems = () => {
               {wishlist?.map((item) => (
                 <tr key={item._id}>
                   <td>
-                    <img  src={bookImages+item?._id+"/"+item?.images[0]}  className="table__img" />
+                    <img  src={item?.images[0].secure_url}  className="table__img" />
                   </td>
                   <td>
                     <h3 className="table__title">{item.title}</h3>

@@ -3,19 +3,36 @@ const fs = require('fs')
 const path = require('path');
 const Offer = require("../models/Offer");
 const { log } = require("console");
+const { handleUpload, deleteImage } = require("../utils/cloudinary");
 module.exports = {
     async createBook(req, res) {
         try {
             let { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
-
+            console.log("hellllllllllllllllo")
             const imagePaths = [];
-            for (let i = 1; i <= 5; i++) {
-                const field = `image-${i}`;
-                if (req.files[field]) {
-                    req.files[field].forEach(file => imagePaths.push(file.filename));
+            // for (let i = 1; i <= 5; i++) {
+            //     const field = `image-${i}`;
+            //     if (req.files[field]) {
+            //         req.files[field].forEach(file => imagePaths.push(file.filename));
+            //     }
+            // }
+            if (req.files && req.files.length > 0) {
+                for (let i = 0; i < req.files.length; i++) {
+                    const b64 = Buffer.from(req.files[i].buffer).toString("base64");
+                    let dataURI = "data:" + req.files[i].mimetype + ";base64," + b64;
+                    const cldRes = await handleUpload(dataURI)
+                    const path = {
+                        secure_url: cldRes.secure_url,
+                        public_id: cldRes.public_id
+                    }
+                    imagePaths.push(path)
                 }
+
+
             }
-            formats= JSON.parse(formats)
+            console.log(imagePaths)
+
+            formats = JSON.parse(formats)
             const stockStatus = formats?.physical?.stock < 10 ? "Hurry Up" : "In Stock"
             const newBook = {
                 ISBN,
@@ -68,63 +85,63 @@ module.exports = {
     },
     async getBooksByFilter(req, res) {
         try {
-            let { page, limit , sortBy , price , category } = req.query
-            console.log(req.query)  
+            let { page, limit, sortBy, price, category } = req.query
+            console.log(req.query)
             page = parseInt(page) || 1
             limit = parseInt(limit) || 10
             let skip = (page - 1) * limit
-           
-           
-            let sort =  {}
-            if(sortBy == "Newness"){
-               sort.publicationDate = 1
-            }else if(sortBy == "Price: High to Low"){
-               sort={"formats.physical.price":-1}
-            
-            }else if(sortBy == "Price: Low to High"){
-                sort={"formats.physical.price":1}
-            }else if (sortBy == "A-Z"){
-                sort.title=1
-            }else if (sortBy == "Z-A"){
+
+
+            let sort = {}
+            if (sortBy == "Newness") {
+                sort.publicationDate = 1
+            } else if (sortBy == "Price: High to Low") {
+                sort = { "formats.physical.price": -1 }
+
+            } else if (sortBy == "Price: Low to High") {
+                sort = { "formats.physical.price": 1 }
+            } else if (sortBy == "A-Z") {
+                sort.title = 1
+            } else if (sortBy == "Z-A") {
                 sort.title = -1
             }
-            
-            console.log(sort,price) 
-            let  find = {isDeleted : false , "formats.physical.stock":{$gt:0}} 
-             
-            if( price  != "{}" ){
+
+            console.log(sort, price)
+            let find = { isDeleted: false, "formats.physical.stock": { $gt: 0 } }
+
+            if (price != "{}") {
                 price = JSON.parse(price)
-                find ={...find,"formats.physical.price":price}
+                find = { ...find, "formats.physical.price": price }
             }
             let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category').populate("appliedOffer")
-            .sort(sort)
-            if(category != "All"){
-                allBooks = allBooks.filter((book)=>{
-                  return book.category.name == category
+                .sort(sort)
+            if (category != "All") {
+                allBooks = allBooks.filter((book) => {
+                    return book.category.name == category
                 })
-            } 
+            }
 
             const totalBooks = await Book.countDocuments({})
-            
+
             res.status(200).json({ success: true, books: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
             res.status(500).json({ message: "Something went wrong" })
         }
     },
-    async editBook(req, res) { 
+    async editBook(req, res) {
         try {
             const { bookId } = req.params
             const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
 
-            let stockStatus=null
+            let stockStatus = null
             const stock = formats.physical.stock
-            if(stock == 0){
-                stockStatus="Stock Out"
-            }else if(stock < 10){
-                stockStatus="Hurry Up"
-            }else{
-                stockStatus="In Stock"
+            if (stock == 0) {
+                stockStatus = "Stock Out"
+            } else if (stock < 10) {
+                stockStatus = "Hurry Up"
+            } else {
+                stockStatus = "In Stock"
             }
             const newBook = {
                 ISBN,
@@ -150,8 +167,8 @@ module.exports = {
 
             const { bookId } = req.params
             let book = await Book.findOne({ _id: bookId }).populate("category").populate("appliedOffer")
-             console.log(book)
-            res.status(200).json({ success: true, bookData : book })
+            console.log(book)
+            res.status(200).json({ success: true, bookData: book })
         } catch (err) {
             console.log(err)
             res.status(500).json({ message: "Somthing went wrong" })
@@ -174,9 +191,9 @@ module.exports = {
     },
     async getJustPublishedBooks(req, res) {
         try {
-            const books = await Book.find({ isDeleted: false ,"formats.physical.stock":{$gt:0} }).populate("appliedOffer")
-            .sort({ createdAt: -1 }).limit(10)
-   
+            const books = await Book.find({ isDeleted: false, "formats.physical.stock": { $gt: 0 } }).populate("appliedOffer")
+                .sort({ createdAt: -1 }).limit(10)
+
             res.status(200).json({ books: books })
         } catch (err) {
             console.log(err)
@@ -192,7 +209,7 @@ module.exports = {
                 _id: { $ne: bookId },
                 $or: tags,
                 isDeleted: false,
-                "formats.physical.stock":{$gt:0}
+                "formats.physical.stock": { $gt: 0 }
             }).populate("appliedOffer").limit(8)
             console.log(books)
             res.status(200).json({ books: books })
@@ -206,27 +223,30 @@ module.exports = {
         try {
             const { bookId } = req.params
             const { oldUrl } = req.body
-            console.log(req.file.filename)
-            console.log("old url", oldUrl)
-            const updatingBook = await Book.findOne({ _id: bookId })
 
-            const oldPath = path.join(__dirname, '..', `public/images/books/${updatingBook._id}/${oldUrl}`);
-            if (fs.existsSync(oldPath)) {
-                console.log("file exists")
-                fs.unlinkSync(oldPath)
-            }
+            const updatingBook = await Book.findOne({ _id: bookId })
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            const cldRes = await handleUpload(dataURI)
+
             const images = [...updatingBook.images]
-            console.log(images)
-            const newImages = images.map((image, index) => {
-                console.log(image, oldUrl)
-                if (image == oldUrl) {
-                    return req?.file?.filename
+            const newImages=[]
+            for(let i =0 ; i < images.length ; i++){
+                const image=images[i]
+                console.log(image.secure_url, oldUrl)
+                if (image.secure_url == oldUrl) {
+                   deleteImage(image.public_id)
+                    const newIMG= {
+                        secure_url:cldRes.secure_url,
+                        public_id:cldRes.public_id
+                    }
+                    newImages.push(newIMG)
                 } else {
-                    return image
+                    newImages.push(image)
                 }
-            })
-            console.log("new")
-            console.log(newImages)
+
+            }
+                
             updatingBook.images = newImages
             await updatingBook.save()
 
@@ -237,18 +257,18 @@ module.exports = {
             res.status(400).json("Something Went Wrong While Updating Image ")
         }
     },
-    async searchProducts(req,res){
+    async searchProducts(req, res) {
         try {
 
-            const {title} = req.query 
-            if(title.trim() == ""){
-                return res.status(200).json({products:[]})
+            const { title } = req.query
+            if (title.trim() == "") {
+                return res.status(200).json({ products: [] })
             }
-          const products=await Book.find({ title: { $regex: title, $options: "i" } })
-           console.log(products)
-           res.status(200).json({products:products})
+            const products = await Book.find({ title: { $regex: title, $options: "i" } })
+            console.log(products)
+            res.status(200).json({ products: products })
         } catch (error) {
-            res.status(400).json({message:"Somthing went Wrong"})
+            res.status(400).json({ message: "Somthing went Wrong" })
         }
     }
 }
