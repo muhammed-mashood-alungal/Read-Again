@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import './Categories.css'; 
 import { axiosAdminInstance, axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { Link } from 'react-router-dom';
-import { categoryImages } from '../../../redux/Constants/imagesDir';
 
 const CategoriesSection = () => {
   const [categories,setCategories] = useState([])
@@ -27,7 +26,7 @@ const CategoriesSection = () => {
       {
         categories && categories.map((category)=>{
           return <Link to={`/library/?category=${category.name}`} className="category__item no-underline">
-                   <img src={categoryImages+category.image} alt="" className="category__img" />
+                   <img src={category?.image?.secure_url} alt="" className="category__img" />
                    <h3 className="category__title no-underline">{category.name}</h3>
                  </Link>
         })

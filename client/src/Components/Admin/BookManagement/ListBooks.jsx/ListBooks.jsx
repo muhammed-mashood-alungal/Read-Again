@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import {axiosAdminInstance, axiosBookInstance, axiosCategoryInstance, axiosUserInstance} from '../../../../redux/Constants/axiosConstants'
-import { bookImages, categoryImages } from '../../../../redux/Constants/imagesDir';
+import { bookImages } from '../../../../redux/Constants/imagesDir';
 import BookForm from '../BookForm/BookFrom';
 import BookDetails from '../BookDetails/BookDetails';
 import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
@@ -14,7 +14,6 @@ const ListBooks = () => {
   const [allBooks, setAllbooks] = useState([]);
   const [bookDetails , setBookDetails] =useState({})
   const [err, setErr] = useState("")
-  const [isChildUpdated, setIsChildUpdated] = useState(false);
   const [currentAction,setCurrrentAction] = useState("list-books")
   const [currentPage,setCurrentPage]=useState(1)
   const [totalPages, setTotalPages] = useState(1)

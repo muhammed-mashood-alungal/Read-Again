@@ -3,7 +3,6 @@ import './ListCategories.css';
 import { Col, Container, Row } from 'reactstrap';
 import { axiosAdminInstance, axiosCategoryInstance, axiosUserInstance } from '../../../../redux/Constants/axiosConstants'
 import CategoryForm from '../CategoryForm/CategoryForm';
-import { categoryImages } from '../../../../redux/Constants/imagesDir';
 import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
 import { CButton, CTable } from '@coreui/react';
 import { toast } from 'react-toastify';
@@ -132,7 +131,7 @@ const CategoryManagement = () => {
                           {categories.map(category => (
                             <tr key={category._id}>
                               <td>
-                                <img src={categoryImages + category.image} alt="Category" className="category-image" />
+                                <img src={category.image.secure_url} alt="Category" className="category-image" />
 
                               </td>
                               <td>{category.name}</td>

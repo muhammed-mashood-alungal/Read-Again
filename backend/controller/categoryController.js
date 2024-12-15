@@ -1,5 +1,6 @@
 const Book = require("../models/Books");
 const Category = require("../models/Category");
+const { handleUpload, deleteImage } = require("../utils/cloudinary");
 
 module.exports = {
     async addCategory(req, res) {
@@ -14,10 +15,16 @@ module.exports = {
                 return res.status(400).json({ message: "Category already exists." });
             }
 
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            const cldRes = await handleUpload(dataURI)
+
             const newCategory = new Category({
                 name: categoryName,
-                image: req.file?.filename
-            });
+                image:{
+                    secure_url:cldRes.secure_url,
+                    public_id:cldRes.public_id                }
+            })
             await newCategory.save();
             res.status(200).json({ success: true })
         } catch (err) {
@@ -69,16 +76,25 @@ module.exports = {
             const { categoryId } = req.params
             console.log(req.file?.originalname,req.file?.filename)
             let updatedData = { ...req.body }
-            if (req.file) {
-                updatedData.image = req.file.filename
-            }
+            // if (req.file) {
+            //     updatedData.image = req.file.filename
+            // }
 
             const updatedCategory = await Category.findByIdAndUpdate(
                 categoryId,
                 { $set: updatedData },
                 { new: true }
-            );
+            )
+             deleteImage(updatedCategory.image.public_id)
 
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            const cldRes = await handleUpload(dataURI)
+            updatedCategory.image={
+                secure_url:cldRes.secure_url,
+                public_id:cldRes.public_id
+            }
+            updatedCategory.save()
             res.status(200).json({ success: true, updatedCategory });
         } catch (err) {
             console.log(err)

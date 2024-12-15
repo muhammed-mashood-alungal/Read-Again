@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { axiosAdminInstance, axiosCategoryInstance, axiosUserInstance } from '../../../../redux/Constants/axiosConstants';
-import { categoryImages } from '../../../../redux/Constants/imagesDir';
 import CropImage from '../../CropImage/CropImage';
 import './CategoryForm.css';
 import {  toast } from 'react-toastify';
@@ -35,14 +34,13 @@ const CategoryForm = ({ onChildUpdate}) => {
     if(categoryData?.name){
       setIsCreateForm(false)
       setName(categoryData.name)
-      setImageUrl(categoryImages+categoryData.image)
+      setImageUrl(categoryData?.image?.secure_url)
     }
   },[categoryData])
 
 
   useEffect(()=>{
    if(success){
-   onChildUpdate(true)
    setName("")
    setImage(null)
    setImageUrl("")
