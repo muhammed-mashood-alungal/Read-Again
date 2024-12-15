@@ -7,7 +7,7 @@ const { handleUpload, deleteImage } = require("../utils/cloudinary");
 module.exports = {
     async createBook(req, res) {
         try {
-            let { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
+            let { ISBN, title, author, category, language, description, publicationDate, formats } = req.body;
             console.log("hellllllllllllllllo")
             const imagePaths = [];
             // for (let i = 1; i <= 5; i++) {
@@ -39,7 +39,7 @@ module.exports = {
                 title,
                 author,
                 category,
-                genre,
+                language,
                 description,
                 publicationDate,
                 images: imagePaths,
@@ -132,7 +132,7 @@ module.exports = {
     async editBook(req, res) {
         try {
             const { bookId } = req.params
-            const { ISBN, title, author, category, genre, description, publicationDate, formats } = req.body;
+            const { ISBN, title, author, category, language, description, publicationDate, formats } = req.body;
 
             let stockStatus = null
             const stock = formats.physical.stock
@@ -148,7 +148,7 @@ module.exports = {
                 title,
                 author,
                 category,
-                genre,
+                language,
                 description,
                 publicationDate,
                 formats: formats,

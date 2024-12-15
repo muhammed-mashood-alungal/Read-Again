@@ -51,7 +51,7 @@ const BookDetails = ({ }) => {
               <CCardText className="text-medium-emphasis">
                 by {book?.author}
                 <CBadge color="info" className="ms-2">
-                  {book?.genre}
+                  {book?.language}
                 </CBadge>
               </CCardText>
             </CCardBody>
@@ -96,7 +96,7 @@ const BookDetails = ({ }) => {
               </CListGroupItem>
               <CListGroupItem>
                 <CIcon icon={cilTag} className="me-2" />
-                <strong>Genre:</strong> {book?.genre || 'Not Specified'}
+                <strong>Language:</strong> {book?.language || 'Not Specified'}
               </CListGroupItem>
               <CListGroupItem>
                 <CIcon icon={cilBarcode} className="me-2" />

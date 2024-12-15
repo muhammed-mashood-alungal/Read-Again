@@ -33,7 +33,7 @@ const BookForm = ({  }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [category, setCategory] = useState('');
-  const [genre, setGenre] = useState('');
+  const [language, setLanguage] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
   const [imageUrls, setImageUrls] = useState([])
@@ -63,7 +63,7 @@ const BookForm = ({  }) => {
       setTitle(bookDetails.title || '');
       setAuthor(bookDetails.author || '');
       setCategory(bookDetails.category._id || '');
-      setGenre(bookDetails.genre || '');
+      setLanguage(bookDetails.language || '');
       setDescription(bookDetails.description || '');
       setPublicationDate(bookDetails.publicationDate || '');
       setISBN(bookDetails.ISBN || '');
@@ -169,7 +169,7 @@ const BookForm = ({  }) => {
       e.preventDefault();
       console.log(imageUrls.length)
       const bookData = {
-        title, author, category, genre, description, imageUrls, publicationDate, ISBN, formats
+        title, author, category, language, description, imageUrls, publicationDate, ISBN, formats
       }
 
       const result =  bookFormValidate(bookData, !isCreateForm)
@@ -195,7 +195,7 @@ const BookForm = ({  }) => {
         formData.append("title", title)
         formData.append("author", author)
         formData.append("category", category)
-        formData.append("genre", genre)
+        formData.append("language", language)
         formData.append("description", description)
         formData.append("publicationDate", publicationDate)
 
@@ -309,12 +309,12 @@ const BookForm = ({  }) => {
                   </CFormSelect>
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel>Genre</CFormLabel>
+                  <CFormLabel>Language</CFormLabel>
                   <CFormInput
                     type="text"
-                    value={genre}
-                    onChange={(e) => setGenre(e.target.value)}
-                    placeholder="Enter Genre"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    placeholder="Enter Language"
                     className="mb-3"
                   />
                 </CCol>

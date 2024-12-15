@@ -33,13 +33,7 @@ const UsersSChema=mongoose.Schema({
           type: mongoose.Schema.Types.ObjectId,
           ref: "Address", 
         },
-      ],
-      genres:{
-        type:[mongoose.Schema.Types.ObjectId]
-      },
-      publishedBooks:{
-        type:[mongoose.Schema.Types.ObjectId]
-      }
+      ]
     },
     password:{
         type:String

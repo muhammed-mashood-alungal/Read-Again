@@ -75,7 +75,7 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
     'New Author'
   ];
 
-  const topFilters = ['Genre', 'Format', 'Language', 'Age Group'];
+  const topFilters = ['language', 'Format', 'Language', 'Age Group'];
   
   
 

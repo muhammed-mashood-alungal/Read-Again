@@ -29,7 +29,7 @@ function DetailsPage() {
       try{
         const tags=[
           {author:bookData.author},
-          {genre:bookData.genre},
+          {language:bookData.language},
           {category:bookData.category}
         ]
 

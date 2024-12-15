@@ -1,6 +1,6 @@
 export function bookFormValidate(bookData,updating) {
     const {
-        title, author, category, genre, description, imageUrls, publicationDate, ISBN, formats
+        title, author, category, language, description, imageUrls, publicationDate, ISBN, formats
     } = bookData;
 
     if (title.trim() === "") {
@@ -54,8 +54,8 @@ export function bookFormValidate(bookData,updating) {
     if (!category || category.trim() === "") {
         return { success: false, message: "Please enter the category" };
     }
-    if (!genre || genre.trim() === "") {
-        return { success: false, message: "Please enter the genre" };
+    if (!language || language.trim() === "") {
+        return { success: false, message: "Please enter the language" };
     }
     if (!description || description.trim() === "") {
         return { success: false, message: "Please provide a description" };
