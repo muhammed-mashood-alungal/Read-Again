@@ -297,23 +297,6 @@ return (
                       Returned: {item.reason}
                     </CTableDataCell>
                   )}
-                {/* <CTableDataCell>
-                  {item.status === "Canceled" && (
-                    <CBadge color="danger">
-                      Canceled: {item.reason}
-                    </CBadge>
-                  )}
-                  {item.status === "Return Requested" && (
-                    <CBadge color="warning">
-                      Return Requested: {item.reason}
-                    </CBadge>
-                  )}
-                  {item.status === "Returned" && (
-                    <CBadge color="success">
-                      Returned: {item.reason}
-                    </CBadge>
-                  )}
-                </CTableDataCell> */}
               </CTableRow>
             ))}
           </CTableBody>
@@ -321,18 +304,18 @@ return (
 
         <CRow className="mt-4">
           <CCol md={6}>
-            <h3>Shipping Information</h3>
+            <h5>Shipping Information</h5>
             <p>{selectedOrder.shippingAddress}</p>
           </CCol>
           <CCol md={6} className="text-end">
-            <h3>Total Amount</h3>
+            <h5>Total Amount</h5>
             <p className="h4 text-primary">₹{selectedOrder.totalAmount.toFixed(2)}</p>
           </CCol>
         </CRow>
 
         <CRow className="mt-4">
           <CCol>
-            <h3>Payment Information</h3>
+            <h5>Payment Status</h5>
             <CBadge color="info">{selectedOrder.paymentStatus}</CBadge>
           </CCol>
         </CRow>
@@ -365,11 +348,11 @@ return (
             )}
           </CCol>
         </CRow>
-
+        <hr />
         {selectedOrder.cancellationReason && (
           <CRow className="mt-4">
             <CCol>
-              <h4>Cancellation Reason</h4>
+              <h5>Cancellation Reason</h5>
               <p>{selectedOrder.cancellationReason}</p>
             </CCol>
           </CRow>

@@ -31,7 +31,13 @@ function Addresses({ userAddresses, userId }) {
 
   const handleAddAddress = async (formData) => {
     try {
-        const {data} = await axiosUserInstance.post(`/${userId}/address/add`, formData)
+        const response = await axiosUserInstance.post(`/${userId}/address/add`, formData)
+        const data = response.data
+
+        if(response.status == 400){
+          console.log("errror")
+          return toast.error(data.message)
+        }
         toast.success("Address Saved", {
           autoClose: 1000
         })
@@ -46,7 +52,7 @@ function Addresses({ userAddresses, userId }) {
      
     } catch (err) {
       console.log(err)
-      toast.error(err?.response?.message)
+      toast.error(err?.response?.data?.message)
     }
 
   }
@@ -83,12 +89,6 @@ function Addresses({ userAddresses, userId }) {
         }else{
           handleEditAddres(formData)
         }
-        
-      
-        setTimeout(() => {
-          setCurrentAction("view")
-          resetStates()
-        }, 1000)
       } else {
         //toast.error(result.message)
         setAddressError(result.addressError)

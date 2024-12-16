@@ -111,9 +111,13 @@ module.exports={
             const currentDate = new Date()
             console.log(couponData.isActive,couponData.expirationDate)
             if(!couponData.isActive || new Date(couponData.expirationDate) < currentDate){
+                couponData.isActive = false 
+                couponData.save()
                 return res.status(400).json({message:"Coupon Expired"})
             }
             if(couponData.currentUsage >= coupon.maxUsage){
+                couponData.isActive = false 
+                couponData.save()
                 return res.status(400).json({message:"Coupon Exceed its Maximum Usage"})
             }
             if(amount < couponData.minimumPrice){

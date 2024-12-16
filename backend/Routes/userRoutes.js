@@ -52,7 +52,6 @@ router.put('/address/:addressId/edit',editAddress)
 router.delete('/address/:addressId/delete',deleteAddress)
 router.put('/:userId/address/change-default',changeDefaultAddress)
 
-
 //User Wallet Routes
 router.get('/wallet/:userId',getUserWallet)
 

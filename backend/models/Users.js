@@ -24,6 +24,9 @@ const UsersSChema=mongoose.Schema({
         type:String,
         default:"Basic"
     },
+    usedCoupons:[{
+      type:mongoose.Types.ObjectId
+    }],
     profileData:{
       bio:{
         type:String

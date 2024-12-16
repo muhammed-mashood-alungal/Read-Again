@@ -16,6 +16,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
+  cilAccountLogout,
   cilBell,
   cilContrast,
   cilEnvelopeOpen,
@@ -24,6 +25,9 @@ import {
   cilMoon,
   cilSun,
 } from '@coreui/icons'
+import {toast} from 'react-toastify'
+import { axiosAuthInstance } from '../../../redux/Constants/axiosConstants'
+import { removeAuth } from '../../../redux/Actions/userActions'
 
 
 const AdminHeader = () => {
@@ -40,6 +44,15 @@ const AdminHeader = () => {
     })
   }, [])
 
+  const handleLogout=async()=>{
+    try{
+       await axiosAuthInstance.get('/logout')
+       dispatch(removeAuth())
+    }catch(error){
+      toast.error("Something Went Wrong...!")
+    }
+  }
+
   return (
     <CHeader  className="mb-4 p-1 z-100 ms-5 position-fixed w-100 z-1000" ref={headerRef} >
       <CContainer className=" px-4" fluid>
@@ -55,18 +68,9 @@ const AdminHeader = () => {
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
           <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
+            <CNavLink onClick={handleLogout} >
+              <CIcon icon={cilAccountLogout} size="lg" />&nbsp;
+              Logout 
             </CNavLink>
           </CNavItem>
         </CHeaderNav>

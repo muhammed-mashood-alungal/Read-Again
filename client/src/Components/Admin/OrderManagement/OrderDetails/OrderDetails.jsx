@@ -118,6 +118,7 @@ function OrderDetails({  }) {
             const value = e.target.value
             await axiosOrderInstance.put(`/${order._id}/change-status/${value}`)
             setOrder({ ...order, orderStatus: value })
+            toast.success(`Order ${value}`)
         } catch (err) {
 
         }
@@ -157,6 +158,7 @@ function OrderDetails({  }) {
                 newOrderData.cancellationReason = "All Items Cancelled"
             }
             setOrder(newOrderData)
+            toast.success("Item cancelled From Order")
             setSelectedItemId(null)
         } catch (err) {
             console.log(err)
@@ -165,18 +167,18 @@ function OrderDetails({  }) {
     }
     const approveItemReturn = async (itemId) => {
         try {
-            console.log("appriving")
             const {data}=await axiosOrderInstance.put(`/${order._id}/items/${itemId}/approve-return`)
             const orderData = { ...order }
 
             orderData.items = orderData.items.map((item) => {
                 return item.bookId._id == itemId ? { ...item, status: "Returned" } : item
             })
+            toast.success("Item Return Approved")
             if(data.isAllItemsReturned){
                 orderData.orderStatus="Returned"
                 orderData.returnReason ="All Items Returned"
             }
-            console.log(orderData.items)
+            
             setOrder(orderData)
         } catch (err) {
             console.log(err)
@@ -190,6 +192,7 @@ function OrderDetails({  }) {
             orderData.items = orderData.items.map((item) => {
                 return item.bookId._id == itemId ? { ...item, status: "Rejected" } : item
             })
+            toast.success("Item Return Rejected")
             setOrder(orderData)
         } catch (err) {
             console.log(err)

@@ -7,23 +7,29 @@ const User = require("../models/Users")
 const Coupon = require("../models/Coupon")
 const Wallet = require("../models/Wallet")
 const Transaction = require("../models/WalletTransactions")
+const { getAddressString } = require("../services/userServices")
 
 module.exports = {
     async placeOrder(req, res) {
         try {
             const { userId } = req.params
             const orderDetails = req.body
-            const { city, landmark, district, state, country, postalCode, phoneNumbers } = await Address.findOne({ userId, isDefault: true })
-            const shippingAddress = `${city},Near ${landmark},${district},${state},${country},${postalCode}
-                                     ,${phoneNumbers[0]} & ${phoneNumbers[1] && phoneNumbers[1]}`
+            const address = await Address.findOne({ userId, isDefault: true })
+            const user = await User.findOne({_id:userId})
 
+            const shippingAddress = getAddressString(address)
             if (orderDetails.coupon) {
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
                 console.log(couponData.currentUsage, couponData.maxUsage)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
                 } else {
+                  if(user.usedCoupons.includes(couponData._id)){
+                    return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
+                  }
+                    user.usedCoupons =[...user.usedCoupons,couponData._id]
                     couponData.currentUsage += 1
+                    await user.save()
                     await couponData.save()
                     orderDetails.coupon = couponData._id
                 }
@@ -53,7 +59,7 @@ module.exports = {
                 book.save()
             }
             await Cart.deleteOne({ userId })
-            const user = await User.findOne({ _id: userId })
+            //const user = await User.findOne({ _id: userId })
             res.status(200).json({ success: true, orderId: response._id, user })
         } catch (err) {
             console.log(err)

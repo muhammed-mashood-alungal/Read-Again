@@ -45,6 +45,7 @@ const Checkout = () => {
     }
     getProfileData();
   }, [userId])
+ 
   const handleMethodChange = (event) => {
     setPaymentMethod(event.target.value);
   }

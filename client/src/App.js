@@ -43,11 +43,11 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axiosAuthInstance.get('/check-auth');
-        dispatch(setAuth(response.data));
+        const response = await axiosAuthInstance.get('/check-auth')
+        dispatch(setAuth(response.data))
       } catch (error) {
-        console.error('Token verification failed:', error);
-        dispatch(removeAuth());
+        console.error('Token verification failed:', error)
+        dispatch(removeAuth())
       }
     };
     checkAuth();

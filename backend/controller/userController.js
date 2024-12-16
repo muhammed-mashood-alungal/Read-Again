@@ -7,7 +7,9 @@ const bcrypt = require('bcrypt');
 const Category = require("../models/Category");
 const Address = require("../models/Address");
 const Wallet = require("../models/Wallet")
-const Transactions = require("../models/WalletTransactions")
+const Transactions = require("../models/WalletTransactions");
+const { getAddressString } = require("../services/userServices");
+const Coupon = require("../models/Coupon");
 module.exports = {
   async sendOTP(req, res) {
     try {
@@ -345,15 +347,25 @@ module.exports = {
     try {
       const addressData = req.body
       const { userId } = req.params
-      const addresses = await Address.findOne({userId})
+      const addresses = await Address.find({userId})
       let newAddress
+      if(addresses.length > 0){
+        for(let address of addresses){
+          console.log(address)
+          const existingAddress = getAddressString(address)
+          const newAdd = getAddressString(addressData)
+
+        if(existingAddress == newAdd){
+          return res.status(400).json({success:false , message : "Address Should be Unique"})
+        }
+      }
+
+      }
       if(!addresses){
         newAddress =await Address.create({ ...addressData, userId ,isDefault:true })
       }else{
         newAddress = await Address.create({ ...addressData, userId })
-      } 
-      console.log(newAddress,newAddress._id)
-      
+      }
       res.status(200).json({ success: true  , newAddress : newAddress})
     } catch (err) {
       console.log(err)
@@ -419,6 +431,17 @@ module.exports = {
     }catch(err){
      console.log(err)
      res.status(400).json({succes:false,message:"Something went Wrong"})
+    }
+  },
+  async getAvailableCoupons(req,res){
+    try{
+      const {userId} = req.params
+      const user = await User.findById(userId)
+      const availableCoupons = await Coupon.find({_id:{$nin:[user.usedCoupons]},isActive:true})
+      console.log(availableCoupons)
+      res.status(200).json({success:true,availableCoupons})
+    }catch(err){
+      res.status(400).json({success:false ,message:"Something Went Wrong"})
     }
   }
 }
