@@ -17,9 +17,7 @@ module.exports = {
             const shippingAddress = `${city},Near ${landmark},${district},${state},${country},${postalCode}
                                      ,${phoneNumbers[0]} & ${phoneNumbers[1] && phoneNumbers[1]}`
 
-            console.log(orderDetails.coupon)
             if (orderDetails.coupon) {
-
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
                 console.log(couponData.currentUsage, couponData.maxUsage)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
@@ -27,17 +25,13 @@ module.exports = {
                 } else {
                     couponData.currentUsage += 1
                     await couponData.save()
-                    console.log("coupon Data +============")
-                    console.log(couponData)
                     orderDetails.coupon = couponData._id
                 }
             } else {
-                console.log("dleting")
                 delete orderDetails.coupon
             }
             const response = await Order.create({ userId, ...orderDetails, shippingAddress })
-            console.log("response 0))))))))9000000000000000000000000000000")
-            console.log(response)
+
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })
 
@@ -48,7 +42,6 @@ module.exports = {
                     return res.status(400).json({ success: false, message: `${book.title} Have not much Stock` })
                 }
                 book.formats.physical.stock = book?.formats?.physical?.stock - orderDetails.items[i].quantity
-                console.log(book.formats.physical.stock, orderDetails.items[i].quantity)
 
                 if (book.formats.physical.stock == 0) {
                     book.stockStatus = "Out Of Stock"
@@ -59,7 +52,6 @@ module.exports = {
                 }
                 book.save()
             }
-            //consider the buynow case deleting later
             await Cart.deleteOne({ userId })
             const user = await User.findOne({ _id: userId })
             res.status(200).json({ success: true, orderId: response._id, user })
@@ -118,13 +110,39 @@ module.exports = {
     },
     async getAllOrders(req, res) {
         try {
-            let { page, limit } = req.query
+            let { page, limit ,orderStatus , paymentStatus } = req.query
             page = parseInt(page)
             limit = parseInt(limit)
             let skip = (page - 1) * limit
+            
+            let find={}
+            if(orderStatus == 'ordered'){
+                find={orderStatus:"Ordered"}
+            }else if(orderStatus == 'shipped'){
+                find={orderStatus:"Shipped"}
+            }else if(orderStatus == 'delivered'){
+                find={orderStatus:"Delivered"}
+            }else if(orderStatus == 'canceled'){
+                find={orderStatus:"Canceled"}
+            }else if(orderStatus == "returned"){
+                find={orderStatus:"Returned"}
+            }else if(orderStatus == "return requested"){
+                find={orderStatus:"Return Requested"}
+            }else if(orderStatus == "return rejected"){
+                find={orderStatus:"Return Rejected"}
+            }
 
-            const orders = await Order.find({}).sort({ orderDate: -1 }).skip(skip).limit(limit).populate("items.bookId").populate("userId")
-            const totalOrders = await Order.countDocuments({})
+            if(paymentStatus == 'success'){
+                find={...find,paymentStatus:"Success"}
+            }else if(paymentStatus == 'pending'){
+                find={...find,paymentStatus:"Pending"}
+            }else if(paymentStatus == 'refunded'){
+                find={...find,paymentStatus:'Refunded'}
+            }
+            console.log(find)
+
+            const orders = await Order.find(find).sort({ orderDate: -1 }).skip(skip).limit(limit).populate("items.bookId").populate("userId")
+            const totalOrders = await Order.countDocuments(find)
             res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {
             console.log(err)

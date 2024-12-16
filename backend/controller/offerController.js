@@ -44,10 +44,16 @@ module.exports = {
   },
   async getAllOffers(req, res) {
     try {
-      const offers = await Offer.find({})
+            let { page, limit } = req.query
+            page = parseInt(page)
+            limit = parseInt(limit)
+            let skip = (page - 1) * limit
+
+      const offers = await Offer.find({}).skip(skip).limit(limit)
       .populate("applicableProducts")
       .populate("applicableCategories")
-      res.status(200).json({ success: true, offers: offers })
+      const totalOffers = await Offer.countDocuments({})
+      res.status(200).json({ success: true, offers: offers ,totalOffers })
     } catch (error) {
       console.log(error)
       res.status(400).json({ success: false, message: "Something Went wrong" })
