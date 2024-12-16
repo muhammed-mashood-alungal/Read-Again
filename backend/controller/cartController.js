@@ -33,17 +33,19 @@ module.exports = {
           totalAmount: productData.price *parseInt(itemInfo.quantity) 
         })
         return res.status(200).json({ success: true })
-      } else { 
-        console.log("cart length +++++++++++"+cart.items.length)
-        for (let i = 0; i < cart.items.length; i++) {
-          
+      } else {
+        console.log(cart.items.length)
+        for (let i = 0; i < cart.items.length; i++) { 
           if (cart.items[i].productId == itemInfo.productId) {
-            itemInfo.quantity = parseInt(itemInfo.quantity)
+
             if (cart.items[i].quantity + itemInfo.quantity <= 3) {
               cart.items[i].quantity += itemInfo.quantity
               cart.totalQuantity += itemInfo.quantity
               cart.totalAmount += productData.price
-              cart.save()
+
+              
+              await cart.save()
+              console.log(cart.totalAmount)
               return res.status(200).json({ success: true })
             } else {
               return res.status(400).json({ success: false, message: "You can only add the same item up to 3 times." })
@@ -52,6 +54,7 @@ module.exports = {
         }
         cart.totalQuantity +=parseInt(itemInfo.quantity) 
         cart.totalAmount += productData.price *parseInt(itemInfo.quantity) 
+        console.log("pushing")
         cart.items.push(itemInfo)
         console.log("new pushed")
         cart.save()
@@ -75,9 +78,9 @@ module.exports = {
             const offer = await Offer.findOne({ _id: item?.productId?.appliedOffer });
             if (offer) {
               item.productId.appliedOffer = offer;
-              totalAmount += item.productId.formats.physical.offerPrice
+              totalAmount += item.productId.formats.physical.offerPrice * item.quantity
             }else{
-              totalAmount += item.productId.formats.physical.price
+              totalAmount += item.productId.formats.physical.price * item.quantity
             }
             if (!item?.productId?.isDeleted) {
               return item; 
@@ -89,7 +92,7 @@ module.exports = {
       );
       cart.items = updatedItems.filter((item) => item !== null);
       cart.totalAmount  = totalAmount
-      await cart.save(); 
+      await cart.save()
   
       res.status(200).json({ success: true, cart });
     } catch (err) {

@@ -66,7 +66,8 @@ const Checkout = () => {
       const orderDetails = {
         items: cart.items,
         shippingCharge: 0,
-        totalAmount: totalAmount, 
+        totalAmount:cart.totalAmount, 
+        payableAmount:totalAmount,
         orderStatus: "Ordered",
         paymentMethod:paymentMethod,
         coupon:coupon

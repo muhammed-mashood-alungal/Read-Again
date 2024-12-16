@@ -24,10 +24,10 @@ module.exports = {
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
                 } else {
-                  if(user.usedCoupons.includes(couponData._id)){
-                    return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
-                  }
-                    user.usedCoupons =[...user.usedCoupons,couponData._id]
+                //   if(user.usedCoupons.includes(couponData._id)){
+                //     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
+                //   }
+                //     user.usedCoupons =[...user.usedCoupons,couponData._id]
                     couponData.currentUsage += 1
                     await user.save()
                     await couponData.save()
@@ -59,7 +59,6 @@ module.exports = {
                 book.save()
             }
             await Cart.deleteOne({ userId })
-            //const user = await User.findOne({ _id: userId })
             res.status(200).json({ success: true, orderId: response._id, user })
         } catch (err) {
             console.log(err)
@@ -68,7 +67,6 @@ module.exports = {
     },
     async changeStatus(req, res) {
         try {
-
             const { orderId, status } = req.params
             console.log(orderId, status)
             const order = await Order.findOneAndUpdate({ _id: orderId }, {
@@ -106,6 +104,7 @@ module.exports = {
             .limit(limit)
             .populate("items.bookId")
             .populate("userId")
+            .populate("coupon")
 
             const totalOrders = await Order.countDocuments({userId})
             res.status(200).json({ success: true, orders ,totalOrders})
@@ -180,9 +179,8 @@ module.exports = {
                 }
             }
 
-            console.log(order.paymentStatus)
             if (order.paymentStatus == "Success") {
-                const amount = order.totalAmount
+                const amount = order.payableAmount
                 const userWallet = await Wallet.findOneAndUpdate({ userId: order.userId }, {
                     $inc: {
                         balance: amount
@@ -195,8 +193,10 @@ module.exports = {
                     amount: amount,
                     associatedOrder: order._id
                 })
+                order.paymentStatus = "Refunded"
             }
-            order.paymentStatus = "Refunded"
+            order.payableAmount = 0
+            console.log(order.payableAmount)
             await order.save()
             res.status(200).json({ success: true })
         } catch (err) {
@@ -284,6 +284,8 @@ module.exports = {
             const { orderId, itemId } = req.params
             const { cancellationReason } = req.body
             const order = await Order.findOne({ _id: orderId })
+            const coupon = order.coupon
+            const couponData = await Coupon.findOne({ _id: coupon })
             for (let i = 0; i < order.items.length; i++) {
                 if (order.items[i].bookId == itemId) {
                     order.items[i].status = "Canceled"
@@ -291,28 +293,28 @@ module.exports = {
                     const book = await Book.findOne({ _id: itemId })
                     book.formats.physical.stock += order.items[i].quantity
                     await book.save()
-                   
+                    
                     if (order.paymentStatus == "Success") {
                         const orderTotal = order.totalAmount
                         const itemTotal = order.items[i].totalPrice
-                        const coupon = order.coupon
+                      
                         let amount = itemTotal
                         if (coupon) {
-                            const couponData = await Coupon.findOne({ _id: coupon })
+                            
                             const percentage = couponData.discountValue
                             let orderTotalWithoutDiscount = orderTotal / (1 - percentage / 100)
                             orderTotalWithoutDiscount = orderTotalWithoutDiscount.toFixed()
-                            console.log("orderTotalWithoutDiscount  ", orderTotalWithoutDiscount)
-                            const totalOrderDiscount = orderTotalWithoutDiscount - orderTotal
-                            const proptionalDiscount = itemTotal / orderTotalWithoutDiscount * totalOrderDiscount
+                            var totalOrderDiscount = orderTotalWithoutDiscount - orderTotal
+                            var proptionalDiscount = itemTotal / orderTotalWithoutDiscount * totalOrderDiscount
                             amount = itemTotal - proptionalDiscount.toFixed()
+
+                            
                         }
                         const userWallet = await Wallet.findOneAndUpdate({ userId: order.userId }, {
                             $inc: {
                                 balance: amount
                             }
                         }, { upsert: true, new: true })
-                        console.log(userWallet)
                         await Transaction.create({
                             userId: order.userId,
                             walletId: userWallet._id,
@@ -320,9 +322,27 @@ module.exports = {
                             amount: amount,
                             associatedOrder: order._id
                         })
+                    } 
+                    order.payableAmount =  order.payableAmount - order.items[i].totalPrice
+                    console.log("coupon +++++++++++++++++++++++++++++++")
+                    console.log(coupon)
+                    console.log("----------------------------------------")
+                    console.log(order.payableAmount , couponData.minimumPrice)
+  
+                    if(order.payableAmount < couponData.minimumPrice){
+                       const remainingDiscount = totalOrderDiscount - proptionalDiscount
+
+                       let newPayableAmount =0
+                       for(let item of order.items){
+                          if(item.status !== 'Canceled'){
+                            newPayableAmount += item.totalPrice
+                          }
+                       }
+                       order.payableAmount = newPayableAmount
+                       order.coupon=null
                     }
                     break;
-                    order.totalAmount = order.totalAmount - order.items[i].totalPrice
+                    //order.totalAmount = order.totalAmount - order.items[i].totalPrice
                 }
             }
 

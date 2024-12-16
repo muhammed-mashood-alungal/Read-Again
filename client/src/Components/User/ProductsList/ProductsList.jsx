@@ -20,7 +20,7 @@ const ProductList = ({books,title}) => {
   }
   e.preventDefault()
   const itemInfo={
-    productId:book,
+    productId:book._id,
     quantity:1
   }
   dispatch(addToCart(userId,itemInfo))

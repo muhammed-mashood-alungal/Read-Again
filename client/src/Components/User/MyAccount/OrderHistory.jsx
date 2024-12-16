@@ -307,10 +307,25 @@ return (
             <h5>Shipping Information</h5>
             <p>{selectedOrder.shippingAddress}</p>
           </CCol>
-          <CCol md={6} className="text-end">
-            <h5>Total Amount</h5>
+          <CCol md={6}>
+          <CCol  className="text-end">
+            <h6>Total Amount</h6>
             <p className="h4 text-primary">₹{selectedOrder.totalAmount.toFixed(2)}</p>
           </CCol>
+          {
+            selectedOrder.coupon &&  <CCol  className="text-end">
+            <h6>Discounted Amount</h6>
+            <p className="h4 text-primary">₹{(selectedOrder.totalAmount.toFixed(2) * (selectedOrder?.coupon?.discountValue/100))}</p>
+          </CCol>
+          }
+          <hr />
+         
+          <CCol className="text-end">
+            <h5>Payable Amount</h5>
+            <p className="h4 text-primary">₹{selectedOrder.payableAmount?.toFixed()}</p>
+          </CCol>
+          </CCol>
+         
         </CRow>
 
         <CRow className="mt-4">

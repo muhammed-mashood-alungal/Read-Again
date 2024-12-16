@@ -49,7 +49,7 @@ const OrderSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    totalDiscount: {
+    totalDiscount:{
         type: Number,
         default: 0
     },
