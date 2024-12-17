@@ -99,10 +99,12 @@ module.exports = {
     try {
       const { offerId } = req.params
       const { newOfferData } = req.body
+      newOfferData.isActive=true
+   
       const offerData =  await Offer.findOneAndUpdate({ _id: offerId }, {
         $set: { ...newOfferData }
       },{returnDocument: 'before'})
-      console.log(newOfferData)
+      
        if(newOfferData.applicableTo == "CATEGORY"){
         for(let categoryId of newOfferData.applicableCategories){
          const books = await Book.find({category:categoryId}).populate("appliedOffer")
@@ -117,7 +119,6 @@ module.exports = {
              console.log()
              await book.save()
            }
-          
          }
         }
      }else if(newOfferData.applicableTo == "PRODUCT"){

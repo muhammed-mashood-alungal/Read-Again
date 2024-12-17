@@ -16,18 +16,20 @@ module.exports = {
             const orderDetails = req.body
             const address = await Address.findOne({ userId, isDefault: true })
             const user = await User.findOne({_id:userId})
-
+            
             const shippingAddress = getAddressString(address)
             if (orderDetails.coupon) {
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
-                console.log(couponData.currentUsage, couponData.maxUsage)
+                console.log(orderDetails.totalAmount , orderDetails.payableAmount )
+                 orderDetails.totalDiscount = orderDetails.totalAmount - orderDetails.payableAmount 
+                 console.log(orderDetails.totalDiscount)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
                 } else {
-                //   if(user.usedCoupons.includes(couponData._id)){
-                //     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
-                //   }
-                //     user.usedCoupons =[...user.usedCoupons,couponData._id]
+                    if(user.usedCoupons.includes(couponData._id)){
+                    return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
+                    }
+                    user.usedCoupons =[...user.usedCoupons,couponData._id]
                     couponData.currentUsage += 1
                     await user.save()
                     await couponData.save()
@@ -37,7 +39,7 @@ module.exports = {
                 delete orderDetails.coupon
             }
             const response = await Order.create({ userId, ...orderDetails, shippingAddress })
-
+            const cart = await Cart.findOne({ userId })
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })
 
@@ -45,10 +47,18 @@ module.exports = {
                     return res.status(400).json({ success: false, message: `Some Books are No Longer Available.` })
                 }
                 if (book.formats.physical.stock < orderDetails.items[i].quantity) {
+                    cart.items[i].quantity = book.formats.physical.stock
+                    cart.totalQuantity = cart.totalQuantity -(orderDetails.items[i].quantity - book.formats.physical.stock)
+                    cart.save()
                     return res.status(400).json({ success: false, message: `${book.title} Have not much Stock` })
+          
                 }
                 book.formats.physical.stock = book?.formats?.physical?.stock - orderDetails.items[i].quantity
-
+                if(book.appliedOffer){
+                    response.totalDiscount += book.formats.physical.price - book.formats.physical.offerPrice
+                    console.log(response.totalDiscount)
+                    response.save()
+                }
                 if (book.formats.physical.stock == 0) {
                     book.stockStatus = "Out Of Stock"
                 } else if (book.formats.physical.stock < 10) {
@@ -58,7 +68,7 @@ module.exports = {
                 }
                 book.save()
             }
-            await Cart.deleteOne({ userId })
+            await cart.deleteOne()
             res.status(200).json({ success: true, orderId: response._id, user })
         } catch (err) {
             console.log(err)

@@ -66,13 +66,17 @@ code {
   text-decoration: none !important;
 }
 .link-button{
-  color: #088179;
+  color: #088179 ;
+  
   font-size:17px;
   margin: 10px;
   cursor:pointer;
 }
 .link-button:hover{
   color: #000;
+}
+.social-media-icons{
+ fill:#088179 ;
 }
 .delete-btn{
   margin: 10px;

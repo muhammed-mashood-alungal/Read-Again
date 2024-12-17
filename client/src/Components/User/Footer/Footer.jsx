@@ -1,4 +1,7 @@
 import React from 'react';
+import CIcon from '@coreui/icons-react';
+import { cibFacebook, cibInstagram, cibTwitter, cibYoutube } from '@coreui/icons';
+
 
 const Footer = () => {
   return (
@@ -8,7 +11,7 @@ const Footer = () => {
         {/* Logo and Contact Section */}
         <div className="footer__content">
           <a href="index.html" className="footer__logo">
-            <img src="./assets/img/logo.jpg" alt="Logo" className="footer__logo-img" />
+            <img src="/assets/img/logo.jpg" alt="Logo" className="footer__logo-img" />
           </a>
           <h4 className="footer__subtitle">Contact</h4>
           <p className="footer__description">
@@ -25,12 +28,11 @@ const Footer = () => {
           <div className="footer__social">
             <h4 className="footer__subtitle">Follow Me</h4>
             <div className="footer__links flex">
-              <a href="#"><img src="./assets/img/icon-facebook.svg" alt="Facebook" className="footer__social-icon" /></a>
-              <a href="#"><img src="./assets/img/icon-twitter.svg" alt="Twitter" className="footer__social-icon" /></a>
-              <a href="#"><img src="./assets/img/icon-instagram.svg" alt="Instagram" className="footer__social-icon" /></a>
-              <a href="#"><img src="./assets/img/icon-pinterest.svg" alt="Pinterest" className="footer__social-icon" /></a>
-              <a href="#"><img src="./assets/img/icon-youtube.svg" alt="YouTube" className="footer__social-icon" /></a>
-            </div>
+              <CIcon icon={cibInstagram} size="lg" />
+              <CIcon icon={cibFacebook} size="lg" />
+              <CIcon icon={cibTwitter} size="lg" />
+              <CIcon icon={cibYoutube} size="lg"/> 
+              </div>
           </div>
         </div>
 
@@ -63,7 +65,7 @@ const Footer = () => {
         {/* Payment Section */}
         <div className="footer__content">
           <h3 className="footer__title">Secured Payed Gateways</h3>
-          <img src="./assets/img/payment-method.png" alt="Payment Methods" className="payment__img" />
+          <img src="/assets/img/payment-method.png" alt="Payment Methods" className="payment__img" />
         </div>
       </div>
 

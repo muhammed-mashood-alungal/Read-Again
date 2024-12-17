@@ -19,7 +19,7 @@ module.exports = {
       if(productData.formats.physical.stock == 0){
         return res.status(400).json({ success: false, message: "Product is Sold Out.Try later...!" })
       }
-      if(productData.formats.physical.stock < itemInfo.quantity){
+      if(productData.formats.physical.stock < itemInfo.quantity  ){
         return res.status(400).json({ success: false, message: "Not Much Stocks left for this Book.Try less..!" })
       }
       if (!productData) {
@@ -37,7 +37,9 @@ module.exports = {
         console.log(cart.items.length)
         for (let i = 0; i < cart.items.length; i++) { 
           if (cart.items[i].productId == itemInfo.productId) {
-
+            if(cart.items[i].quantity + itemInfo.quantity > productData.formats.physical.stock){
+              return res.status(400).json({ success: false, message: "Not Much Quantity Availble" })
+            }
             if (cart.items[i].quantity + itemInfo.quantity <= 3) {
               cart.items[i].quantity += itemInfo.quantity
               cart.totalQuantity += itemInfo.quantity
