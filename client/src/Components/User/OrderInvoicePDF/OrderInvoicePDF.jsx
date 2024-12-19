@@ -7,7 +7,6 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 
-// Define styles
 const styles = StyleSheet.create({
   page: { 
     padding: 20, 
@@ -103,13 +102,20 @@ const OrderInvoicePDF = ({ orderData }) => (
         <Text style={styles.label}>Email: </Text>
         <Text style={styles.value}>{orderData?.userId?.email}</Text>
       </View>
-
+      <View style={styles.section}>
+        <Text style={styles.label}>Payment Method: </Text>
+        <Text style={styles.value}>{orderData?.paymentMethod}</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.label}>Payment Status: </Text>
+        <Text style={styles.value}>{orderData?.paymentStatus}</Text>
+      </View>
       {/* Products Table */}
       <View style={styles.table}>
         <View style={[styles.tableRow, styles.tableHeader]}>
           <Text style={styles.productCell}>Product</Text>
           <Text style={styles.tableCell}>Quantity</Text>
-          <Text style={styles.tableCell}>Price</Text>
+          <Text style={styles.tableCell}>Unit Price</Text>
           <Text style={styles.tableCell}>Total</Text>
         </View>
         {orderData?.items?.map((item, index) => (

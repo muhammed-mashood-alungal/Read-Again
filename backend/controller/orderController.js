@@ -14,6 +14,9 @@ module.exports = {
         try {
             const { userId } = req.params
             const orderDetails = req.body
+            if(orderDetails.paymentMethod == "COD" && orderDetails.payableAmount > 1000){
+              return  res.status(400).json({message:"Cash On delivery Not Available for Order above Rs 1000"})
+            }
             const address = await Address.findOne({ userId, isDefault: true })
             const user = await User.findOne({_id:userId})
             

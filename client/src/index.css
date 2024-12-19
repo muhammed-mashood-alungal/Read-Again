@@ -11,9 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-.primary-btn{
+
+.primary-btn {
   background-color: #088179;
-  color:#fff;
+  color: #fff;
   padding: 10px;
   margin: 3px;
   font-size: 16px;
@@ -21,16 +22,18 @@ code {
   transition: all ease;
   transition-duration: 0.2s;
 }
-.primary-btn:hover{
+
+.primary-btn:hover {
   background-color: #bed1d0;
-  color:#088179;
+  color: #088179;
   padding: 10px;
   font-size: 16px;
- 
+
 }
-.secondary-btn{
+
+.secondary-btn {
   background-color: #bed1d0;
-  color:rgb(65, 94, 92);
+  color: rgb(65, 94, 92);
   padding: 10px;
   margin: 3px;
   font-size: 16px;
@@ -38,70 +41,101 @@ code {
   transition: all ease;
   transition-duration: 0.2s;
 }
-.secondary-btn:hover{
+
+.secondary-btn:hover {
   background-color: #d9e9e8;
-  color:#088179;
+  color: #088179;
   padding: 10px;
   font-size: 16px;
- 
+
 }
-.no-underline{
+
+.no-underline {
   text-decoration: none;
 }
-.space-between{
+
+.space-between {
   display: flex;
   justify-content: space-between;
 }
-.flex-column-left{
-  display:flex;
+
+.flex-column-left {
+  display: flex;
   justify-content: start;
   align-items: start;
   flex-direction: column;
 }
-.err-msg{
+
+.err-msg {
   color: red;
   margin-bottom: 0px;
 }
-.no-hover-underline:hover{
+
+.no-hover-underline:hover {
   text-decoration: none !important;
 }
-.link-button{
-  color: #088179 ;
-  
-  font-size:17px;
+
+.link-button {
+  color: #088179;
+
+  font-size: 17px;
   margin: 10px;
-  cursor:pointer;
+  cursor: pointer;
 }
-.link-button:hover{
+
+.link-button:hover {
   color: #000;
 }
-.social-media-icons{
- fill:#088179 ;
+
+.social-media-icons {
+  fill: #088179;
 }
-.delete-btn{
+
+.delete-btn {
   margin: 10px;
   color: rgb(197, 0, 0);
 }
-.delete-btn:hover{
+
+.delete-btn:hover {
   color: #000;
 }
-.empty-msg{
-  color:#088179;
+
+.empty-msg {
+  color: #088179;
   text-align: center;
 }
-button{
+
+button {
   cursor: pointer;
 }
+
 .sidebar-nav {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
+
 .sidebar-nav::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
-.z-1000{
+
+.z-1000 {
   z-index: 1000 !important;
 }
-.sidebar-narrow-unfoldable:not(:hover){
+
+.sidebar-narrow-unfoldable:not(:hover) {
   width: 5rem !important;
+}
+
+.primary-badge {
+  padding: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #088179;
+  background-color: #bbdddb;
+  border-radius: 5px;
+  height: fit-content;
+  cursor: pointer;
 }

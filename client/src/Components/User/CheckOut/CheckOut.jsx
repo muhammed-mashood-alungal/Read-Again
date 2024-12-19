@@ -21,7 +21,7 @@ const Checkout = () => {
   const [totalAmount,setTotalAmount] = useState(cart.totalAmount)
   const navigate = useNavigate()
   const [isPlacingOrder,setIsPlacingOrder]=useState(false)
-  const {Razorpay} = useRazorpay();
+  const {Razorpay} = useRazorpay()
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login')
@@ -76,7 +76,7 @@ const Checkout = () => {
       
       if(paymentMethod === 'Razorpay'){
         try {
-          const result = await handleOnlinePayment(orderDetails.totalAmount)
+          const result = await handleOnlinePayment(orderDetails.payableAmount)
           if (result.success) {
             console.log("orderId :" , data.orderId)
             await axiosOrderInstance.patch(`/${data.orderId}/payment-success`)
@@ -85,8 +85,11 @@ const Checkout = () => {
             toast.error("Payment Failed. You can Retry on Order Page")
           }
         } catch (error) {
-          console.error(error);
+         
           toast.error("Payment failed, please try again.");
+        }finally{
+         navigate('/order-success', {state:{orderId:data.orderId}})
+          setIsPlacingOrder(false)
         }
       }
       navigate('/order-success', {state:{orderId:data.orderId}})
@@ -147,8 +150,20 @@ const Checkout = () => {
             color: "#3399cc",
           },
         }
-        const rzpay = new Razorpay(options);
-        rzpay.open(options);
+        const rzpay = new Razorpay(options)
+
+        rzpay.open(options)
+
+        rzpay.on('payment.failed', (response) => {
+        console.error("Payment failed", response.error);
+        reject({
+          success: false,
+          message: "Payment failed",
+          error: response.error,
+        })
+      })
+
+        
       }catch(err){
         console.log(err)
       }

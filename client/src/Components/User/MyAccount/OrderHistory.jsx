@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './MyAccount.css'
-import { axiosOrderInstance } from '../../../redux/Constants/axiosConstants'
+import { axiosOrderInstance, axiosRazorpayInstance } from '../../../redux/Constants/axiosConstants'
 import ReasonPopUp from '../../ReasonPopUp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
@@ -18,11 +18,11 @@ import {
   CButton,
   CContainer,
   CRow,
-  CCol,
-  CBadge
+  CCol
 } from '@coreui/react';
 import { cilArrowLeft } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
+import { useRazorpay } from 'react-razorpay'
 
 
 function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalPages }) {
@@ -31,6 +31,7 @@ function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalP
   const [isCancelling, setIsCancelling] = useState(false)
   const [isReturing, setIsReturning] = useState(false)
   const [selectedItemId, setSelectedItemId] = useState(null)
+  const {Razorpay} = useRazorpay()
   const isEligibleForReturn = () => {
     if (selectedOrder.orderStatus == "Delivered" && !selectedOrder.isRejectedOne) {
       return true
@@ -148,6 +149,77 @@ function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalP
       toast.error(err?.response?.data?.message)
     }
   }
+  const continuePayment=async()=>{
+     try {
+              const result = await handleOnlinePayment(selectedOrder.payableAmount)
+              if (result.success){
+                await axiosOrderInstance.patch(`/${selectedOrder._id}/payment-success`)
+                toast.success("Payment Successful")
+                setSelectedOrder({...selectedOrder,paymentStatus:"Success"})
+              } else {
+                toast.error("Payment Failed. Please try again")
+              }
+            } catch (error) {
+              toast.error("Payment failed, please try again.");
+            }
+  }
+    const handleOnlinePayment=(amount)=>{
+       return new Promise(async(resolve,reject)=>{
+         try{
+           const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_ID;
+           const {data} = await axiosRazorpayInstance.post('/create-order',{amount:amount*100})
+           const order = data
+           console.log(order)
+           const options = {
+             key: RAZORPAY_KEY_ID,
+             amount: order.amount,
+             currency: order.currency,
+             name: "Read Again", 
+             description: "Payment for your order", 
+             order_id: order.id,
+             handler: async (response) => {
+               try {
+               await axiosRazorpayInstance.post('/verify-payment',{
+                   razorpay_order_id: response.razorpay_order_id,
+                   razorpay_payment_id: response.razorpay_payment_id,
+                   razorpay_signature: response.razorpay_signature
+               })
+               resolve({success:true,message:"Payment Success"})
+               } catch (err) {
+                 reject({success:false , message:"Payment Failed"})
+               }
+             },
+             prefill: {
+               name:data?.user?.username, 
+               email: data?.user?.email
+               //contact: "9999999999",
+             },
+             notes: {
+               address: "Razorpay Corporate Office",
+             },
+             theme: {
+               color: "#3399cc",
+             },
+           }
+           const rzpay = new Razorpay(options)
+   
+           rzpay.open(options)
+   
+           rzpay.on('payment.failed', (response) => {
+           console.error("Payment failed", response.error);
+           reject({
+             success: false,
+             message: "Payment failed",
+             error: response.error,
+           })
+         })
+   
+           
+         }catch(err){
+           console.log(err)
+         }
+       })
+      }
 
   
 return (
@@ -200,7 +272,7 @@ return (
                     {new Date(order.orderDate).toLocaleDateString()}
                   </CTableDataCell>
                   <CTableDataCell>
-                    <CBadge color="info">{order.orderStatus}</CBadge>
+                    <span className='primary-badge'>{order.orderStatus}</span>
                   </CTableDataCell>
                   <CTableDataCell>₹{order.totalAmount}</CTableDataCell>
                   <CTableDataCell>
@@ -244,7 +316,7 @@ return (
         </CButton>
         <div className="d-flex justify-content-between w-100 align-items-center">
           <h2 className="mb-0">Order Details</h2>
-          <CBadge color="info">{selectedOrder.orderStatus}</CBadge>
+          <span className='primary-badge'>{selectedOrder.orderStatus}</span>
         </div>
       </CCardHeader>
       <CCardBody>
@@ -321,20 +393,45 @@ return (
           <hr />
          
           <CCol className="text-end">
+            
+
             <h5>Payable Amount</h5>
             <p className="h4 text-primary">₹{selectedOrder.payableAmount?.toFixed()}</p>
+           
           </CCol>
           </CCol>
          
         </CRow>
-
+         <hr />
         <CRow className="mt-4">
-          <CCol>
-            <h5>Payment Status</h5>
-            <CBadge color="info">{selectedOrder.paymentStatus}</CBadge>
+        
+        <CCol  >
+            <div className='d-flex  align-items-center ' >
+            <h6 className='mt-1'>Payment Method : </h6>
+            <span className='ms-2 primary-badge'>{selectedOrder.paymentMethod}</span>
+            </div>
           </CCol>
+          
         </CRow>
-
+        <CRow className="mt-2 align-items-center">
+        <CCol  >
+            <div className='d-flex  align-items-center ' >
+            <h6 className='mt-1'>Payment Status : </h6>
+            <span  className='ms-2 primary-badge'>{selectedOrder.paymentStatus}</span>
+            </div>
+          </CCol>
+          {
+            (selectedOrder.paymentMethod == "Razorpay" && selectedOrder.paymentStatus == "Pending") && (
+              <CCol  >
+              <div className='d-flex  align-items-center ' >
+              <button  className='ms-2 primary-btn' onClick={continuePayment}>Continue Payment</button>
+              </div>
+            </CCol>
+            )
+          }
+         
+        </CRow>
+        <hr />
         <CRow className="mt-4">
           <CCol>
             {isEligibleForReturn() && (
@@ -363,7 +460,7 @@ return (
             )}
           </CCol>
         </CRow>
-        <hr />
+       
         {selectedOrder.cancellationReason && (
           <CRow className="mt-4">
             <CCol>
