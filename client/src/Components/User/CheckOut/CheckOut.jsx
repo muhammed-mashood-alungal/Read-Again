@@ -89,8 +89,7 @@ const Checkout = () => {
           toast.error("Payment failed, please try again.");
         }
       }
-      toast.success("Your Order Placed Successfully.You can Track delivery status in You Order History")
-      navigate('/')
+      navigate('/order-success', {state:{orderId:data.orderId}})
       setIsPlacingOrder(false)
       
     

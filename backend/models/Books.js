@@ -14,7 +14,7 @@ const BookSchema = mongoose.Schema({
       ref: 'Category',
       required:true
    },
-   Language:{
+   language:{
     type:String
    },
    description:{

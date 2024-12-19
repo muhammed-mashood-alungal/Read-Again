@@ -435,13 +435,13 @@ module.exports = {
   },
   async getAvailableCoupons(req,res){
     try{
-      const {userId} = req.params
+      const {userId} = req.params  
       const user = await User.findById(userId)
       const availableCoupons = await Coupon.find({_id:{$nin:[user.usedCoupons]},isActive:true})
       console.log(availableCoupons)
       res.status(200).json({success:true,availableCoupons})
     }catch(err){
-      res.status(400).json({success:false ,message:"Something Went Wrong"})
+      res.status(400).json({success:false ,availableCoupons:[]})
     }
   }
 }

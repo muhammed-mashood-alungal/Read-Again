@@ -1,10 +1,11 @@
 const express= require('express')
-const { getUserOrders, updateOrderStatus, getAllOrders, placeOrder, cancelOrder, requestReturnOrder, approveReturnRequest, rejectReturnRequest, changeStatus, cancelOrderItem, returnOrderItem, approveItemReturn, rejectItemReturn, paymentSuccess } = require('../controller/orderController')
+const { getUserOrders, updateOrderStatus, getAllOrders, placeOrder, cancelOrder, requestReturnOrder, approveReturnRequest, rejectReturnRequest, changeStatus, cancelOrderItem, returnOrderItem, approveItemReturn, rejectItemReturn, paymentSuccess, getOrderData } = require('../controller/orderController')
 const { isAdmin } = require('../middlewares/auth')
 const router = express.Router()
 
 router.get('/',isAdmin,getAllOrders)
 router.post('/:userId/place-order',placeOrder)
+router.get('/:orderId/order-data',getOrderData)
 router.get('/:userId',getUserOrders)
 router.put('/:orderId/change-status/:status',changeStatus)
 router.put('/:orderId/cancel-order',cancelOrder)

@@ -37,6 +37,8 @@ import CouponDetails from './Components/Admin/CouponManagement/CouponDetails';
 import CouponForm from './Components/Admin/CouponManagement/CouponForm';
 import ViewOffer from './Components/Admin/OfferManagement/ViewOffer/ViewOffer';
 import OfferForm from './Components/Admin/OfferManagement/OfferForm/OfferForm';
+import OrderSuccess from './Components/User/OrderSuccess/OrderSuccess';
+import OrderSuccessPage from './Pages/Userpages/OrderSuccessPage';
 
 function App() {
   const dispatch = useDispatch()
@@ -68,6 +70,7 @@ function App() {
           <Route path='/wishlist' element={<WishlistPage />} />
           <Route path='/account' element={<AccountPage />} />
           <Route path='/checkout' element={<CheckOutPage />} />
+          <Route path='/order-success' element={<OrderSuccessPage />} />
           <Route path='/book-details/:bookId' element={<DetailsPage />} />
         </Routes>
         <ForgetPassProvider>

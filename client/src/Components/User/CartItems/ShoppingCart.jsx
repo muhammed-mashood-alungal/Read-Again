@@ -24,13 +24,13 @@ const ShoppingCart = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [availableCoupons,setAvailabeCoupons]=useState([])
   useEffect(() => {
+    
     if (!userId) {
-      navigate("/login", { state: { cart } })
+      return 
     } else {
       const fetchCartData = async () => {
         try {
           const { data } = await axiosCartInstance.get(`/${userId}`)
-          console.log(data.cart)
           setCart(data.cart ? data.cart : {})
         } catch (err) {
           console.log(err)
@@ -48,11 +48,13 @@ const ShoppingCart = () => {
         const {data} = await axiosCouponInstance.get(`/${userId}/available-coupons`)
         setAvailabeCoupons(data?.availableCoupons)
        }catch(err){
-        toast.error(err?.response?.data?.message)
+        setAvailabeCoupons(err?.response?.data?.availableCoupons)
        }
     }
-
-    fetchAvailablecoupons()
+    if(userId){
+      fetchAvailablecoupons()
+    }
+    
   },[userId])
 
   const handleQuantiyChange = debounce(async (value, index, productPrice) => {
@@ -88,6 +90,7 @@ const ShoppingCart = () => {
       })
 
     } catch (err) {
+      console.log("90")
       if (err.response?.status == 400) {
         toast.error(err?.response?.data?.message)
       }
@@ -113,6 +116,7 @@ const ShoppingCart = () => {
       setSelectedIndex(-1)
       dispatch(decCartItemCount(cart.items[selectedIndex].quantity))
     } catch (err) {
+      console.log("115")
       console.log(err)
       toast.error(err?.response?.data?.message)
     } finally {

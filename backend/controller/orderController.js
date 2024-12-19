@@ -46,7 +46,7 @@ module.exports = {
                 if (!book) {
                     return res.status(400).json({ success: false, message: `Some Books are No Longer Available.` })
                 }
-                if (book.formats.physical.stock < orderDetails.items[i].quantity) {
+                if ( cart && book.formats.physical.stock < orderDetails.items[i].quantity) {
                     cart.items[i].quantity = book.formats.physical.stock
                     cart.totalQuantity = cart.totalQuantity -(orderDetails.items[i].quantity - book.formats.physical.stock)
                     cart.save()
@@ -68,8 +68,10 @@ module.exports = {
                 }
                 book.save()
             }
-            await cart.deleteOne()
-            res.status(200).json({ success: true, orderId: response._id, user })
+            if(cart){
+                await cart.deleteOne()
+            }
+            res.status(200).json({ success: true, orderId: response._id, user , orderDetails:response})
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false, message: "Order Placing Failed Please try Again" })
@@ -488,5 +490,15 @@ module.exports = {
             console.log(error)
             res.status(400).json({ success: fale, message: "Something Went Wrong" })
         }
+    },
+    async getOrderData(req,res){
+       try{
+         const {orderId} = req.params
+         const orderData = await Order.findById(orderId).populate("userId").populate("items.bookId")
+         res.status(200).json({success:true , orderData : orderData})
+       }catch(err){
+         console.log(err)
+         res.status(400).json({success:false , message: err?.message || "Something Went Wrong"})
+       }
     }
 }

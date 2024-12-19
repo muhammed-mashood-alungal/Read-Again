@@ -58,7 +58,6 @@ app.use('/api/test',testingRoutes)
 //ERROR HANDLING MIDDLEWARE
 app.use((err,req,res,next)=>{
     if(err){
-        
         console.log(err)
     }
 }) 
