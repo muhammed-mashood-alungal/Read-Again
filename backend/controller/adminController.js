@@ -37,23 +37,23 @@ module.exports = {
       throw new Error("Somthing went Wrong while fetching user data")
     }
   },
-   async checkAuth(req, res) {
+  async checkAuth(req, res) {
     console.log("check-auth")
     const token = req.cookies.token
     console.log(token)
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        const user = await User.findOne({_id:decoded.id})
-        if(user.isBlocked){
-          return res.status(403).json({ message: 'Blocked' });
-        }
-        res.status(200).json({ isLoggedIn : true , role: decoded.role ,id:decoded.id });
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const user = await User.findOne({ _id: decoded.id })
+      if (user.isBlocked) {
+        return res.status(403).json({ message: 'Blocked' });
+      }
+      res.status(200).json({ isLoggedIn: true, role: decoded.role, id: decoded.id });
     } catch (error) {
-        console.error(error);
-        res.status(403).json({ isLoggedIn : false , role: null});
+      console.error(error);
+      res.status(403).json({ isLoggedIn: false, role: null });
     }
   },
   async adminLogin(req, res) {
@@ -66,11 +66,11 @@ module.exports = {
         const isMatched = await bcrypt.compare(password, Admin.password)
         if (isMatched) {
           const token = await generateToken({ id: Admin._id, role: Admin.role })
-            res.cookie('token',token,{
-              httpOnly:true,
-              secure:true
-            })
-            
+          res.cookie('token', token, {
+            httpOnly: true,
+            secure: true
+          })
+
           return res.status(200).json({ success: true, token })
         }
       }
@@ -80,86 +80,233 @@ module.exports = {
       return res.status(401).json({ message: "Invalid Credential" })
     }
   },
-  async getSalesReport(req,res){
-      try {
-        const {filterType} = req.params
-        const {startDate,endDate} = req.body
+  async getSalesReport(req, res) {
+    try {
+      const { filterType } = req.params
+      const { startDate, endDate } = req.body
 
-        
-        let find = {}
-        switch(filterType){
-          case 'daily':
-            find = { orderDate: { $gte: new Date().setHours(0, 0, 0, 0) } }
-            break;
 
-          case 'weekly':
-            const weekAgo = new Date()
-            weekAgo.setDate(weekAgo.getDate() - 7)
-            find = { orderDate: { $gte: weekAgo } }
-            break;
-          case 'monthly':
-            const monthAgo = new Date()
-            monthAgo.setDate(monthAgo.getDate() - 30)
-            find = { orderDate: { $gte: monthAgo } }
-            break;
-          case 'custom':
-            const start = new Date(startDate); 
-            const end = new Date(endDate);
-            console.log(start,end,startDate,endDate)
-            find = {orderDate : {$gte : start , $lte : end}}
-            break;
-          default:
-            find
-        }
-        const orders = await Order.find({...find,orderStatus:"Delivered"}).populate("items.bookId").populate("userId")
-        //salesReport.orders = orders
-        let totalRevenue = 0
-        let totalCouponDiscount = 0
-        let totalSales = 0
-        let itemsSold = 0
-        
-        for (const order of orders) {
-            totalRevenue += order.totalAmount;
-            if(order.orderStatus == "Delivered"){
-              totalSales += 1
-              for(let item of order.items){
-                itemsSold += item.quantity
-              }
-            }
-            if (order.coupon) {
-                const coupon = await Coupon.findOne({ _id: order.coupon });
-                const percentage = coupon.discountValue;
-                const orderTotalWithoutDiscount = order.totalAmount / (1 - percentage / 100);
-                totalCouponDiscount += orderTotalWithoutDiscount.toFixed() - order.totalAmount;
-            }
-        }
-         const salesReport = {
-          filterType :filterType ,
-          totalRevenue,        
-          totalCouponDiscount,
-          totalSales,
-          itemsSold,
-          orders:[...orders],
-          startDate,
-          endDate
-        }
-        console.log(totalRevenue,totalCouponDiscount,totalSales,itemsSold)
-        res.status(200).json({success:true, salesReport})
-      } catch (error) { 
-        console.log(error)
-        res.status(400).json({message:"Somthing Went Wrong"})
+      let find = {}
+      switch (filterType) {
+        case 'daily':
+          find = { orderDate: { $gte: new Date().setHours(0, 0, 0, 0) } }
+          break;
+
+        case 'weekly':
+          const weekAgo = new Date()
+          weekAgo.setDate(weekAgo.getDate() - 7)
+          find = { orderDate: { $gte: weekAgo } }
+          break;
+        case 'monthly':
+          const monthAgo = new Date()
+          monthAgo.setDate(monthAgo.getDate() - 30)
+          find = { orderDate: { $gte: monthAgo } }
+          break;
+        case 'yearly':
+          const yearAgo = new Date()
+          yearAgo.setDate(yearAgo.getDate() - 365)
+          find = { orderDate: { $gte: yearAgo } }
+          break;
+        case 'custom':
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          console.log(start, end, startDate, endDate)
+          find = { orderDate: { $gte: start, $lte: end } }
+          break;
+        default:
+          find
       }
+      const orders = await Order.find({ ...find, orderStatus: "Delivered" }).populate("items.bookId").populate("userId")
+      //salesReport.orders = orders
+      let totalRevenue = totalCouponDiscount = totalSales = itemsSold = totalDiscount = 0
+
+      for (const order of orders) {
+        totalRevenue += order.totalAmount;
+        totalDiscount += order.totalDiscount || 0
+        if (order.orderStatus == "Delivered") {
+          totalSales += 1
+          for (let item of order.items) {
+            itemsSold += item.quantity
+          }
+        }
+        if (order.coupon) {
+          const coupon = await Coupon.findOne({ _id: order.coupon });
+          const percentage = coupon.discountValue;
+          const orderTotalWithoutDiscount = order.totalAmount / (1 - percentage / 100);
+          totalCouponDiscount += orderTotalWithoutDiscount.toFixed() - order.totalAmount;
+        }
+      }
+      const salesReport = {
+        filterType: filterType,
+        totalRevenue,
+        totalDiscount,
+        totalCouponDiscount,
+        totalSales,
+        itemsSold,
+        orders: [...orders],
+        startDate,
+        endDate
+      }
+
+
+
+      let salesChart = ordersChart = []
+      if (filterType != 'custom') {
+        let groupBy
+        if (filterType === 'daily') {
+          groupBy = { $hour: "$orderDate" }
+        } else if (filterType === 'weekly') {
+          groupBy = { $dayOfWeek: "$orderDate" }
+        } else if (filterType === 'monthly') {
+          groupBy = { $dayOfMonth: "$orderDate" }
+        } else if (filterType === 'yearly') {
+          groupBy = { $month: "$orderDate" }
+        }
+        salesChart = await Order.aggregate([
+          { $match: { ...find, orderStatus: "Delivered" } },
+          {
+            $group: {
+              _id: groupBy,
+              totalSales: { $sum: 1 },
+            },
+          },
+          { $sort: { _id: 1 } },
+        ])
+        ordersChart = await Order.aggregate([
+          { $match: { ...find } },
+          {
+            $group: {
+              _id: groupBy,
+              totalOrders: { $sum: 1 },
+            },
+          },
+          { $sort: { _id: 1 } },
+        ])
+      }
+      chartData = {
+        salesChart,
+        ordersChart
+      }
+      console.log(chartData)
+      res.status(200).json({ success: true, salesReport, chartData: chartData })
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({ message: "Something Went Wrong" })
+    }
   },
-  async getOverallStates(req,res){
-    try{
+  async getOverallStates(req, res) {
+    try {
       const orderCount = await Order.countDocuments({})
-      const salesCount = await Order.countDocuments({orderStatus:"Delivered"})
+      const salesCount = await Order.countDocuments({ orderStatus: "Delivered" })
       const userCount = await User.countDocuments({})
-      console.log(orderCount,salesCount,userCount)
-      res.status(200).json({overall:{orderCount,salesCount,userCount}})
-    }catch(err){
+      console.log(orderCount, salesCount, userCount)
+      res.status(200).json({ overall: { orderCount, salesCount, userCount } })
+    } catch (err) {
       console.log(err)
-      res.status(400).json({message:"Somthing Went Wrong"})
+      res.status(400).json({ message: "Somthing Went Wrong" })
+    }
+  },
+  async topSelling(req, res) {
+    try {
+      const [topBooks, topCategories,topAuthors] = await Promise.all([
+        Order.aggregate([
+          { $match: { orderStatus: "Delivered" } },
+          { $unwind: "$items" },
+          {
+            $group: {
+              _id: "$items.bookId",
+              total: { $sum: "$items.quantity" }
+            }
+          },
+          { $sort: { total: -1 } },
+          { $limit: 10 },
+          {
+            $lookup: {
+              from: "books",
+              localField: "_id",
+              foreignField: "_id",
+              as: "bookDetails"
+            }
+          },
+          { $unwind: "$bookDetails" },
+          {
+            $project: {
+              _id: 0,
+              bookId: "$_id",
+              title: "$bookDetails.title",
+              author: "$bookDetails.author",
+              totalSold: "$total"
+            }
+          }
+        ]),
+        Order.aggregate([
+          { $match: { orderStatus: "Delivered" } },
+          { $unwind: "$items" },
+          {
+            $group: {
+              _id: "$items.bookId",
+              total: { $sum: "$items.quantity" }
+            }
+          },
+          { $sort: { total: -1 } },
+          { $limit: 10 },
+          {
+            $lookup: {
+              from: "books",
+              localField: "_id",
+              foreignField: "_id",
+              as: "bookDetails"
+            }
+          },
+          { $unwind: "$bookDetails" },
+          {
+            $group: {
+              _id: "$bookDetails.category",
+              total: { $sum: 1 }
+            }
+          },
+          {
+            $lookup: {
+              from: "categories",
+              localField: "_id",
+              foreignField: "_id",
+              as: "categoryDetails"
+            }
+          },
+          { $unwind: "$categoryDetails" }
+        ]),
+        Order.aggregate([
+          { $match: { orderStatus: "Delivered" } },
+          { $unwind: "$items" },
+          {
+            $group: {
+              _id: "$items.bookId",
+              total: { $sum: "$items.quantity" }
+            }
+          },
+          { $sort: { total: -1 } },
+          { $limit: 10 },
+          {
+            $lookup: {
+              from: "books",
+              localField: "_id",
+              foreignField: "_id",
+              as: "bookDetails"
+            }
+          },
+          { $unwind: "$bookDetails" },
+          {
+            $group: {
+              _id: "$bookDetails.author",
+              total: { $sum: 1 }
+            }
+          }
+        ]),
+      ])
+      console.log(topBooks,topCategories,topAuthors)
+      res.status(200).json({topBooks,topCategories,topAuthors})
+    } catch (err) {
+      console.log(err)
     }
   }
 

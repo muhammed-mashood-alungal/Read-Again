@@ -21,5 +21,6 @@ router.put('/:bookId/toggle-delete', isAdmin, handleBookDelete)
 router.put('/update-book-image/:bookId',isAdmin,upload.single('image'),updateBookImage);
 router.get('/list/just-published', getJustPublishedBooks)
 router.post('/list/related-books/:bookId', getRelatedBooks)
+router.post('/:bookId/reviews/add/:userId')
 
 module.exports = router 

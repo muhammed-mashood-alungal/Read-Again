@@ -3,8 +3,11 @@ import { bookImages } from "../../../redux/Constants/imagesDir";
 import './ProductDetails.css'
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, resetCartStates } from "../../../redux/Actions/userActions";
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import Rating from '@mui/material/Rating';
+import Stack from '@mui/material/Stack';
 import { useNavigate } from "react-router-dom";
+import { axiosBookInstance, axiosUserInstance } from "../../../redux/Constants/axiosConstants";
 
 const ProductDetails = ({ bookData }) => {
   const [activeTab, setActiveTab] = useState("info");
@@ -17,8 +20,10 @@ const ProductDetails = ({ bookData }) => {
   });
   const [selectedFormat, setSelectedFormat] = useState("physical")
   const [price, setPrice] = useState(null)
-  const [quantity, setQuantity]=useState(1)
-  const {userId} = useSelector(state=>state.auth)
+  const [quantity, setQuantity] = useState(1)
+  const { userId } = useSelector(state => state.auth)
+  const [rating, setRating] = useState(2)
+  const [ratingText,setRatingText]=useState("")
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
@@ -27,20 +32,11 @@ const ProductDetails = ({ bookData }) => {
     }
   }, [bookData, selectedFormat]);
 
- 
 
-
-  // useEffect(() => {
-  //   if (bookData.images) {
-  //     console.log("useEffet")
-  //     console.log(bookData.images)
-  //     setImages([...bookData.images])
-  //   }
-  // }, [bookData])
 
   useEffect(() => {
     if (bookData.images) {
-      const imageUrls = bookData.images.map((image)=>{
+      const imageUrls = bookData.images.map((image) => {
         return image.secure_url
       })
       setImages(imageUrls);
@@ -51,22 +47,33 @@ const ProductDetails = ({ bookData }) => {
     }
   }, [bookData]);
 
-  const handleQuantityChange=(e)=>{
+  const handleQuantityChange = (e) => {
     setQuantity(e.target.value)
+  }
+  const submitReview=async()=>{
+    try{
+      const ratingData={
+        rating,
+        ratingText
+      }
+         await axiosBookInstance.post(`/${bookData._id}/reviews/add/${userId}`,{ratingData})
+    }catch(err){
+
+    }
   }
 
 
-  const renderProductPrice=(book)=>{
+  const renderProductPrice = (book) => {
     const formats = book.formats
-    if(formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive){
-     return <>
-      <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
-      <span className='old__price'>₹{formats?.physical?.price}</span>
-     </>
-    }else{
-     return  <span className='new__price'>₹{formats?.physical?.price}</span>
+    if (formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive) {
+      return <>
+        <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
+        <span className='old__price'>₹{formats?.physical?.price}</span>
+      </>
+    } else {
+      return <span className='new__price'>₹{formats?.physical?.price}</span>
     }
- }
+  }
 
   const handleMouseMove = (event) => {
     const imageZoom = event.currentTarget;
@@ -93,7 +100,7 @@ const ProductDetails = ({ bookData }) => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  
+
 
   const handleImageClick = (index) => {
     let newArr = [...images];
@@ -102,7 +109,7 @@ const ProductDetails = ({ bookData }) => {
     newArr[index] = temp;
     setImages([...newArr]);
     console.log(newArr)
-  
+
     setZoom((prevZoom) => ({
       ...prevZoom,
       backgroundImage: `url(${newArr[0]})`,
@@ -119,45 +126,32 @@ const ProductDetails = ({ bookData }) => {
     }
     dispatch(addToCart(userId, itemInfo))
   }
-  
 
 
-  const renderStock = () => {
-    if (!bookData?.formats || !selectedFormat) {
-      return <td>N/A</td>;
-    }
-    const stock = bookData?.formats[selectedFormat]?.stock;
-    if (stock < 1) {
-      return <td className="stock-out">Stock Out</td>;
-    } else if (stock < 10) {
-      return <td className="hurry-up">Hurry Up</td>;
-    } else {
-      return <td className="in-stock">In Stock</td>;
-    }
-  }
-  const getPrice=(book)=>{
+
+  const getPrice = (book) => {
     console.log(book?.appliedOffer)
-    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+    if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
       return book.formats.physical.offerPrice
     }
-    return  book?.formats.physical.price
+    return book?.formats.physical.price
   }
- 
-  const buyNow=()=>{
-    console.log(bookData?.formats?.physical?.price,quantity)
-    try{
-       const cart = {}
-       cart.totalAmount= getPrice(bookData) * parseInt(quantity)
-       cart.quantity =quantity
-       cart.items = [{
-        productId:{...bookData},
-        offer:{},
-        quantity:quantity
-       }]
-       navigate('/checkout',{state:{cart}})
-    }catch(err){
-        console.log(err)
-        toast.error(err?.response?.data.message)
+
+  const buyNow = () => {
+    console.log(bookData?.formats?.physical?.price, quantity)
+    try {
+      const cart = {}
+      cart.totalAmount = getPrice(bookData) * parseInt(quantity)
+      cart.quantity = quantity
+      cart.items = [{
+        productId: { ...bookData },
+        offer: {},
+        quantity: quantity
+      }]
+      navigate('/checkout', { state: { cart } })
+    } catch (err) {
+      console.log(err)
+      toast.error(err?.response?.data.message)
     }
   }
   return (
@@ -177,7 +171,7 @@ const ProductDetails = ({ bookData }) => {
               onMouseOut={handleMouseOut}
             >
               <img
-               src={images[0]}
+                src={images[0]}
                 alt="Product"
                 className="details__img Zoomable"
               />
@@ -186,7 +180,7 @@ const ProductDetails = ({ bookData }) => {
             <div className="details__small-images grid">
               {images.length != 0 && images.map((image, i) => {
                 return images[i + 1] && <img
-                  src={images[i+1]}
+                  src={images[i + 1]}
                   className="details__small-img"
                   onClick={() => { handleImageClick(i + 1) }}
                 />
@@ -203,19 +197,22 @@ const ProductDetails = ({ bookData }) => {
             </p>
             <div className="details__price ">
               <div className="flex">
-              {renderProductPrice(bookData)}
+                {renderProductPrice(bookData)}
                 {/* <span className="new__price">{bookData.formats[selectedFormat].price}</span>
                 <span className="old__price">{bookData.formats[selectedFormat].offerPrice}</span> */}
                 <span className="save__price">{bookData?.appliedOffer?.discountValue && `(${bookData?.appliedOffer?.discountValue}%)`}</span>
               </div>
               <div>
-                <div className="product__rating">
+                <Stack spacing={1}>
+                  <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                </Stack>
+                {/* <div className="product__rating">
                   <i className="fi fi-rs-star"></i>
                   <i className="fi fi-rs-star"></i>
                   <i className="fi fi-rs-star"></i>
                   <i className="fi fi-rs-star"></i>
                   <i className="fi fi-rs-star"></i>
-                </div>
+                </div> */}
               </div>
             </div>
             <p className="short__description">
@@ -259,21 +256,18 @@ const ProductDetails = ({ bookData }) => {
 
             {/* Quantity and Actions */}
             <div className="details__action">
-              <input type="number" className="quantity" 
-               value={quantity}
-              onChange={handleQuantityChange}
-              min={1} 
-              max={bookData?.formats?.physical?.stock}/>
+              <input type="number" className="quantity"
+                value={quantity}
+                onChange={handleQuantityChange}
+                min={1}
+                max={bookData?.formats?.physical?.stock} />
               <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
-              <button className="primary-btn" onClick={(e)=>{handleAddToCart(bookData)}}>Add To Cart</button>
+              <button className="primary-btn" onClick={(e) => { handleAddToCart(bookData) }}>Add To Cart</button>
               <button className="primary-btn" onClick={buyNow}>Buy Now</button>
               <button className="primary-btn">Borrow</button>
 
 
             </div>
-
-            {/* Meta Information */}
-
           </div>
         </div>
       </section>
@@ -294,12 +288,12 @@ const ProductDetails = ({ bookData }) => {
                   <tr><th>Author</th><td> {bookData?.author}</td></tr>
                   <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
                   <tr><th>Stock Status</th>
-                  <th
-                  className={`${bookData.stockStatus == "Stock Out" && "stock-out"}
+                    <th
+                      className={`${bookData.stockStatus == "Stock Out" && "stock-out"}
                      ${bookData.stockStatus == "Hurry Up" && 'hurry-up'}
                      ${bookData.stockStatus == "In Stock" && 'in-stock'}`
-                     }
-                  >{bookData?.stockStatus}</th>
+                      }
+                    >{bookData?.stockStatus}</th>
                   </tr>
                   <tr><th>Stock </th><td>{bookData?.formats?.physical?.stock}</td></tr>
                   {/* Add more rows as needed */}
@@ -335,16 +329,21 @@ const ProductDetails = ({ bookData }) => {
               <div className="review__form">
                 <h4 className="review__form-title">Add a review</h4>
                 <div className="rate__product">
-                  <i className="fi fi-rs-star"></i>
+                  <Stack spacing={1}>
+                    <Rating name="half-rating"  value={rating}
+                     precision={1} 
+                     onChange={(e) => {
+                      setRating(e.target.value)
+                    }}/>
+                  </Stack>
                 </div>
                 <form action="" className="form grid">
-                  <textarea className="form__input textarea" placeholder="Write Comment"></textarea>
-                  <div className="form__group grid">
-                    <input type="text" placeholder="Name" className="form__input" />
-                    <input type="email" placeholder="Email" className="form__input" />
-                  </div>
+                  <textarea className="form__input textarea" placeholder="Write Comment"
+                  value={ratingText}
+                  onChange={(e)=>{setRatingText(e.target.value)}}
+                  ></textarea>
                   <div className="form__btn">
-                    <button className="btn">Submit Review</button>
+                    <button className="primary-btn" onClick={submitReview}>Submit Review</button>
                   </div>
                 </form>
               </div>

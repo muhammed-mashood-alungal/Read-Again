@@ -24,6 +24,7 @@ import ReactPDF, { pdf, PDFDownloadLink } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import SalesPDFDocument from './SalesPDFDocument'
 import { toast } from 'react-toastify'
+import Chart from './Chart'
 
 const SalesReport = () => {
   // Sample sales report data
@@ -38,6 +39,7 @@ const SalesReport = () => {
     itemsSold: 0,
     orders: []
   })
+  const [chartData , setChartData]=useState([])
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredOrders = useMemo(() => {
@@ -53,6 +55,8 @@ const SalesReport = () => {
        try{
         const {data}=await axiosAdminInstance.post(`/sales-report/${dateRange}`)
         setSalesReport(data?.salesReport)
+        setChartData(data.chartData)
+
        }catch(err){
           toast.error(err?.response?.data?.message)
        }
@@ -81,7 +85,6 @@ const SalesReport = () => {
 
 
 const handleCustomSalesReport=async()=>{
-    console.log("sdfsadfsdfsdfd")
    if(dateRange == 'custom' && startDate && endDate  && (startDate < endDate)){
     const {data}=await axiosAdminInstance.post(`/sales-report/${dateRange}`,{startDate,endDate})
     setSalesReport(data?.salesReport)
@@ -110,6 +113,7 @@ const handleCustomSalesReport=async()=>{
                    <option value="daily">Daily</option>
                    <option value="weekly">Weekly</option>
                    <option value="monthly">Monthly</option>
+                   <option value="yearly">Yearly</option>
                    <option value="custom">Custom Range</option>
                  </CFormSelect>
                </CCol>
@@ -234,6 +238,15 @@ const handleCustomSalesReport=async()=>{
           </button>
         )}
       </PDFDownloadLink>
+                    <Chart basedOn={dateRange} chartData={chartData}/>
+                  {/* <CChartLine
+                    data={salesData.chartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                    }}
+                    height={300}
+                  /> */}
       </CCardBody>
     </CCard>
   )

@@ -93,6 +93,10 @@ const SalesPDFDocument = ({ salesReport }) => (
         <Text style={styles.value}>{salesReport.totalCouponDiscount}</Text>
       </View>
       <View style={styles.section}>
+        <Text style={styles.label}>Overall Discount(Coupon+Offer): </Text>
+        <Text style={styles.value}>{salesReport.totalDiscount}</Text>
+      </View>
+      <View style={styles.section}>
         <Text style={styles.label}>Total Sales: </Text>
         <Text style={styles.value}>{salesReport.totalSales}</Text>
       </View>

@@ -31,6 +31,7 @@ import Chart from './Chart';
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
 import SalesReport from './SalesReport';
 import { toast } from 'react-toastify';
+import TopSales from './TopSales';
 //import { CChartLine } from '@coreui/coreui-chartjs-react';
 
 const Dashboard = () => {
@@ -136,80 +137,18 @@ const Dashboard = () => {
                 </CRow>
               </CForm>
 
-              {/* Generate Report Button */}
-              {/* <CButton 
-                color="primary" 
-                onClick={generateSalesReport}
-                className="mb-3"
-              >
-                <CIcon icon={cilFolderOpen} className="me-2" />
-                 Generate Sales Report
-                </CButton> */}
-
               <CCard className='mt-3'>
                  <SalesReport/>
               </CCard>
 
-              {/* Sales Chart */}
-              <CCard className="mt-3">
-                <CCardBody>
-                    <Chart/>
-                  {/* <CChartLine
-                    data={salesData.chartData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                    }}
-                    height={300}
-                  /> */}
-                </CCardBody>
-              </CCard>
+             
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
-
-      {/* Recent Sales Table */}
-      <CRow className="mt-4">
-        <CCol>
-          <CCard>
-            <CCardHeader>Recent Sales</CCardHeader>
-            <CCardBody>
-              <CTable striped hover>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell>Order ID</CTableHeaderCell>
-                    <CTableHeaderCell>Date</CTableHeaderCell>
-                    <CTableHeaderCell>Amount</CTableHeaderCell>
-                    <CTableHeaderCell>Discount</CTableHeaderCell>
-                    <CTableHeaderCell>Status</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  <CTableRow>
-                    <CTableDataCell>#12345</CTableDataCell>
-                    <CTableDataCell>2024-01-15</CTableDataCell>
-                    <CTableDataCell>$450.00</CTableDataCell>
-                    <CTableDataCell>$45.00</CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color="success">Completed</CBadge>
-                    </CTableDataCell>
-                  </CTableRow>
-                  <CTableRow>
-                    <CTableDataCell>#12346</CTableDataCell>
-                    <CTableDataCell>2024-01-16</CTableDataCell>
-                    <CTableDataCell>$350.00</CTableDataCell>
-                    <CTableDataCell>$35.00</CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color="warning">Pending</CBadge>
-                    </CTableDataCell>
-                  </CTableRow>
-                </CTableBody>
-              </CTable>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+     <CCard className='mt-3'>
+      <TopSales/>
+     </CCard>
     </CContainer>
   );
 };
