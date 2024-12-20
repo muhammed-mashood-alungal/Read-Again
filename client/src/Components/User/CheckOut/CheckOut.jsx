@@ -7,21 +7,20 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { bookImages } from '../../../redux/Constants/imagesDir';
 import { useRazorpay } from 'react-razorpay';
-import { green } from '@mui/material/colors';
 
 const Checkout = () => {
   const { userId, isLoggedIn } = useSelector(state => state.auth)
   const location = useLocation()
   const cart = location?.state?.cart
-  //const [cart,setCart]=useState({})
   const [addresses, setAddresses] = useState([])
   const [paymentMethod, setPaymentMethod] = useState("COD")
-  const [coupon,setCoupon ]=useState('')
-  const [isCouponApplied,setIssCouponApplied]=useState(false)
-  const [totalAmount,setTotalAmount] = useState(cart.totalAmount)
+  const [coupon, setCoupon] = useState('')
+  const [isCouponApplied, setIssCouponApplied] = useState(false)
+  const [totalAmount, setTotalAmount] = useState(cart.totalAmount)
   const navigate = useNavigate()
-  const [isPlacingOrder,setIsPlacingOrder]=useState(false)
-  const {Razorpay} = useRazorpay()
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
+  const [walletBalance, setWalletBalance] = useState(0)
+  const { Razorpay } = useRazorpay()
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login')
@@ -45,58 +44,71 @@ const Checkout = () => {
     }
     getProfileData();
   }, [userId])
- 
+  useEffect(() => {
+    async function checkWalletBalance() {
+      try {
+        const { data } = await axiosUserInstance.get(`/wallet/${userId}/get-balance`)
+        setWalletBalance(data.balance)
+      } catch (err) {
+        toast.error(err?.message)
+      }
+    }
+    if (userId) {
+      checkWalletBalance()
+    }
+  }, [userId])
+
   const handleMethodChange = (event) => {
     setPaymentMethod(event.target.value);
   }
 
-  const handlePlaceOrder = async() => {
+  const handlePlaceOrder = async () => {
     try {
       setIsPlacingOrder(true)
       cart.items = cart.items.map((item) => {
-        
+
         return {
           ...item,
           bookId: item.productId?._id,
           quantity: item.quantity,
           unitPrice: getPrice(item.productId),
-          totalPrice: getPrice(item.productId)* item.quantity
+          totalPrice: getPrice(item.productId) * item.quantity
         }
       })
       const orderDetails = {
         items: cart.items,
         shippingCharge: 0,
-        totalAmount:cart.totalAmount, 
-        payableAmount:totalAmount,
+        totalAmount: cart.totalAmount,
+        payableAmount: totalAmount,
         orderStatus: "Ordered",
-        paymentMethod:paymentMethod,
-        coupon:coupon
+        paymentMethod: paymentMethod,
+        coupon: coupon
       }
-      const {data} = await axiosOrderInstance.post(`/${userId}/place-order`,orderDetails)
-      
-      if(paymentMethod === 'Razorpay'){
+      const { data } = await axiosOrderInstance.post(`/${userId}/place-order`, orderDetails)
+
+      if (paymentMethod === 'Razorpay') {
         try {
           const result = await handleOnlinePayment(orderDetails.payableAmount)
           if (result.success) {
-            console.log("orderId :" , data.orderId)
+            console.log("orderId :", data.orderId)
             await axiosOrderInstance.patch(`/${data.orderId}/payment-success`)
             toast.success("Payment Successful");
           } else {
             toast.error("Payment Failed. You can Retry on Order Page")
           }
         } catch (error) {
-         
+
           toast.error("Payment failed, please try again.");
-        }finally{
-         navigate('/order-success', {state:{orderId:data.orderId}})
+        } finally {
+          navigate('/order-success', { state: { orderId: data.orderId } })
           setIsPlacingOrder(false)
         }
       }
-      navigate('/order-success', {state:{orderId:data.orderId}})
+      navigate('/order-success', { state: { orderId: data.orderId } })
       setIsPlacingOrder(false)
-      
-    
-     
+
+
+
     } catch (err) {
       setIsPlacingOrder(false)
       console.log(err)
@@ -104,42 +116,42 @@ const Checkout = () => {
     }
   }
 
-  const getPrice=(book)=>{
-    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+  const getPrice = (book) => {
+    if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
       return book.formats.physical.offerPrice
     }
-    return  book.formats.physical.price
+    return book.formats.physical.price
   }
 
 
-  const handleOnlinePayment=(amount)=>{
-    return new Promise(async(resolve,reject)=>{
-      try{
+  const handleOnlinePayment = (amount) => {
+    return new Promise(async (resolve, reject) => {
+      try {
         const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_ID;
-        const {data} = await axiosRazorpayInstance.post('/create-order',{amount:amount*100})
+        const { data } = await axiosRazorpayInstance.post('/create-order', { amount: amount * 100 })
         const order = data
         console.log(order)
         const options = {
           key: RAZORPAY_KEY_ID,
           amount: order.amount,
           currency: order.currency,
-          name: "Read Again", 
-          description: "Payment for your order", 
+          name: "Read Again",
+          description: "Payment for your order",
           order_id: order.id,
           handler: async (response) => {
             try {
-            await axiosRazorpayInstance.post('/verify-payment',{
+              await axiosRazorpayInstance.post('/verify-payment', {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature
-            })
-            resolve({success:true,message:"Payment Success"})
+              })
+              resolve({ success: true, message: "Payment Success" })
             } catch (err) {
-              reject({success:false , message:"Payment Failed"})
+              reject({ success: false, message: "Payment Failed" })
             }
           },
           prefill: {
-            name:data?.user?.username, 
+            name: data?.user?.username,
             email: data?.user?.email
             //contact: "9999999999",
           },
@@ -155,34 +167,34 @@ const Checkout = () => {
         rzpay.open(options)
 
         rzpay.on('payment.failed', (response) => {
-        console.error("Payment failed", response.error);
-        reject({
-          success: false,
-          message: "Payment failed",
-          error: response.error,
+          console.error("Payment failed", response.error);
+          reject({
+            success: false,
+            message: "Payment failed",
+            error: response.error,
+          })
         })
-      })
 
-        
-      }catch(err){
+
+      } catch (err) {
         console.log(err)
       }
     })
   }
-  const handleCouponApply=async()=>{
+  const handleCouponApply = async () => {
     try {
-      if(coupon.trim() == ""){
+      if (coupon.trim() == "") {
         return toast.error("Enter a coupon code")
-       }
-      const {data}= await axiosCouponInstance.post('/verify-coupon',{coupon,amount:cart.totalAmount})
+      }
+      const { data } = await axiosCouponInstance.post('/verify-coupon', { coupon, amount: cart.totalAmount })
       //console.log(data.discountedPrice)
-      setTotalAmount(x=>x-data.discountedPrice)
+      setTotalAmount(x => x - data.discountedPrice)
       setIssCouponApplied(true)
     } catch (error) {
       toast.error(error?.response?.data?.message)
     }
   }
-  const handleCouponRemove=()=>{
+  const handleCouponRemove = () => {
     setIssCouponApplied(false)
     setTotalAmount(cart.totalAmount)
     setCoupon('')
@@ -209,7 +221,7 @@ const Checkout = () => {
                   return <tr>
                     <td>
                       <img
-                        src={item?.productId?.images[0].secure_url} 
+                        src={item?.productId?.images[0].secure_url}
                         alt=""
                         className="order__img"
                       />
@@ -223,9 +235,9 @@ const Checkout = () => {
                 })
               }
               <tr>
-               
-              
-              
+
+
+
               </tr>
               <tr>
                 <td><span className="order__subtitle">Cart Total</span></td>
@@ -246,27 +258,27 @@ const Checkout = () => {
             </tbody>
           </Table>
           <div>
-           
+
             <div className=''>
               {
-                isCouponApplied ? <h5 style={{color:'green' }}><em>Congratulations! You have successfully applied the coupon "{coupon}"
-                 and received ₹{cart.totalAmount - totalAmount} off on your purchase.</em></h5> : <>
-                 <h5>Apply Coupon</h5>
-                 <input type="text" placeholder="Your Coupon Code"
-                className="form__input w-75"
-                value={coupon}
-                onChange={(e)=>setCoupon(e.target.value)}
-                disabled={isCouponApplied}
-              />
+                isCouponApplied ? <h5 style={{ color: 'green' }}><em>Congratulations! You have successfully applied the coupon "{coupon}"
+                  and received ₹{cart.totalAmount - totalAmount} off on your purchase.</em></h5> : <>
+                  <h5>Apply Coupon</h5>
+                  <input type="text" placeholder="Your Coupon Code"
+                    className="form__input w-75"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    disabled={isCouponApplied}
+                  />
                 </>
               }
               {
-                isCouponApplied ?  <button className='primary-btn' onClick={handleCouponRemove}>Remove</button> 
-                : <button className='primary-btn' onClick={handleCouponApply}>Apply</button>
+                isCouponApplied ? <button className='primary-btn' onClick={handleCouponRemove}>Remove</button>
+                  : <button className='primary-btn' onClick={handleCouponApply}>Apply</button>
               }
             </div>
-          
-             
+
+
           </div>
 
           <div className="payment__methods">
@@ -299,20 +311,23 @@ const Checkout = () => {
                 Razorpay
               </label>
             </div>
-            <div className="payment__option flex">
-              <input
-                type="radio"
-                name="paymentMethod"
-                id="paypal"
-                value="Wallet"
-                checked={paymentMethod === "Wallet"}
-                onChange={handleMethodChange}
-                className="payment__input"
-              />
-              <label htmlFor="paypal" className="payment__label">
-                Wallet
-              </label>
-            </div>
+            {
+              walletBalance >= totalAmount && <div className="payment__option flex">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  id="paypal"
+                  value="Wallet"
+                  checked={paymentMethod === "Wallet"}
+                  onChange={handleMethodChange}
+                  className="payment__input"
+                />
+                <label htmlFor="paypal" className="payment__label">
+                  Wallet
+                </label>
+              </div>
+            }
+
           </div>
           <Button className="btn btn--md" onClick={handlePlaceOrder} disabled={isPlacingOrder}>Place Order</Button>
         </div>

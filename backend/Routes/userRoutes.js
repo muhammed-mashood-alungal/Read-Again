@@ -20,7 +20,8 @@ const { sendOTP,
         editAddress,
         deleteAddress,
         changeDefaultAddress,
-        getUserWallet
+        getUserWallet,
+        getUserWalletBalance
         }  = require('../controller/userController')
 const passport = require('passport')
 const { getAllUsers } = require('../controller/adminController')
@@ -54,5 +55,6 @@ router.put('/:userId/address/change-default',changeDefaultAddress)
 
 //User Wallet Routes
 router.get('/wallet/:userId',getUserWallet)
+router.get('/wallet/:userId/get-balance',getUserWalletBalance)
 
 module.exports=router 

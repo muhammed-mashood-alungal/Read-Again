@@ -17,15 +17,12 @@ module.exports = {
             if(orderDetails.paymentMethod == "COD" && orderDetails.payableAmount > 1000){
               return  res.status(400).json({message:"Cash On delivery Not Available for Order above Rs 1000"})
             }
-            const address = await Address.findOne({ userId, isDefault: true })
+            const shippingAddress = await Address.findOne({ userId, isDefault: true })
             const user = await User.findOne({_id:userId})
             
-            const shippingAddress = getAddressString(address)
             if (orderDetails.coupon) {
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
-                console.log(orderDetails.totalAmount , orderDetails.payableAmount )
                  orderDetails.totalDiscount = orderDetails.totalAmount - orderDetails.payableAmount 
-                 console.log(orderDetails.totalDiscount)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
                 } else {
@@ -41,8 +38,21 @@ module.exports = {
             } else {
                 delete orderDetails.coupon
             }
+            if(orderDetails.paymentMethod == "Wallet"){
+                const wallet = await Wallet.findOne({userId})
+                if(!wallet){
+                  return res.status(400).json({ success: false, message: "No Wallet For this User" })
+                }
+                if(wallet.balance < orderDetails.payableAmount){
+                  return res.status(400).json({ success: false, message: " Wallet Haven't Sufficient balance" })
+                }
+                wallet.balance -= orderDetails.payableAmount
+                orderDetails.paymentStatus= "Success"
+                await wallet.save()
+              }
             const response = await Order.create({ userId, ...orderDetails, shippingAddress })
             const cart = await Cart.findOne({ userId })
+           
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })
 
@@ -71,6 +81,7 @@ module.exports = {
                 }
                 book.save()
             }
+            
             if(cart){
                 await cart.deleteOne()
             }

@@ -445,6 +445,16 @@ module.exports = {
     } catch (err) {
       res.status(400).json({ success: false, availableCoupons: [] })
     }
+  },
+  async getUserWalletBalance(req,res){
+    try {
+      const {userId} =req.params
+      const wallet =await Wallet.findOne({userId})
+      res.status(200).json({success:true,balance:wallet?.balance || 0})
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({succes:false,message:error?.message})
+    }
   }
  
 }
