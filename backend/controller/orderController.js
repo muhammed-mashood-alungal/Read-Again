@@ -17,7 +17,11 @@ module.exports = {
             if(orderDetails.paymentMethod == "COD" && orderDetails.payableAmount > 1000){
               return  res.status(400).json({message:"Cash On delivery Not Available for Order above Rs 1000"})
             }
-            const shippingAddress = await Address.findOne({ userId, isDefault: true })
+            const address = await Address.findOne({ userId, isDefault: true })
+            if(!address){
+                return res.status(400).json({message:"Address Not Found"})
+            }
+            const shippingAddress = getAddressString(address)
             const user = await User.findOne({_id:userId})
             
             if (orderDetails.coupon) {

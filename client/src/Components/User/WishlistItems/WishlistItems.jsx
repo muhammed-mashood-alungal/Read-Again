@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { bookImages } from '../../../redux/Constants/imagesDir';
 import { toast } from 'react-toastify';
-import { addToCart } from '../../../redux/Actions/userActions';
+import { addToCart, decCartItemCount, decWishlistItemsCount } from '../../../redux/Actions/userActions';
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
 
 const WishlistItems = () => {
@@ -41,11 +41,10 @@ const WishlistItems = () => {
         quantity:1
        }
 
-       const isSuccess = await dispatch(addToCart(userId,itemInfo))
+       const isSuccess = dispatch(addToCart(userId,itemInfo))
        console.log(isSuccess)
        if(isSuccess) {
-       // await axiosWishlistInstance.put(`/${userId}/move-to-cart`,{itemId})
-         removeItemFromCart(itemId)
+        removeItemFromWishlist(itemId)
        }
        
     } catch (error) {
@@ -53,7 +52,7 @@ const WishlistItems = () => {
       toast.error(error?.response?.data?.message)
     }
   }
-  const removeItemFromCart =async (itemId)=>{
+  const removeItemFromWishlist =async (itemId)=>{
     try{
       console.log(itemId)
       setSelectedItemId(null)
@@ -67,6 +66,7 @@ const WishlistItems = () => {
           return item._id != itemId
         })
       })
+      dispatch(decWishlistItemsCount())
     }catch(error){
       console.log(error)
        toast.error(error?.response?.data?.message)
@@ -88,7 +88,7 @@ const WishlistItems = () => {
         selectedItemId  &&
         <ConfirmationModal
           title={`Are You Sure to Remove This Item From Wishlist ?`}
-          onConfirm={()=>removeItemFromCart(selectedItemId)}
+          onConfirm={()=>removeItemFromWishlist(selectedItemId)}
           onCancel={onCancel} />
 
       }

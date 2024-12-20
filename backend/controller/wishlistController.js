@@ -49,6 +49,17 @@ module.exports={
         }catch(err){
             res.status(400).json({message:"Something Went Wrong "})
         }
+    },
+    async getItemsCount(req,res){
+        try {
+            const {userId} = req.params
+            const wishlist = await Wishlist.findOne({userId})
+            const totalItems = wishlist.items.length
+            res.status(200).json({success:true,totalItems})
+        } catch (error) {
+            res.status(400).json({success:false,message:error?.message})
+            
+        }
     }
     
 }

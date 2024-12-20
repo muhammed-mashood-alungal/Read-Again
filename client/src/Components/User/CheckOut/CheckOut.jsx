@@ -16,7 +16,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("COD")
   const [coupon, setCoupon] = useState('')
   const [isCouponApplied, setIssCouponApplied] = useState(false)
-  const [totalAmount, setTotalAmount] = useState(cart.totalAmount)
+  const [totalAmount, setTotalAmount] = useState(cart?.totalAmount)
   const navigate = useNavigate()
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
   const [walletBalance, setWalletBalance] = useState(0)
@@ -42,8 +42,9 @@ const Checkout = () => {
 
       }
     }
-    getProfileData();
+    getProfileData()
   }, [userId])
+
   useEffect(() => {
     async function checkWalletBalance() {
       try {

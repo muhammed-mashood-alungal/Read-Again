@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { getUserData, removeAuth, setCartItemsCount } from '../../../redux/Actions/userActions';
-import { axiosAuthInstance, axiosBookInstance, axiosCartInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { getUserData, removeAuth, setCartItemsCount, setWishlistItemsCount } from '../../../redux/Actions/userActions';
+import { axiosAuthInstance, axiosBookInstance, axiosCartInstance, axiosUserInstance, axiosWishlistInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
 import { CListGroup, CListGroupItem } from '@coreui/react';
 import { bookImages } from '../../../redux/Constants/imagesDir';
@@ -10,6 +10,7 @@ const Header = ({ setSearchQuery }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { isLoggedIn, userId } = useSelector(state => state.auth)
   const { cartCount } = useSelector(state => state.cartItemsCount)
+  const {wishlistCount} = useSelector(state=>state.wishlistCount)
   const [activeTab, setActiveTab] = useState("Home")
   const [search, setSearch] = useState("")
   const [searchedProducts, setSearchedProducts] = useState([])
@@ -18,18 +19,23 @@ const Header = ({ setSearchQuery }) => {
   const location = useLocation()
   const navigate = useNavigate()
   useEffect(() => {
-    async function fetchCartItemsCount() {
+    async function fetchCartAndWishlistCount() {
       try {
-        const { data } = await axiosCartInstance.get(`/${userId}/cart-items-count`)
-        console.log(data)
-        dispatch(setCartItemsCount(data.cartItemsCount))
+        const [cartResponse,wishlistResponse]=await Promise.all([
+           axiosCartInstance.get(`/${userId}/cart-items-count`),
+           axiosWishlistInstance.get(`/${userId}/wishlist-items-count`)
+        ])
+        dispatch(setCartItemsCount(cartResponse?.data?.cartItemsCount))
+        
+        dispatch(setWishlistItemsCount(wishlistResponse?.data?.totalItems))
       } catch (err) {
         console.log(err)
         toast.error(err?.response?.data?.message)
       }
     }
+    
     if (userId) {
-      fetchCartItemsCount()
+      fetchCartAndWishlistCount()
     }
 
   }, [dispatch, userId])
@@ -158,7 +164,7 @@ const Header = ({ setSearchQuery }) => {
         <div className="header__user-actions">
           <Link to={"/wishlist"} className="header__action-btn" title="Wishlist">
             <img src="/assets/img/icon-heart.svg" alt="Wishlist" />
-            {/* <span className="count">3</span> */}
+            <span className="count">{wishlistCount}</span>
           </Link>
           <Link to={"/cart"} className="header__action-btn" title="Cart">
             <img src="/assets/img/icon-cart.svg" alt="Cart" />
