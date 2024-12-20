@@ -8,10 +8,16 @@ import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from "react-router-dom";
 import { axiosBookInstance, axiosUserInstance } from "../../../redux/Constants/axiosConstants";
+import { CFormInput } from "@coreui/react";
+import { validateImage } from "../../../validations/imageValidation";
+import CIcon from "@coreui/icons-react";
+import { cilImagePlus, cilTrash, cilUser } from "@coreui/icons";
+import { Dialog } from "@mui/material";
 
 const ProductDetails = ({ bookData }) => {
   const [activeTab, setActiveTab] = useState("info");
   const [images, setImages] = useState([])
+  const [reviewImage, setReviewImage] = useState(null)
   const [zoom, setZoom] = useState({
     display: "none",
     zoomX: "0%",
@@ -23,7 +29,17 @@ const ProductDetails = ({ bookData }) => {
   const [quantity, setQuantity] = useState(1)
   const { userId } = useSelector(state => state.auth)
   const [rating, setRating] = useState(2)
-  const [ratingText,setRatingText]=useState("")
+  const [reviewText, setReviewText] = useState("")
+  const [reviews, setReviews] = useState([])
+  const [prodRating,setProdRating]=useState(0)
+  const [selectedImage, setSelectedImage] = useState(null)
+  const handleSetImage = (file) => {
+    if (!validateImage(file)) {
+      toast.error("Make sure the image is either .png , .jpg or .jpeg")
+      return
+    }
+    setReviewImage(file)
+  }
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
@@ -32,6 +48,19 @@ const ProductDetails = ({ bookData }) => {
     }
   }, [bookData, selectedFormat]);
 
+  useEffect(() => {
+    async function fetchBookReviews() {
+      try {
+        const { data } = await axiosBookInstance.get(`/${bookData._id}/reviews`)
+        setReviews(data.reviews)
+      } catch (err) {
+        toast.error(err?.message)
+      }
+    }
+    if (bookData?._id) {
+      fetchBookReviews()
+    }
+  }, [bookData])
 
 
   useEffect(() => {
@@ -43,22 +72,36 @@ const ProductDetails = ({ bookData }) => {
       setZoom((prevZoom) => ({
         ...prevZoom,
         backgroundImage: `url(${bookData?.images[0]?.secure_url})`,
-      }));
+      }))
+      
     }
+    console.log(bookData.averageRating)
+    setProdRating(bookData.averageRating)
   }, [bookData]);
 
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value)
   }
-  const submitReview=async()=>{
-    try{
-      const ratingData={
-        rating,
-        ratingText
+  const submitReview = async (e) => {
+    try {
+      e.preventDefault()
+      const formData = new FormData()
+      formData.append("rating", rating)
+      formData.append("reviewText", reviewText)
+      if (reviewImage) {
+        formData.append("reviewImage", reviewImage)
       }
-         await axiosBookInstance.post(`/${bookData._id}/reviews/add/${userId}`,{ratingData})
-    }catch(err){
-
+      await axiosBookInstance.post(`/${bookData._id}/reviews/add/${userId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      })
+      toast.success("Your Review Saved Successfully")
+      setReviewImage(null)
+      setReviewText("")
+      setRating(2)
+    } catch (err) {
+      toast.error(err?.response?.data?.message)
     }
   }
 
@@ -154,6 +197,21 @@ const ProductDetails = ({ bookData }) => {
       toast.error(err?.response?.data.message)
     }
   }
+
+  const handleRemoveReview=async(reviewId)=>{
+    try{
+      await axiosBookInstance.delete(`/reviews/${reviewId}/remove`)
+      toast.success("Remove Removed Successfully")
+      setReviews((reviews)=>{
+        return reviews.filter((review)=>{
+          return review._id  != reviewId 
+        })
+      })
+    }catch(error){
+      console.log(error)
+      toast.error(error?.message)
+    }
+  }
   return (
     <>
       <section className="details section--lg">
@@ -189,7 +247,6 @@ const ProductDetails = ({ bookData }) => {
             </div>
           </div>
 
-          {/* Product Details */}
           <div className="details__group">
             <h3 className="details__title">{bookData?.title}</h3>
             <p className="details__brand">
@@ -204,7 +261,7 @@ const ProductDetails = ({ bookData }) => {
               </div>
               <div>
                 <Stack spacing={1}>
-                  <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                  <Rating name="half-rating-read" value={bookData?.averageRating?.toFixed()}  readOnly />
                 </Stack>
                 {/* <div className="product__rating">
                   <i className="fi fi-rs-star"></i>
@@ -296,7 +353,6 @@ const ProductDetails = ({ bookData }) => {
                     >{bookData?.stockStatus}</th>
                   </tr>
                   <tr><th>Stock </th><td>{bookData?.formats?.physical?.stock}</td></tr>
-                  {/* Add more rows as needed */}
                 </tbody>
               </table>
             </div>
@@ -306,42 +362,104 @@ const ProductDetails = ({ bookData }) => {
           {activeTab === "reviews" && (
             <div className={`details__tab-content ${activeTab == 'reviews' && "active-tab"}`} id="reviews">
               <div className="reviews__container grid">
-                <div className="review__single flex-column-left ">
-                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
-                  <h4 className="review__title">Jacky Chan</h4>
-                  <p className="review__description">Fast shipping from Poland.</p>
-                  <span className="review__date">December 4, 2022 at 3:12 pm</span>
-                </div>
-                <div className="review__single flex-column-left ">
-                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
-                  <h4 className="review__title">Jacky Chan</h4>
-                  <p className="review__description">Fast shipping from Poland.</p>
-                  <span className="review__date">December 4, 2022 at 3:12 pm</span>
-                </div>
-                <div className="review__single flex-column-left ">
-                  <img src="/assets/img/avatar-1.jpg" alt="Reviewer" className="review__img" />
-                  <h4 className="review__title">Jacky Chan</h4>
-                  <p className="review__description">Fast shipping from Poland.</p>
-                  <span className="review__date">December 4, 2022 at 3:12 pm</span>
-                </div>
+                {selectedImage && <Dialog open={true} onClose={() => setSelectedImage(null)} maxWidth="md">
+                  <img
+                    src={selectedImage}
+                    alt="Popup"
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                </Dialog>
+                }
+                {
+                  reviews.length > 0 ?
+                    reviews.map((review) => {
+                      return <div className="review__single d-flex justify-content-between">
+                        <div>
+                        <h2 className="review__title">
+                          <CIcon icon={cilUser} className="me-1" />
+                          {review.userId?.username}</h2>
+                        <Stack spacing={1} className="mb-2">
+                          <Rating name="half-rating-read" defaultValue={review.rating} readOnly size="small" />
+                        </Stack>
+                        {
+                          review?.image?.secure_url &&
+                          <img src={review?.image?.secure_url}
+                            alt="Reviewer"
+                            className="review-images"
+                            onClick={() => setSelectedImage(review?.image?.secure_url)
+                            } />
+                        }
+                        
+                        
+                        <p className="review__description">{review.reviewText}</p>
+                        <span className="review__date">{new Date(review.createdAt).toLocaleString()}</span>
+                        </div>
+                        <div>
+                        {
+                          review?.userId?._id == userId && <span className="review-img-remove"
+                            onClick={()=>{handleRemoveReview(review._id)}}
+                          >
+                            <CIcon icon={cilTrash} className="me-2" />
+                            Remove Your Review </span>
+                        }
+                        </div>
+                      </div>
+                    })
+
+                    :
+                    <h5 className="empty-msg">No Reviews Yet</h5>
+                }
+
               </div>
 
               <div className="review__form">
                 <h4 className="review__form-title">Add a review</h4>
                 <div className="rate__product">
                   <Stack spacing={1}>
-                    <Rating name="half-rating"  value={rating}
-                     precision={1} 
-                     onChange={(e) => {
-                      setRating(e.target.value)
-                    }}/>
+                    <Rating name="half-rating" value={rating}
+                      precision={1}
+                      onChange={(e) => {
+                        setRating(e.target.value)
+                      }} />
                   </Stack>
                 </div>
                 <form action="" className="form grid">
                   <textarea className="form__input textarea" placeholder="Write Comment"
-                  value={ratingText}
-                  onChange={(e)=>{setRatingText(e.target.value)}}
+                    value={reviewText}
+                    onChange={(e) => { setReviewText(e.target.value) }}
                   ></textarea>
+                  {!reviewImage ? <label htmlFor="review-img" className="review-img-label">
+                    <CIcon icon={cilImagePlus} className="me-2" />
+                    Add A Image For Your Review </label> :
+                    <span className="review-img-remove"
+                      onClick={() => setReviewImage(null)}
+                    >
+                      <CIcon icon={cilTrash} className="me-2" />
+                      Remove Image </span>
+                  }
+
+                  <input
+                    type="file"
+                    id="review-img"
+                    accept='.png, .jpg, .jpeg'
+                    name="image"
+                    hidden
+                    onChange={(e) => { handleSetImage(e.target.files[0]) }}
+                    placeholder="Image URL"
+                  />
+                  {reviewImage && (
+                    <div className="image-preview mb-2">
+                      <img
+                        src={URL.createObjectURL(reviewImage)}
+                        alt="Your Review"
+                        style={{
+                          maxWidth: '200px',
+                          maxHeight: '200px',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    </div>
+                  )}
                   <div className="form__btn">
                     <button className="primary-btn" onClick={submitReview}>Submit Review</button>
                   </div>

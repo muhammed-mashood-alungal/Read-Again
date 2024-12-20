@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, addToWishlist } from '../../../redux/Actions/userActions';
 import { toast } from 'react-toastify';
+import { Rating, Stack } from '@mui/material';
 const ProductList = ({books,title}) => {
 
   const {userId} = useSelector(state=>state.auth)
@@ -71,13 +72,9 @@ const ProductList = ({books,title}) => {
                 <div className="product__content">
                   <span className="product__category">{book?.category?.name}</span> <br />
                   <button ><h3 className="product__title no-underline">{book.title}</h3></button>
-                  <div className="product__rating no-hover-underline">
-                    <i className="fi fi-rs-star no-hover-underline"></i>
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                    <i className="fi fi-rs-star"></i>
-                  </div>
+                  <Stack>
+                  <Rating name="half-rating-read" value={book?.averageRating?.toFixed()}  readOnly size='small'/>
+                </Stack>
                   <div className="product__price flex">
                     {renderProductPrice(book)}
                   </div>

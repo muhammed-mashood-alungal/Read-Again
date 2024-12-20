@@ -4,6 +4,7 @@ const path = require('path');
 const Offer = require("../models/Offer");
 const { log } = require("console");
 const { handleUpload, deleteImage } = require("../utils/cloudinary");
+const Review = require("../models/Reviews");
 module.exports = {
     async createBook(req, res) {
         try {
@@ -167,7 +168,6 @@ module.exports = {
 
             const { bookId } = req.params
             let book = await Book.findOne({ _id: bookId }).populate("category").populate("appliedOffer")
-            console.log(book)
             res.status(200).json({ success: true, bookData: book })
         } catch (err) {
             console.log(err)
@@ -230,15 +230,15 @@ module.exports = {
             const cldRes = await handleUpload(dataURI)
 
             const images = [...updatingBook.images]
-            const newImages=[]
-            for(let i =0 ; i < images.length ; i++){
-                const image=images[i]
+            const newImages = []
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i]
                 console.log(image.secure_url, oldUrl)
                 if (image.secure_url == oldUrl) {
-                   deleteImage(image.public_id)
-                    const newIMG= {
-                        secure_url:cldRes.secure_url,
-                        public_id:cldRes.public_id
+                    deleteImage(image.public_id)
+                    const newIMG = {
+                        secure_url: cldRes.secure_url,
+                        public_id: cldRes.public_id
                     }
                     newImages.push(newIMG)
                 } else {
@@ -246,7 +246,7 @@ module.exports = {
                 }
 
             }
-                
+
             updatingBook.images = newImages
             await updatingBook.save()
 
@@ -269,6 +269,71 @@ module.exports = {
             res.status(200).json({ products: products })
         } catch (error) {
             res.status(400).json({ message: "Somthing went Wrong" })
+        }
+    },
+    async addReview(req, res) {
+        try {
+            const { userId, bookId } = req.params
+            const { rating, reviewText } = req.body
+            console.log(rating, reviewText)
+
+            let cldRes
+            if (req.file) {
+                const b64 = Buffer.from(req.file.buffer).toString("base64");
+                let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+                cldRes = await handleUpload(dataURI)
+            }
+            await Review.create({
+                rating,
+                reviewText,
+                userId,
+                bookId,
+                image: {
+                    secure_url: cldRes?.secure_url,
+                    public_id: cldRes?.public_id
+                }
+            })
+
+            const reviews = await Review.find({ bookId })
+            const totalRatings = reviews.reduce((acc, review) => acc + review.rating, 0)
+            const averageRating = totalRatings / reviews.length
+            await Book.findByIdAndUpdate(
+                bookId,
+                {
+                    $set: {
+                        averageRating
+                    }
+                }
+            )
+
+            res.status(200).json({ success: true })
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({ success: false, message: error.messagem || "Something Went Wrong" })
+        }
+    },
+    async removeReview(req, res) {
+        try {
+            const { reviewId } = req.params
+            console.log(reviewId)
+            const deletedReview = await Review.findOneAndDelete({ _id: reviewId })
+            if (deletedReview && deletedReview?.image?.public_id) {
+                deleteImage(deletedReview.image.public_id)
+            }
+            res.status(200).json({ success: true })
+        } catch (err) {
+            console.log(err)
+            res.status(400).json({ message: err?.message || "Something Went Wrong" })
+        }
+    },
+    async getBookReview(req, res) {
+        try {
+            const { bookId } = req.params
+            const reviews = await Review.find({ bookId }).populate("userId")
+            res.status(200).json({ success: true, reviews: reviews ? reviews : [] })
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({ success: false, message: error.message || "Something Went Wrong" })
         }
     }
 }

@@ -117,7 +117,6 @@ module.exports = {
           find
       }
       const orders = await Order.find({ ...find, orderStatus: "Delivered" }).populate("items.bookId").populate("userId")
-      //salesReport.orders = orders
       let totalRevenue = totalCouponDiscount = totalSales = itemsSold = totalDiscount = 0
 
       for (const order of orders) {

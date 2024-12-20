@@ -10,6 +10,8 @@ const Wallet = require("../models/Wallet")
 const Transactions = require("../models/WalletTransactions");
 const { getAddressString } = require("../services/userServices");
 const Coupon = require("../models/Coupon");
+const Review = require("../models/Reviews");
+const { handleUpload } = require("../utils/cloudinary");
 module.exports = {
   async sendOTP(req, res) {
     try {
@@ -329,14 +331,14 @@ module.exports = {
       const { userId } = req.params
       let { email, username } = req.body
       if (email) newData.email = email
-      console.log( email, userId)
+      console.log(email, userId)
       const newUserData = await User.findOneAndUpdate({ _id: userId }, {
         $set: {
           username: username,
           email: newData.email
         }
       }, { new: true })
-      
+
       res.status(200).json({ success: true })
     } catch (err) {
       console.log(err)
@@ -347,26 +349,26 @@ module.exports = {
     try {
       const addressData = req.body
       const { userId } = req.params
-      const addresses = await Address.find({userId})
+      const addresses = await Address.find({ userId })
       let newAddress
-      if(addresses.length > 0){
-        for(let address of addresses){
+      if (addresses.length > 0) {
+        for (let address of addresses) {
           console.log(address)
           const existingAddress = getAddressString(address)
           const newAdd = getAddressString(addressData)
 
-        if(existingAddress == newAdd){
-          return res.status(400).json({success:false , message : "Address Should be Unique"})
+          if (existingAddress == newAdd) {
+            return res.status(400).json({ success: false, message: "Address Should be Unique" })
+          }
         }
-      }
 
       }
-      if(!addresses){
-        newAddress =await Address.create({ ...addressData, userId ,isDefault:true })
-      }else{
+      if (!addresses) {
+        newAddress = await Address.create({ ...addressData, userId, isDefault: true })
+      } else {
         newAddress = await Address.create({ ...addressData, userId })
       }
-      res.status(200).json({ success: true  , newAddress : newAddress})
+      res.status(200).json({ success: true, newAddress: newAddress })
     } catch (err) {
       console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong While adding Address" })
@@ -383,65 +385,66 @@ module.exports = {
       res.status(400).json({ succes: false, message: "Something Went Wrong While Fetching Address" })
     }
   },
-  async editAddress(req,res){
-    try{
-     const address = req.body
-     const {addressId} =req.params
-     await Address.findOneAndUpdate({_id:addressId},{
-      $set:address
-     })
-     res.status(200).json({success:true})
-    }catch(err){
+  async editAddress(req, res) {
+    try {
+      const address = req.body
+      const { addressId } = req.params
+      await Address.findOneAndUpdate({ _id: addressId }, {
+        $set: address
+      })
+      res.status(200).json({ success: true })
+    } catch (err) {
       console.log(err)
-      res.status(400).json({succes:false,message:"Something went wrong while updating the Address "})
+      res.status(400).json({ succes: false, message: "Something went wrong while updating the Address " })
     }
   },
-  async deleteAddress(req,res){
-    try{
+  async deleteAddress(req, res) {
+    try {
       console.log(req.params)
-      const {addressId} = req.params
+      const { addressId } = req.params
       console.log(addressId)
-      await Address.deleteOne({_id:addressId})
-      res.status(200).json({success:true})
-    }catch(err){
-     console.log(err)
-     res.status(400).json({succes:false,message:"Somthing went Wrong While Deleting Address"})
+      await Address.deleteOne({ _id: addressId })
+      res.status(200).json({ success: true })
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ succes: false, message: "Somthing went Wrong While Deleting Address" })
     }
   },
-  async changeDefaultAddress(req,res){
-    try{
-      const {userId} = req.params
-      const {addressId} = req.body
-      await Address.findOneAndUpdate({userId,isDefault:true},{isDefault:false})
-      await Address.findOneAndUpdate({_id:addressId},{isDefault:true})
-       res.status(200).json({success:true})
-    }catch(err){
-       console.log(err)
-       res.status(400).json({message:"Somthing Went Wrong"})
+  async changeDefaultAddress(req, res) {
+    try {
+      const { userId } = req.params
+      const { addressId } = req.body
+      await Address.findOneAndUpdate({ userId, isDefault: true }, { isDefault: false })
+      await Address.findOneAndUpdate({ _id: addressId }, { isDefault: true })
+      res.status(200).json({ success: true })
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ message: "Somthing Went Wrong" })
     }
   },
-  async getUserWallet(req,res){
-    try{
-      const {userId} = req.params
-      let wallet = await Wallet.findOne({userId}).populate("userId")
-      const transactions = await Transactions.find({walletId:wallet._id}).populate("associatedOrder")
+  async getUserWallet(req, res) {
+    try {
+      const { userId } = req.params
+      let wallet = await Wallet.findOne({ userId }).populate("userId")
+      const transactions = await Transactions.find({ walletId: wallet._id }).populate("associatedOrder")
       const walletData = wallet.toObject()
       walletData.transactions = transactions
-      res.status(200).json({success:true , wallet : walletData})
-    }catch(err){
-     console.log(err)
-     res.status(400).json({succes:false,message:"Something went Wrong"})
+      res.status(200).json({ success: true, wallet: walletData })
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ succes: false, message: "Something went Wrong" })
     }
   },
-  async getAvailableCoupons(req,res){
-    try{
-      const {userId} = req.params  
+  async getAvailableCoupons(req, res) {
+    try {
+      const { userId } = req.params
       const user = await User.findById(userId)
-      const availableCoupons = await Coupon.find({_id:{$nin:[user.usedCoupons]},isActive:true})
+      const availableCoupons = await Coupon.find({ _id: { $nin: [user.usedCoupons] }, isActive: true })
       console.log(availableCoupons)
-      res.status(200).json({success:true,availableCoupons})
-    }catch(err){
-      res.status(400).json({success:false ,availableCoupons:[]})
+      res.status(200).json({ success: true, availableCoupons })
+    } catch (err) {
+      res.status(400).json({ success: false, availableCoupons: [] })
     }
   }
+ 
 }

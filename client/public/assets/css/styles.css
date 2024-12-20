@@ -1311,7 +1311,7 @@ table {
 }
 
 .review__title {
-  font-size: var(--tiny-font-size);
+  font-size: 15px;
 }
 
 .review__data {

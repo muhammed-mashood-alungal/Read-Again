@@ -118,8 +118,6 @@ const CategoryForm = ({ onChildUpdate}) => {
       toast.error(err?.respons?.data?.message)
     }
   };
- 
-
 
   const handleInputChange = (e) => {
     setName(e.target.value)

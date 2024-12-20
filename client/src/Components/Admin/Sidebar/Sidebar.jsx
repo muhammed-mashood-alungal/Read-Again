@@ -18,7 +18,6 @@ const Sidebar = () => {
   const [visible, setVisible] = useState(true);
   return (
     <>
-    {/* Mobile Hamburger Button */}
     <button 
     style={{zIndex:'10000'}}
       className="d-lg-none btn btn-link position-fixed top-0 start-0 m-2 " 

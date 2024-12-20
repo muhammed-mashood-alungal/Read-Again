@@ -20,15 +20,17 @@ const ReviewSchema = new mongoose.Schema(
     reviewText: {
       type: String,
       required: true,
-      minlength: 50, 
       maxlength: 500, 
     },
-    images: [
-      {
-        type: String,
-      }
-    ]
-  },
+    image: {
+        secure_url:{
+           type:String
+        },
+        public_id:{
+           type:String
+        }
+     },
+},
   {
     timestamps: true,
   }

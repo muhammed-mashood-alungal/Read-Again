@@ -47,3 +47,28 @@
     background-color: aliceblue;
     color: #088179;
   }
+ .review-img-label{
+  padding: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  width: fit-content;
+  background-color: aliceblue;
+  color: #088179;
+  border-radius: 5px;
+  cursor: pointer;
+ }
+ .review-img-remove{
+  padding: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  width: fit-content;
+  background-color: rgb(255, 240, 240);
+  color: #810808;
+  border-radius: 5px;
+  cursor: pointer;
+ }
+ .review-images{
+  border-radius: 10px;
+  width: 200px;
+  height: auto;
+ }
