@@ -154,7 +154,6 @@ const Checkout = () => {
           prefill: {
             name: data?.user?.username,
             email: data?.user?.email
-            //contact: "9999999999",
           },
           notes: {
             address: "Razorpay Corporate Office",
@@ -210,6 +209,23 @@ const Checkout = () => {
         <div className="checkout__group">
           <h3 className="section__title">Cart Totals</h3>
           <div className="table-responsive">
+          <Table borderless className="mb-3">
+          <tbody>
+            {cart?.items?.map((item,i)=>{
+               return  <tr>
+               <td className="text-start" >
+                 <strong>{i+1}</strong>
+               </td>
+               <td className="text-start" >
+                <img src={item?.productId?.images[0].secure_url} style={{width:"25px",height:"25px"}} className='me-2'/>
+                 <strong>{item?.productId?.title}</strong>
+               </td>
+               <td className="text-end">₹{getPrice(item.productId)}</td>
+             </tr>
+            })}
+            
+          </tbody>
+        </Table>
         <Table borderless className="mb-3">
           <tbody>
             <tr>

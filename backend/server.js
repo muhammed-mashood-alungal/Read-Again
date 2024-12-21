@@ -52,7 +52,6 @@ app.use('/api/coupons',couponRoutes)
 app.use('/api/wishlist',wishlistRoutes)
 app.use('/api/offers',offerRoutes)
 app.use('/api/razorpay',razorpayRoutes)
-app.use('/api/test',testingRoutes)
 
 
 //ERROR HANDLING MIDDLEWARE

@@ -85,6 +85,9 @@ const ProductDetails = ({ bookData }) => {
   const submitReview = async (e) => {
     try {
       e.preventDefault()
+      if(!userId){
+        return  toast.error("Login For add Your Review")
+      }
       const formData = new FormData()
       formData.append("rating", rating)
       formData.append("reviewText", reviewText)
@@ -255,21 +258,13 @@ const ProductDetails = ({ bookData }) => {
             <div className="details__price ">
               <div className="flex">
                 {renderProductPrice(bookData)}
-                {/* <span className="new__price">{bookData.formats[selectedFormat].price}</span>
-                <span className="old__price">{bookData.formats[selectedFormat].offerPrice}</span> */}
                 <span className="save__price">{bookData?.appliedOffer?.discountValue && `(${bookData?.appliedOffer?.discountValue}%)`}</span>
               </div>
               <div>
                 <Stack spacing={1}>
-                  <Rating name="half-rating-read" value={bookData?.averageRating?.toFixed()}  readOnly />
+                  <Rating name="half-rating-read" value={prodRating?.toFixed()}  readOnly />
                 </Stack>
-                {/* <div className="product__rating">
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                </div> */}
+              
               </div>
             </div>
             <p className="short__description">
@@ -333,7 +328,7 @@ const ProductDetails = ({ bookData }) => {
       <section className="details__tab container">
         <div className="detail__tabs">
           <span className={`detail__tab ${activeTab === "info" ? "active-tab" : ""}`} onClick={() => handleTabClick("info")}>Additional Info</span>
-          <span className={`detail__tab ${activeTab === "reviews" ? "active-tab" : ""}`} onClick={() => handleTabClick("reviews")}>Reviews(3)</span>
+          <span className={`detail__tab ${activeTab === "reviews" ? "active-tab" : ""}`} onClick={() => handleTabClick("reviews")}>Reviews</span>
         </div>
 
         <div className="details__tabs-content">
@@ -344,6 +339,7 @@ const ProductDetails = ({ bookData }) => {
                 <tbody>
                   <tr><th>Author</th><td> {bookData?.author}</td></tr>
                   <tr><th>Published Date</th><td>{bookData?.publicationDate}</td></tr>
+                  <tr><th>Language</th><td>{bookData?.language}</td></tr>
                   <tr><th>Stock Status</th>
                     <th
                       className={`${bookData.stockStatus == "Stock Out" && "stock-out"}

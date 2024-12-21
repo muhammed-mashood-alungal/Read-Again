@@ -35,8 +35,6 @@ const Header = ({ setSearchQuery }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Keep all your existing useEffects and functions
-  // ... (keep all your existing functions like handleLogOut, searchForProducts, etc.)
     useEffect(() => {
     async function fetchCartAndWishlistCount() {
       try {
@@ -45,11 +43,10 @@ const Header = ({ setSearchQuery }) => {
            axiosWishlistInstance.get(`/${userId}/wishlist-items-count`)
         ])
         dispatch(setCartItemsCount(cartResponse?.data?.cartItemsCount))
-        
         dispatch(setWishlistItemsCount(wishlistResponse?.data?.totalItems))
       } catch (err) {
         console.log(err)
-        toast.error(err?.response?.data?.message)
+        //toast.error(err?.response?.data?.message)
       }
     }
     
@@ -80,7 +77,6 @@ const Header = ({ setSearchQuery }) => {
     try {
         const value = e.target.value
         setSearchedProduct(value)
-        
         const { data } = await axiosBookInstance.get(`/search/?title=${value}`)
         setSearchedProducts(data.products)
     } catch (err) {

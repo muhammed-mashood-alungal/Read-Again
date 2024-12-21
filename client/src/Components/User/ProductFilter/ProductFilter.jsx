@@ -50,7 +50,6 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
 
   const sortOptions = [
     'Default',
-    'Popularity',
     'Average rating',
     'Newness',
     'Price: Low to High',

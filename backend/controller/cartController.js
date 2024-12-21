@@ -154,6 +154,7 @@ module.exports = {
      }
      console.log(userId)
      const  cart = await Cart.findOne({userId:userId},{items:1})
+     console.log(cart)
      const cartItemsCount = cart?.items?.reduce((count,item)=>{
         return count + item.quantity
      },0)

@@ -97,7 +97,7 @@ module.exports = {
             if (sortBy == "Newness") {
                 sort.publicationDate = 1
             } else if(sortBy == "Average rating"){
-                sortBy.averageRating=1
+                sort.averageRating=-1
             }else if (sortBy == "Price: High to Low") {
                 sort = { "formats.physical.price": -1 }
             } else if (sortBy == "Price: Low to High") {
@@ -125,11 +125,9 @@ module.exports = {
                     return book.category.name == category
                 })
                 totalBooks=allBooks.length
-                    
               
             }
             
-           
            
             res.status(200).json({ success: true, books: allBooks, totalBooks });
         } catch (err) {

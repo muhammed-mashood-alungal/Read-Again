@@ -54,7 +54,7 @@ module.exports={
         try {
             const {userId} = req.params
             const wishlist = await Wishlist.findOne({userId})
-            const totalItems = wishlist.items.length
+            const totalItems = wishlist?.items?.length
             res.status(200).json({success:true,totalItems})
         } catch (error) {
             res.status(400).json({success:false,message:error?.message})
