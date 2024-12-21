@@ -255,7 +255,7 @@ function OrderDetails({  }) {
               <CTableRow key={item.bookId?._id}>
                 <CTableDataCell>{item?.bookId.title}</CTableDataCell>
                 <CTableDataCell>{item?.quantity}</CTableDataCell>
-                <CTableDataCell>${(item?.quantity * item?.bookId?.formats?.physical?.price).toFixed(2)}</CTableDataCell>
+                <CTableDataCell>₹{(item?.quantity * item?.bookId?.formats?.physical?.price).toFixed(2)}</CTableDataCell>
                 {itemsCancelOrReturn(item.status, item.bookId._id)}
                 {item.status === "Canceled" && (
                   <CTableDataCell className='text-danger'>

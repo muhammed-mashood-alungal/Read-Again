@@ -11,6 +11,7 @@ import { removeAuth, setAuth } from '../../redux/Actions/userActions'
 
 function HomePage() {
   const [justPublished,setJustPublished] = useState([])
+  const [showCaseData,setShowCaseData]=useState([])
   const dispatch = useDispatch()
   useEffect(() => {
     const checkAuth = async () => {
@@ -38,6 +39,20 @@ function HomePage() {
     fetchProducts()
   
   },[])
+  
+  // useEffect(()=>{
+  //   const fecthShowCase =async ()=>{
+  //     try{
+  //       const response= await axiosBookInstance.get('/list/get-showcase-data')
+  //       console.log(response.data['showcaseData'])
+  //       setShowCaseData(response.data['showcaseData'])
+  //     }catch(err){
+  //       console.log(err)
+  //     }
+  //   }
+  //   fecthShowCase()
+  
+  // },[])
   return (
    <>
       <Header/>
@@ -46,10 +61,10 @@ function HomePage() {
       <Suspense fallback={<h1>Loading</h1>}>
       <Categories/>
       </Suspense>
-     
       <Suspense fallback={<h1>Loading</h1>}>
       <ProductList books={justPublished} title={'Just Published'}/>
       </Suspense>
+      {/* <Showcase data={showCaseData}/> */}
       
       
       {/* <Showcase/> */}

@@ -337,11 +337,12 @@ function OfferForm({}) {
                                     name="maxDiscount"
                                     value={formData.maxDiscount}
                                     onChange={handleChange}
+                                    max="500"
                                     placeholder='Maximum discount Price'
                                     required
                                 />
                                 <CFormFeedback invalid>
-                                    Please select an expiration date
+                                    Please Enter a Valid Maximum discount Price
                                 </CFormFeedback>
                             </CCol>
                         </CRow>

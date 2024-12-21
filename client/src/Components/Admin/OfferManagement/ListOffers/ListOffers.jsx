@@ -37,6 +37,18 @@ function ListOffers() {
     fetchOffers()
   }, [currentPage])
 
+  const handleSearch = async (e) => {
+      try {
+        const name = e.target.value
+        const response = await axiosOfferInstance.get(`/?page=${currentPage}&limit=${limit}&name=${name}`)
+        let pages = Math.ceil(response?.data?.totalOffers / limit)
+        setTotalPages(pages)
+        setOffers(response?.data?.offers)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
   const handleOfferActivation = async () => {
     try {
       setSelectedOfferId(null)
@@ -55,9 +67,7 @@ function ListOffers() {
   const onCancel = () => {
     setSelectedOfferId(null)
   }
-  const handleSearch = () => {
-    ///search 
-  }
+
   const handleCoupenAdd = () => {
     ///adddd...
   }
@@ -101,7 +111,7 @@ function ListOffers() {
                     <input
                       type="text"
                       className="form-control mt-1"
-                      placeholder="Search Coupons"
+                      placeholder="Search Offer"
                       onChange={handleSearch}
                     />
                   </form>

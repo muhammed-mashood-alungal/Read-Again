@@ -78,8 +78,9 @@ const CategoryForm = ({ onChildUpdate}) => {
       });
       console.log(response.data)
       if(response.status ==200){
-        toast.success("Created Successfully")
         navigate('/admin/category')
+        toast.success("Created Successfully")
+        
       }
     }catch(err){
       console.log(err)
@@ -111,7 +112,8 @@ const CategoryForm = ({ onChildUpdate}) => {
       })
       console.log(response.data)
       if(response.status ==200){
-        toast.success("Category Created")
+        navigate('/admin/category')
+        toast.success("Category Saved Successfully")
         setIsCreateForm(true)
       }
     }catch(err){

@@ -268,8 +268,8 @@ function CouponForm({ isCreate, onSubmit }) {
                                     value={formData.minimumPrice}
                                     onChange={handleChange}
                                     required
-                                    min="1"
-                                    placeholder="Enter maximum usage count"
+                                    min="500"
+                                    placeholder="Enter Minimum Purchase Price"
                                 />
                                 <CFormFeedback invalid>
                                     Please provide a valid Minimum Price
@@ -286,6 +286,7 @@ function CouponForm({ isCreate, onSubmit }) {
                                     onChange={handleChange}
                                     required
                                     min="1"
+                                    max={"500"}
                                     placeholder="Enter maximum Discount Price"
                                 />
                                 <CFormFeedback invalid>

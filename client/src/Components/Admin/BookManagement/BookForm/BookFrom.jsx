@@ -99,14 +99,14 @@ const BookForm = ({  }) => {
     fetchCategories()
   },[])
 
-  const popularLanguages = [
-    { value: "English" },
-    { value: "Hindi" },
-    { value: "Spanish" },
-    { value: "French" },
-    { value: "Chinese" },
-    { value: "Arabic" },
-  ];
+  // const popularLanguages = [
+  //   { value: "English" },
+  //   { value: "Hindi" },
+  //   { value: "Spanish" },
+  //   { value: "French" },
+  //   { value: "Chinese" },
+  //   { value: "Arabic" },
+  // ];
 
  
 
@@ -166,7 +166,8 @@ const BookForm = ({  }) => {
   const handleSubmit = async (e) => { 
     try {
 
-      e.preventDefault();
+      e.preventDefault()
+      setLoading(true)
       console.log(imageUrls.length)
       const bookData = {
         title, author, category, language, description, imageUrls, publicationDate, ISBN, formats
@@ -219,14 +220,12 @@ const BookForm = ({  }) => {
       }
     } catch (err) {
       toast.error(err?.response?.data?.message)
+    }finally{
+      setLoading(false)
     }
   };
 
 
-  const handleImageRemove = (index) => {
-    setImageUrls(imageUrls.filter((_, i) => i !== index))
-    setImages(images.filter((_, i) => i !== index));
-  }
 
 
   const handleSetImage = (index, file) => {
@@ -423,7 +422,7 @@ const BookForm = ({  }) => {
                     </CRow>
                   )}
 
-                  {/* eBook */}
+                  {/* eBook
                   <CFormCheck
                     id="ebookCheck"
                     label="eBook"
@@ -466,7 +465,6 @@ const BookForm = ({  }) => {
                     </CRow>
                   )}
 
-                  {/* Audiobook */}
                   <CFormCheck
                     id="audiobookCheck"
                     label="Audiobook"
@@ -507,7 +505,7 @@ const BookForm = ({  }) => {
                         />
                       </CCol>
                     </CRow>
-                  )}
+                  )} */}
                 </CCardBody>
               </CCard>
 

@@ -1,88 +1,93 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const showcaseData = [
-  {
-    title: "Highly Recommended",
-    products: [
-      {
-        imgSrc: "./assets/img/showcase-img-1.jpg",
-        name: "Floral Print Casual Cotton Dress",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      },
-      {
-        imgSrc: "./assets/img/showcase-img-2.jpg",
-        name: "Ruffled Solid Long Sleeve Blouse",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      },
-      {
-        imgSrc: "./assets/img/showcase-img-3.jpg",
-        name: "Multi-Color Print V-neck T-shirt",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      }
-    ]
-  },
-  {
-    title: "Staff picks",
-    products: [
-      {
-        imgSrc: "./assets/img/showcase-img-4.jpg",
-        name: "Fish Print Patched T-shirt",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      },
-      {
-        imgSrc: "./assets/img/showcase-img-5.jpg",
-        name: "Fintage Floral Print Dress",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      },
-      {
-        imgSrc: "./assets/img/showcase-img-6.jpg",
-        name: "Multi-Color Stripe Circle T-shirt",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      }
-    ]
-  },
-  {
-    title: "Top Selling",
-    products: [
-      {
-        imgSrc: "./assets/img/showcase-img-7.jpg",
-        name: "Geometric Printed Long Sleeve Blouse",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      },
-      {
-        imgSrc: "./assets/img/showcase-img-8.jpg",
-        name: "Print Patchwork Maxi Dress",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      },
-      {
-        imgSrc: "./assets/img/showcase-img-9.jpg",
-        name: "Daisy Floral Print Straps Jumpsuit",
-        newPrice: "$238.85",
-        oldPrice: "$245.8"
-      }
-    ]
-  }
-];
+// const showcaseData = [
+//   {
+//     title: "Highly Recommended",
+//     products: [
+//       {
+//         imgSrc: "./assets/img/showcase-img-1.jpg",
+//         name: "Floral Print Casual Cotton Dress",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       },
+//       {
+//         imgSrc: "./assets/img/showcase-img-2.jpg",
+//         name: "Ruffled Solid Long Sleeve Blouse",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       },
+//       {
+//         imgSrc: "./assets/img/showcase-img-3.jpg",
+//         name: "Multi-Color Print V-neck T-shirt",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       }
+//     ]
+//   },
+//   {
+//     title: "Staff picks",
+//     products: [
+//       {
+//         imgSrc: "./assets/img/showcase-img-4.jpg",
+//         name: "Fish Print Patched T-shirt",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       },
+//       {
+//         imgSrc: "./assets/img/showcase-img-5.jpg",
+//         name: "Fintage Floral Print Dress",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       },
+//       {
+//         imgSrc: "./assets/img/showcase-img-6.jpg",
+//         name: "Multi-Color Stripe Circle T-shirt",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       }
+//     ]
+//   },
+//   {
+//     title: "Top Selling",
+//     products: [
+//       {
+//         imgSrc: "./assets/img/showcase-img-7.jpg",
+//         name: "Geometric Printed Long Sleeve Blouse",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       },
+//       {
+//         imgSrc: "./assets/img/showcase-img-8.jpg",
+//         name: "Print Patchwork Maxi Dress",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       },
+//       {
+//         imgSrc: "./assets/img/showcase-img-9.jpg",
+//         name: "Daisy Floral Print Straps Jumpsuit",
+//         newPrice: "$238.85",
+//         oldPrice: "$245.8"
+//       }
+//     ]
+//   }
+// ];
 
-const Showcase = () => (
-  <section className="showcase section">
+const Showcase = ({data}) => {
+  const [showcaseData,setShowCaseData]=useState([])
+  useEffect(()=>{
+    setShowCaseData(data)
+  })
+ return (
+   <section className="showcase section">
     <div className="showcase__container container grid">
-      {showcaseData.map((section, index) => (
+      {showcaseData?.map((section, index) => (
         <div className="showcase__wrapper" key={index}>
-          <h3 className="section__title">{section.title}</h3>
-          {section.products.map((product, idx) => (
+          <h3 className="">{section.title}</h3>
+          {section?.products?.map((product, idx) => (
             <div className="showcase__item" key={idx}>
               <a href="details.html" className="showcase__img-box">
                 <img
-                  src={product.imgSrc}
+                  src={product?.images[0]?.secure_url}
                   alt={product.name}
                   className="showcase__img"
                 />
@@ -102,6 +107,7 @@ const Showcase = () => (
       ))}
     </div>
   </section>
-);
+  )
+};
 
 export default Showcase;

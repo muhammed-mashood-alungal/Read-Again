@@ -59,7 +59,7 @@ const Dashboard = () => {
 
       {/* Key Metrics */}
       <CRow>
-        <CCol sm={4}>
+        <CCol sm={3}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilCart} size="xl" className="me-3 text-primary" />
@@ -70,7 +70,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol sm={4}>
+        <CCol sm={3}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilDollar} size="xl" className="me-3 text-success" />
@@ -81,7 +81,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol sm={4}>
+        <CCol sm={3}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilDollar} size="xl" className="me-3 text-success" />
@@ -92,7 +92,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol sm={4}>
+        <CCol sm={3}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilChartLine} size="xl" className="me-3 text-warning" />

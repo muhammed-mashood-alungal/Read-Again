@@ -117,14 +117,20 @@ module.exports = {
             }
             let allBooks = await Book.find(find).skip(skip).limit(limit).populate('category').populate("appliedOffer")
                 .sort(sort)
+
+            let totalBooks = await Book.countDocuments({...find})
             if (category != "All") {
+                
                 allBooks = allBooks.filter((book) => {
                     return book.category.name == category
                 })
+                totalBooks=allBooks.length
+                    
+              
             }
-
-            const totalBooks = await Book.countDocuments({})
-
+            
+           
+           
             res.status(200).json({ success: true, books: allBooks, totalBooks });
         } catch (err) {
             console.log(err)
@@ -193,8 +199,7 @@ module.exports = {
     async getJustPublishedBooks(req, res) {
         try {
             const books = await Book.find({ isDeleted: false, "formats.physical.stock": { $gt: 0 } }).populate("appliedOffer")
-                .sort({ createdAt: -1 }).limit(10)
-
+                .sort({ createdAt: -1 }).limit(8)
             res.status(200).json({ books: books })
         } catch (err) {
             console.log(err)
@@ -336,5 +341,36 @@ module.exports = {
             console.log(error)
             res.status(400).json({ success: false, message: error.message || "Something Went Wrong" })
         }
+    },
+    async getShowcaseData(req, res) {
+        try {
+            console.log("_________________________")
+            const books = await Book.find({"formats.physical.price": {$ne: 0}}).populate("category");
+    
+            const categories = ["Fincance", "Self-Help", "Fiction"];
+    
+
+            const showcaseData = categories.map((categoryTitle) => {
+                const categoryBooks = books.filter(book => book.category.name === categoryTitle);
+    
+                const products = categoryBooks.map(book => ({
+                    imgSrc: book.image, 
+                    name: book.title, 
+                    newPrice: `$${book?.formats?.physical?.offerPrice}`, 
+                    oldPrice: `$${(book?.formats?.physical?.price)}`, 
+                }));
+    
+                return {
+                    title: categoryTitle,
+                    products: products
+                };
+            });
+             console.log(showcaseData)
+            res.status(200).json({showcaseData:showcaseData})
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Error fetching showcase data" });
+        }
     }
+    
 }

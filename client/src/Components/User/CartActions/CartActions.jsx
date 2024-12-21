@@ -62,15 +62,15 @@ const CartActions = () => {
                   <tbody>
                     <tr>
                       <td><span className="cart__total-title">Cart Subtotal</span></td>
-                      <td><span className="cart__total-price">$240.00</span></td>
+                      <td><span className="cart__total-price">₹240.00</span></td>
                     </tr>
                     <tr>
                       <td><span className="cart__total-title">Shipping</span></td>
-                      <td><span className="cart__total-price">$10.00</span></td>
+                      <td><span className="cart__total-price">₹10.00</span></td>
                     </tr>
                     <tr>
                       <td><span className="cart__total-title">Total</span></td>
-                      <td><span className="cart__total-price">$250.00</span></td>
+                      <td><span className="cart__total-price">₹250.00</span></td>
                     </tr>
                   </tbody>
                 </Table>
