@@ -269,12 +269,25 @@ function OrderDetails({  }) {
         </CTable>
 
         <CRow className="mb-4">
-          <CCol>
-            <div className="order-total d-flex justify-content-end">
-              <strong>Total: </strong>
-              <span className="ms-2">${order.totalAmount.toFixed(2)}</span>
-            </div>
-          </CCol>
+           <CCol md={6}>
+                    <CCol  className="text-end">
+                      <h6>Total Amount</h6>
+                      <p className="h4 text-primary">₹{selectedOrder.totalAmount.toFixed(2)}</p>
+                    </CCol>
+                    {
+                      selectedOrder.coupon &&  <CCol  className="text-end">
+                      <h6>Discounted Amount</h6>
+                      <p className="h4 text-primary">₹{Math.round((selectedOrder.totalAmount * (selectedOrder?.coupon?.discountValue / 100)) * 100) / 100}</p>
+                    </CCol>
+                    }
+                    <hr />
+                   
+                    <CCol className="text-end">
+                      <h5>Payable Amount</h5>
+                      <p className="h4 text-primary">₹{selectedOrder.payableAmount?.toFixed()}</p>
+                     
+                    </CCol>
+                    </CCol>
         </CRow>
 
         <CRow>

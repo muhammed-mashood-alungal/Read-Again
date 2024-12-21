@@ -209,55 +209,32 @@ const Checkout = () => {
 
         <div className="checkout__group">
           <h3 className="section__title">Cart Totals</h3>
-          <Table className="order__table">
-            <thead>
-              <tr>
-                <th colSpan="2">Products</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                cart?.items?.map((item) => {
-                  return <tr>
-                    <td>
-                      <img
-                        src={item?.productId?.images[0].secure_url}
-                        alt=""
-                        className="order__img"
-                      />
-                    </td>
-                    <td>
-                      <h3 className="table__title">{item?.productId?.title}</h3>
-                      <p className="table__quantity">{item?.quantity}</p>
-                    </td>
-                    <td><span className="table__price">₹{item?.quantity * getPrice(item.productId)}</span></td>
-                  </tr>
-                })
-              }
-              <tr>
-
-
-
-              </tr>
-              <tr>
-                <td><span className="order__subtitle">Cart Total</span></td>
-                <td colSpan="2"><span className="table__price">₹{cart?.totalAmount}</span></td>
-              </tr>
-              <tr>
-                <td><span className="order__subtitle">Shipping</span></td>
-                <td colSpan="2">
-                  <span className="table__price">Free Shipping</span>
-                </td>
-              </tr>
-              <tr>
-                <td><span className="order__subtitle">Total</span></td>
-                <td colSpan="2">
-                  <span className="order__grand-total">₹{totalAmount}</span>
-                </td>
-              </tr>
-            </tbody>
-          </Table>
+          <div className="table-responsive">
+        <Table borderless className="mb-3">
+          <tbody>
+            <tr>
+              <td className="text-start" style={{ width: '50%' }}>
+                <strong>Cart Total</strong>
+              </td>
+              <td className="text-end">₹{cart?.totalAmount}</td>
+            </tr>
+            <tr>
+              <td className="text-start">
+                <strong>Shipping</strong>
+              </td>
+              <td className="text-end">Free Shipping</td>
+            </tr>
+            <tr className="border-top">
+              <td className="text-start">
+                <strong>Total</strong>
+              </td>
+              <td className="text-end">
+                <strong>₹{totalAmount}</strong>
+              </td>
+            </tr>
+          </tbody>
+        </Table>
+      </div>
           <div>
 
             <div className=''>

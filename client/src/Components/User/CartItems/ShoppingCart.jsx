@@ -277,7 +277,7 @@ const ShoppingCart = () => {
                         </tr>
                       </table>
                       <button href="checkout.html" class="primary-btn mt-3 flex btn--md"  onClick={loadCheckOut}>
-                        <i class="fi fi-rs-box-alt"></i> Proceed To Checkout
+                        <span><i class="fi fi-rs-box-alt"></i> Checkout</span>
                       </button>
                     </div>
 

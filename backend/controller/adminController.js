@@ -117,7 +117,7 @@ module.exports = {
           find
       }
       const orders = await Order.find({ ...find, orderStatus: "Delivered" }).populate("items.bookId").populate("userId")
-      let totalRevenue = totalCouponDiscount = totalSales = itemsSold = totalDiscount = 0
+      let totalRevenue  = totalSales = itemsSold = totalDiscount = 0
 
       for (const order of orders) {
         totalRevenue += order.totalAmount;
@@ -128,18 +128,17 @@ module.exports = {
             itemsSold += item.quantity
           }
         }
-        if (order.coupon) {
-          const coupon = await Coupon.findOne({ _id: order.coupon });
-          const percentage = coupon.discountValue;
-          const orderTotalWithoutDiscount = order.totalAmount / (1 - percentage / 100);
-          totalCouponDiscount += orderTotalWithoutDiscount.toFixed() - order.totalAmount;
-        }
+        // if (order.coupon) {
+        //   const coupon = await Coupon.findOne({ _id: order.coupon });
+        //   const percentage = coupon.discountValue;
+        //   const orderTotalWithoutDiscount = order.totalAmount / (1 - percentage / 100);
+        //   totalCouponDiscount += orderTotalWithoutDiscount.toFixed() - order.totalAmount;
+        // }
       }
       const salesReport = {
         filterType: filterType,
         totalRevenue,
         totalDiscount,
-        totalCouponDiscount,
         totalSales,
         itemsSold,
         orders: [...orders],
@@ -195,11 +194,20 @@ module.exports = {
   },
   async getOverallStates(req, res) {
     try {
-      const orderCount = await Order.countDocuments({})
+     // const orderCount = await Order.countDocuments({})
       const salesCount = await Order.countDocuments({ orderStatus: "Delivered" })
       const userCount = await User.countDocuments({})
-      console.log(orderCount, salesCount, userCount)
-      res.status(200).json({ overall: { orderCount, salesCount, userCount } })
+      const orders = await Order.find({})
+      const orderCount = orders.length
+      const totalDiscount = orders.reduce((total,order)=>{
+        total += order.totalDiscount || 0
+        if(order.totalDiscount>0){
+           console.log(order._id , order.totalDiscount)
+        }
+        return total
+      },0)
+      console.log(orderCount, salesCount, userCount,totalDiscount)
+      res.status(200).json({ overall: { orderCount, salesCount, userCount ,totalDiscount } })
     } catch (err) {
       console.log(err)
       res.status(400).json({ message: "Somthing Went Wrong" })

@@ -55,7 +55,7 @@ const ProductList = ({books,title}) => {
         <span>{title}</span>
          </h3>
           {books?.length > 0  && books?.map((book, index) => (
-            <Col key={book._id} md="4" lg="3" className="mb-4">
+            <Col key={book._id} md="4" lg="3" xs="6"className="mb-4">
               <Link to={`/book-details/${book._id}`} className='no-underline'>
               <div className="product__item">
                 <div className="product__banner">

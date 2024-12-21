@@ -27,6 +27,7 @@ module.exports = {
             if (orderDetails.coupon) {
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
                  orderDetails.totalDiscount = orderDetails.totalAmount - orderDetails.payableAmount 
+                 console.log(orderDetails.totalDiscount)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
                 } else {
@@ -176,7 +177,10 @@ module.exports = {
             }
             console.log(find)
 
-            const orders = await Order.find(find).sort({ orderDate: -1 }).skip(skip).limit(limit).populate("items.bookId").populate("userId")
+            const orders = await Order.find(find).sort({ orderDate: -1 }).skip(skip).limit(limit)
+            .populate("items.bookId")
+            .populate("userId")
+            .populate('coupon')
             const totalOrders = await Order.countDocuments(find)
             res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {

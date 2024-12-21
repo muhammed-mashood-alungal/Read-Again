@@ -9,7 +9,7 @@ function CheckOutPage() {
   return (
     <>
     <Header/>
-    <Breadcrumb/>
+    {/* <Breadcrumb/> */}
     <Checkout/>
     <Footer/>
     </>

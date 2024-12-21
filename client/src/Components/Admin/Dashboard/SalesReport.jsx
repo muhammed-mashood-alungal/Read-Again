@@ -27,7 +27,6 @@ import { toast } from 'react-toastify'
 import Chart from './Chart'
 
 const SalesReport = () => {
-  // Sample sales report data
   const [dateRange, setDateRange] = useState('daily');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -69,19 +68,7 @@ const SalesReport = () => {
     
   },[dateRange])
 
-//   const handleDownload = async () => {
-//     // Generate PDF document as a blob
-//     try{
-//         const pdfDoc = pdf(<ReportPDF salesReport={salesReport} />);
-//         const blob = await pdfDoc.toBlob();
-    
-//         // Save the blob as a file
-//         saveAs(blob, `SalesReport_${new Date().toLocaleDateString()}.pdf`);
-//     }catch(err){
-//       console.log(err)
-//     }
-    
-//   };
+
 
 
 const handleCustomSalesReport=async()=>{
@@ -155,8 +142,8 @@ const handleCustomSalesReport=async()=>{
           </CCol>
           <CCol sm={6} md={3}>
             <div className="border p-3 rounded text-center">
-              <h6 className="text-medium-emphasis">Total Coupon Discount</h6>
-              <h4 className="text-danger">₹{salesReport.totalCouponDiscount?.toFixed(2)}</h4>
+              <h6 className="text-medium-emphasis">Total Discount</h6>
+              <h4 className="text-danger">₹{salesReport.totalDiscount?.toFixed(2)}</h4>
             </div>
           </CCol>
           <CCol sm={6} md={3}>

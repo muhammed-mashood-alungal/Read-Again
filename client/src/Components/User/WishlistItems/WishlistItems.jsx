@@ -68,8 +68,7 @@ const WishlistItems = () => {
       })
       dispatch(decWishlistItemsCount())
     }catch(error){
-      console.log(error)
-       toast.error(error?.response?.data?.message)
+      toast.error(error?.response?.data?.message)
     }
   }
   const onCancel =()=>{
@@ -123,9 +122,9 @@ const WishlistItems = () => {
                     <span className="table__stock">{getPrice(item)}</span>
                   </td>
                   <td>
-                    <Button color="primary" size="sm" className="btn--sm" onClick={(e)=>handleAddToCart(item._id)}>
+                    <button className='primary-btn' onClick={(e)=>handleAddToCart(item._id)}>
                       Add to Cart
-                    </Button>
+                    </button>
                   </td>
                   <td onClick={()=>setSelectedItemId(item._id)}>
                     <i className="fi fi-rs-trash table__trash" style={{ cursor: 'pointer' }}></i>

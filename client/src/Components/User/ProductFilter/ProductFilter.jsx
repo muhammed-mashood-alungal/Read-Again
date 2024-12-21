@@ -3,7 +3,7 @@ import './ProductFilter.css'
 import { toast } from 'react-toastify';
 import { axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilter , faAngleDown ,faAngleUp, faUpDown } from '@fortawesome/free-solid-svg-icons'
+import { faFilter , faAngleDown ,faAngleUp } from '@fortawesome/free-solid-svg-icons'
 import { useSearchParams } from 'react-router-dom';
 
 
@@ -81,7 +81,7 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
 
   return (
 
-    <div className="filter-container container">
+    <div className="filter-container container mt-3">
       {
        
           <button onClick={() => { setIsOpen(!isOpen) }} className="chip">

@@ -9,7 +9,7 @@
   }
   
   /* Admin Navbar Styles */
-  .navbar {
+  /* .navbar {
     z-index: 100;
     background-color:rgb(29, 29, 29);
     color: white;
@@ -42,7 +42,7 @@
   
   .navbar .nav-link:hover {
     color: #ffab00; /* Hover color */
-  }
+  
   
   /* Sidebar Styles */
  

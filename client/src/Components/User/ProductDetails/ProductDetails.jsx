@@ -216,7 +216,7 @@ const ProductDetails = ({ bookData }) => {
     <>
       <section className="details section--lg">
         <div className="details__container container grid">
-          <div className="details__group">
+          <div className="details__group col-6">
             <div
               className="imageZoom"
               style={{

@@ -40,7 +40,7 @@ const OrderSuccess = ({}) => {
 
   return (
     <CContainer className='d-flex justify-content-center'>
-    <CCard className="text-center  w-50 m-5">
+    <CCard className="text-center  w-75 m-5">
       <div className="d-flex justify-content-center align-items-center mt-3">
        <motion.div
         initial={{ x: 0 }}
@@ -55,15 +55,15 @@ const OrderSuccess = ({}) => {
         
         <CContainer>
           <CRow className="mb-3 bg-light p-3 rounded">
-            <CCol xs={6} className="text-left text-muted">Order ID:</CCol>
-            <CCol xs={6} className="text-right font-weight-bold">
+            <CCol xs={12} className="text-left text-muted">Order ID:</CCol>
+            <CCol xs={12} className="text-right font-weight-bold">
               {orderData._id}
             </CCol>
           </CRow>
           
           <CRow className="mb-4 bg-light p-3 rounded">
-            <CCol xs={6} className="text-left text-muted">Payment Status:</CCol>
-            <CCol xs={6} className="text-right">
+            <CCol xs={12} className="text-left text-muted">Payment Status:</CCol>
+            <CCol xs={12} className="text-right">
               <span className={`font-weight-bold ${
                 orderData?.paymentStatus === 'Successful' 
                   ? 'text-success' 

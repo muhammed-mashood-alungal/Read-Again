@@ -122,7 +122,7 @@ export const cartItemsCountReducer = (state = { cartCount: 0 }, action) => {
       return state
   }
 }
-export const wishlistItemsCountReducer = (state = { cartCount: 0 }, action) => {
+export const wishlistItemsCountReducer = (state = { wishlistCount: 0 }, action) => {
   switch (action.type) {
     case SET_WISHLIST_ITEMS_COUNT: 
       return { ...state, laoding: true, wishlistCount:action.payload }

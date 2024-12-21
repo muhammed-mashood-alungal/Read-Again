@@ -393,8 +393,6 @@ return (
           <hr />
          
           <CCol className="text-end">
-            
-
             <h5>Payable Amount</h5>
             <p className="h4 text-primary">₹{selectedOrder.payableAmount?.toFixed()}</p>
            

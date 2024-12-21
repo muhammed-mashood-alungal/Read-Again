@@ -10,8 +10,19 @@
     text-align: center;
   }
   
-  .category__img {
+  .category-img {
     width: 100%;
     height: auto;
+    border-radius: 25px !important;  
   }
+  .hover-shadow {
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.1) !important;
+    transition: box-shadow 0.3s ease-in-out !important;
+    border-radius: 15px !important;
+  }
+  
+  .hover-shadow:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+  }
+  
   

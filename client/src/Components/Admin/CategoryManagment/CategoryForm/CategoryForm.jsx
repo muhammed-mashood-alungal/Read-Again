@@ -78,7 +78,8 @@ const CategoryForm = ({ onChildUpdate}) => {
       });
       console.log(response.data)
       if(response.status ==200){
-        setSuccess(true)
+        toast.success("Created Successfully")
+        navigate('/admin/category')
       }
     }catch(err){
       console.log(err)

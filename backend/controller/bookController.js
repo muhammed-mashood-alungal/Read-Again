@@ -96,9 +96,10 @@ module.exports = {
             let sort = {}
             if (sortBy == "Newness") {
                 sort.publicationDate = 1
-            } else if (sortBy == "Price: High to Low") {
+            } else if(sortBy == "Average rating"){
+                sortBy.averageRating=1
+            }else if (sortBy == "Price: High to Low") {
                 sort = { "formats.physical.price": -1 }
-
             } else if (sortBy == "Price: Low to High") {
                 sort = { "formats.physical.price": 1 }
             } else if (sortBy == "A-Z") {

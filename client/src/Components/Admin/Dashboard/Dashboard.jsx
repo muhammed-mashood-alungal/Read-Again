@@ -84,6 +84,17 @@ const Dashboard = () => {
         <CCol sm={4}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
+              <CIcon icon={cilDollar} size="xl" className="me-3 text-success" />
+              <div>
+                <div className="text-medium-emphasis">Total Discount</div>
+                <div className="fs-4 fw-semibold">{overall.totalDiscount}</div>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={4}>
+          <CCard>
+            <CCardBody className="d-flex align-items-center">
               <CIcon icon={cilChartLine} size="xl" className="me-3 text-warning" />
               <div>
                 <div className="text-medium-emphasis">Total Users</div>
@@ -100,48 +111,10 @@ const Dashboard = () => {
           <CCard>
             <CCardHeader>Sales Report</CCardHeader>
             <CCardBody>
-              {/* Date Range Filters */}
-              <CForm className="mb-4">
-                <CRow>
-                  {/* <CCol md={4}>
-                    <CFormSelect 
-                      value={dateRange}
-                      onChange={(e) => setDateRange(e.target.value)}
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="custom">Custom Range</option>
-                    </CFormSelect>
-                  </CCol> */}
-                  {/* {dateRange === 'custom' && (
-                    <>
-                      <CCol md={4}>
-                        <CFormInput 
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          placeholder="Start Date"
-                        />
-                      </CCol>
-                      <CCol md={4}>
-                        <CFormInput 
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          placeholder="End Date"
-                        />
-                      </CCol>
-                    </>
-                  )} */}
-                </CRow>
-              </CForm>
-
+          
               <CCard className='mt-3'>
                  <SalesReport/>
               </CCard>
-
-             
             </CCardBody>
           </CCard>
         </CCol>

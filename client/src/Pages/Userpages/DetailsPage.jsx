@@ -47,7 +47,7 @@ function DetailsPage() {
   return (
     <>
      <Header/>
-     <Breadcrumb idName={bookData.title}/>
+     {/* <Breadcrumb idName={bookData.title}/> */}
      <ProductDetails bookData={bookData}/>
      <Suspense fallback={<h1>loading...</h1>}>  
      <ProductList books={related} title={'Related Books'}/>
