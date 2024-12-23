@@ -40,15 +40,7 @@
   .details__small-img{
     border-radius: 10px;
   }
-  .stock-out{
-    color:red !important;
-  }
-  .hurry-up{
-    color:#f58b00 !important;
-  }
-  .in-stock{
-    color: green !important;
-  }
+  
   .selected{
     background-color: aliceblue;
     color: #088179;
@@ -78,3 +70,13 @@
   width: 200px;
   height: auto;
  }
+
+.prod-stock-out{
+  color:red !important;
+}
+.prod-hurry-up{
+  color:#f58b00 !important;
+}
+.prod-in-stock{
+  color: green !important;
+}

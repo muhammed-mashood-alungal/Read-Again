@@ -14,3 +14,31 @@
 .no-underline:hover{
     text-decoration: none !important;
 }
+.in-stock {
+    position: absolute;
+    left: 1.25rem;
+    top: 1.25rem;
+    background-color: var(--first-color);
+    color: var(--body-color);
+    padding: 0.25rem 0.625rem;
+    font-size: var(--tiny-font-size);
+    border-radius: 2.5rem;
+    -webkit-border-radius: 2.5rem;
+    -moz-border-radius: 2.5rem;
+    -ms-border-radius: 2.5rem;
+    -o-border-radius: 2.5rem;
+  } 
+  .hurry-up {
+    position: absolute;
+    left: 1.25rem;
+    top: 1.25rem;
+    background-color: #f58b00;
+    color: var(--body-color);
+    padding: 0.25rem 0.625rem;
+    font-size: var(--tiny-font-size);
+    border-radius: 2.5rem;
+    -webkit-border-radius: 2.5rem;
+    -moz-border-radius: 2.5rem;
+    -ms-border-radius: 2.5rem;
+    -o-border-radius: 2.5rem;
+  } 

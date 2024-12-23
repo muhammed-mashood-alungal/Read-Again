@@ -29,7 +29,6 @@ function DetailsPage() {
       try{
         const tags=[
           {author:bookData.author},
-          {language:bookData.language},
           {category:bookData.category}
         ]
 

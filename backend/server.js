@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const dotenv=require('dotenv')
+dotenv.config()
 const {connectDB} = require('./config/db')
 const userRoutes = require('./Routes/userRoutes')
 const adminRoutes = require('./Routes/adminRoutes')
@@ -27,7 +28,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended : true}))
 app.use(express.json())
 app.use('/public/images', express.static(path.join(__dirname, 'public/images')));
-dotenv.config()
+
 connectDB() 
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }))

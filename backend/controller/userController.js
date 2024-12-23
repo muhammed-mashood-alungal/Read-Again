@@ -426,6 +426,9 @@ module.exports = {
     try {
       const { userId } = req.params
       let wallet = await Wallet.findOne({ userId }).populate("userId")
+      if(!wallet){
+       return  res.status(200).json({ success: true, wallet: {balance:0 , transactions:[]} })
+      }
       const transactions = await Transactions.find({ walletId: wallet._id }).populate("associatedOrder")
       const walletData = wallet.toObject()
       walletData.transactions = transactions

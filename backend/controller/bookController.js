@@ -9,7 +9,6 @@ module.exports = {
     async createBook(req, res) {
         try {
             let { ISBN, title, author, category, language, description, publicationDate, formats } = req.body;
-            console.log("hellllllllllllllllo")
             const imagePaths = [];
          
             if (req.files && req.files.length > 0) {

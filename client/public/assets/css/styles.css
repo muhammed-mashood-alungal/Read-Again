@@ -619,7 +619,7 @@ table {
   -o-border-radius: 0.25rem;
 }
 
-.product__badge {
+/* .product__badge {
   position: absolute;
   left: 1.25rem;
   top: 1.25rem;
@@ -632,7 +632,7 @@ table {
   -moz-border-radius: 2.5rem;
   -ms-border-radius: 2.5rem;
   -o-border-radius: 2.5rem;
-}
+} */
 
 .product__badge.light-pink {
   background-color: hsl(341, 100%, 73%);

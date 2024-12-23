@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosAuthInstance, axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import UpdateProfile from './UpdateProfile';
 import ChangePass from './ChangePass';
 import Addresses from './Addresses';
 import OrderHistory from './OrderHistory';
 import WalletPage from './WalletPage';
+import { removeAuth } from '../../../redux/Actions/userActions';
 
 const MyAccount = () => {
   const [profileData, setProfileData] = useState({});
-  const [orders, setOrders] = useState([]);
-  const [wallet ,setWallet]=useState({})
+  const [orders, setOrders] = useState([])
   const { isLoggedIn, userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [currentOrderPage,setCurrentOrderPage]=useState(1)
@@ -20,7 +20,7 @@ const MyAccount = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const limit = 10 
   const activeTab = searchParams.get('tab') || 'dashboard';
-
+  const dispatch = useDispatch()
   const handleTabClick = (target) => {
     setSearchParams({ tab: target });
   };
@@ -49,16 +49,12 @@ const MyAccount = () => {
   useEffect(() => {
     const getUserOrderHistory = async () => {
       try {
-        // const response = await axiosOrderInstance.get(`/${userId}`);
-        // setOrders(response?.data?.orders);
-
           const { data } = await axiosOrderInstance.get(`/${userId}/?page=${currentOrderPage}&limit=${limit}`)
           setOrders(data.orders)
           let pages = Math.ceil(data?.totalOrders / limit)
           setTotalPages(pages)
       } catch (err) {
         console.error(err);
-       // toast.error(err?.response?.data?.error);
       }
     };
     if(isLoggedIn){
@@ -66,7 +62,14 @@ const MyAccount = () => {
     }
   }, [userId,activeTab,currentOrderPage]);
 
-  
+  const handleLogOut = async () => {
+    try {
+      const response = await axiosAuthInstance.get('/logout');
+      dispatch(removeAuth());
+    } catch (error) {
+      console.error("Logout failed", error.response?.data || error.message);
+    }
+  }
 
   return (
     <section className="accounts section--lg">
@@ -110,7 +113,7 @@ const MyAccount = () => {
               <i className="fi fi-rs-settings-sliders"></i> Change Password
             </p>
           )}
-          <p className="account__tab">
+          <p className="account__tab" onClick={handleLogOut}>
             <i className="fi fi-rs-exit"></i> Logout
           </p>
         </div>

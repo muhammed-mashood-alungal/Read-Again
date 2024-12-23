@@ -50,7 +50,12 @@ function LibraryPage() {
       <Header />
       {/* <Breadcrumbs/> */}
       <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} />
-      <ProductList books={justPublished} title={''} />
+      {
+        justPublished.length > 0 ?
+        <ProductList books={justPublished} title={''} /> :
+        <h2 className='empty-msg m-5'>No Books Found </h2>
+      }
+     
       <div className="text-center">
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Previous

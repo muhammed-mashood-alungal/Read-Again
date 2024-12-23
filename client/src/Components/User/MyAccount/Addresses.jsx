@@ -162,8 +162,6 @@ function Addresses({ userAddresses, userId }) {
       console.log(err)
     }
   }
-  
-
 
   return (
     <>
@@ -235,22 +233,20 @@ function Addresses({ userAddresses, userId }) {
                   <button className="link-button" onClick={()=>{setEditingMode(address)}}>Edit</button> 
                   <button className="delete-btn" onClick={()=>{
                     setAddressId(address._id)
-
-                    console.log(address)
                     setShowModal(true)}}>Delete</button>
                 <hr />
                 </div>
               })
             }
 
-            <button className="primary-btn" onClick={() => { setCurrentAction("creating") }}>Add Address</button>
+            <button className="primary-btn m-3" onClick={() => { setCurrentAction("creating") }}>Add Address</button>
 
           </div>
         ) 
       }
       {
         currentAction === "creating" &&  (
-          <div className='p-3'>
+          <div className='p-3 address-div'>
             <h4>Add New Address</h4>
             <form className="form grid " >
               <input type="text" placeholder="Your City"
@@ -315,7 +311,7 @@ function Addresses({ userAddresses, userId }) {
       }
       {
         currentAction === "editing"  && (
-          <div className='p-3'>
+          <div className='p-3 address-div'>
             <h4>Edit Address</h4>
             <form className="form grid " >
               <input type="text" placeholder="Your City"

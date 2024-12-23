@@ -67,7 +67,8 @@ const ProductList = ({books,title}) => {
                     <a href="#" className="action__btn" aria-label="Quick View"><i className="fi fi-rs-eye"></i></a>
                     <a href="#" className="action__btn" aria-label="Add to Wishlist" onClick={(e)=>{handleAddToWishlist(e,book._id)}}><i className="fi fi-rs-heart"></i></a>
                   </div>
-                  <div className="product__badge ">New</div>
+                  <div className={`product__badge ${book.stockStatus == "In Stock" && 'in-stock'}
+                  ${book.stockStatus == "Hurry Up" && 'hurry-up'}`}>{book.stockStatus}</div>
                 </div>
                 <div className="product__content">
                   <span className="product__category">{book?.category?.name}</span> <br />

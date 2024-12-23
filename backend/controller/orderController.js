@@ -30,7 +30,7 @@ module.exports = {
                  console.log(orderDetails.totalDiscount)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
-                } else {
+                } else { 
                     if(user.usedCoupons.includes(couponData._id)){
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
                     }
@@ -115,12 +115,15 @@ module.exports = {
                 console.log(item.status)
                 return item
             })
+            if(status == "Delivered"){
+                order.paymentStatus == "Success"
+            }
             order.save()
             res.status(200).json({ success: true })
         }
         catch (err) {
             console.log(err)
-            res.status(400).json({ message: 'Somthing went wrong while changing order status' })
+            res.status(400).json({ message: 'Something went wrong while changing order status' })
         }
     },
     async getUserOrders(req, res) {
@@ -362,22 +365,24 @@ module.exports = {
                     console.log(coupon)
                     console.log("----------------------------------------")
                     console.log(order.payableAmount , couponData.minimumPrice)
-  
-                    if(order.payableAmount < couponData.minimumPrice){
-                       const remainingDiscount = totalOrderDiscount - proptionalDiscount
-
-                       let newPayableAmount =0
-                       for(let item of order.items){
-                          if(item.status !== 'Canceled'){
-                            newPayableAmount += item.totalPrice
-                          }
-                       }
-                       order.payableAmount = newPayableAmount
-                       order.coupon=null
-                    }
-                    break;
+                   
+                        if(coupon && order.payableAmount < couponData.minimumPrice){
+                            const remainingDiscount = totalOrderDiscount - proptionalDiscount
+     
+                            let newPayableAmount =0
+                            for(let item of order.items){
+                               if(item.status !== 'Canceled'){
+                                 newPayableAmount += item.totalPrice
+                               }
+                            }
+                            order.payableAmount = newPayableAmount
+                            order.coupon=null
+                         }
+                         break;
+                     }
+                    
                     //order.totalAmount = order.totalAmount - order.items[i].totalPrice
-                }
+                
             }
 
             const itemStatuses = order.items.map(item => item.status)

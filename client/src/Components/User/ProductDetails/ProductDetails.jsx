@@ -342,9 +342,9 @@ const ProductDetails = ({ bookData }) => {
                   <tr><th>Language</th><td>{bookData?.language}</td></tr>
                   <tr><th>Stock Status</th>
                     <th
-                      className={`${bookData.stockStatus == "Stock Out" && "stock-out"}
-                     ${bookData.stockStatus == "Hurry Up" && 'hurry-up'}
-                     ${bookData.stockStatus == "In Stock" && 'in-stock'}`
+                      className={`${bookData.stockStatus == "Stock Out" && "prod-stock-out"}
+                     ${bookData.stockStatus == "Hurry Up" && 'prod-hurry-up'}
+                     ${bookData.stockStatus == "In Stock" && 'prod-in-stock'}`
                       }
                     >{bookData?.stockStatus}</th>
                   </tr>

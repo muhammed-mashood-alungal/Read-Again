@@ -1,6 +1,6 @@
 
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import HomePage from './Pages/Userpages/HomePage';
 import LoginPage from './Pages/Userpages/LoginPage';
 import RegisterPage from './Pages/Userpages/RegisterPage';
@@ -39,6 +39,7 @@ import ViewOffer from './Components/Admin/OfferManagement/ViewOffer/ViewOffer';
 import OfferForm from './Components/Admin/OfferManagement/OfferForm/OfferForm';
 import OrderSuccess from './Components/User/OrderSuccess/OrderSuccess';
 import OrderSuccessPage from './Pages/Userpages/OrderSuccessPage';
+import ScrollToTop from './Components/ScrollToTop';
 
 function App() {
   const dispatch = useDispatch()
@@ -60,6 +61,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
+        <ScrollToTop/>
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/login' element={<LoginPage />} />
