@@ -89,9 +89,8 @@ module.exports = {
       let find = {}
       switch (filterType) {
         case 'daily':
-          find = { orderDate: { $gte: new Date().setHours(0, 0, 0, 0) } }
+          find = { orderDate: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }}
           break;
-
         case 'weekly':
           const weekAgo = new Date()
           weekAgo.setDate(weekAgo.getDate() - 7)
@@ -118,7 +117,7 @@ module.exports = {
       }
       const orders = await Order.find({ ...find, orderStatus: "Delivered" }).populate("items.bookId").populate("userId")
       let totalRevenue  = totalSales = itemsSold = totalDiscount = 0
-
+      console.log(orders)
       for (const order of orders) {
         totalRevenue += order.totalAmount;
         totalDiscount += order.totalDiscount || 0
@@ -128,12 +127,6 @@ module.exports = {
             itemsSold += item.quantity
           }
         }
-        // if (order.coupon) {
-        //   const coupon = await Coupon.findOne({ _id: order.coupon });
-        //   const percentage = coupon.discountValue;
-        //   const orderTotalWithoutDiscount = order.totalAmount / (1 - percentage / 100);
-        //   totalCouponDiscount += orderTotalWithoutDiscount.toFixed() - order.totalAmount;
-        // }
       }
       const salesReport = {
         filterType: filterType,
@@ -149,19 +142,34 @@ module.exports = {
 
 
       let salesChart = ordersChart = []
-      if (filterType != 'custom') {
+     
         let groupBy
         if (filterType === 'daily') {
-          groupBy = { $hour: "$orderDate" }
+         groupBy = {
+          $dateToString: {
+            format: "%H", 
+            date: "$orderDate",
+            timezone: "Asia/Kolkata",
+          }
+        }
         } else if (filterType === 'weekly') {
           groupBy = { $dayOfWeek: "$orderDate" }
         } else if (filterType === 'monthly') {
           groupBy = { $dayOfMonth: "$orderDate" }
         } else if (filterType === 'yearly') {
           groupBy = { $month: "$orderDate" }
+        }else if(filterType === 'custom'){
+          groupBy = {
+            $dateToString: {
+                format: "%Y-%m-%d",
+                date: "$orderDate",
+                timezone: "Asia/Kolkata"
+            }
+        };
         }
+        console.log( groupBy)
         salesChart = await Order.aggregate([
-          { $match: { ...find, orderStatus: "Delivered" } },
+          { $match: { ...find ,orderStatus: "Delivered"}  },
           {
             $group: {
               _id: groupBy,
@@ -171,7 +179,7 @@ module.exports = {
           { $sort: { _id: 1 } },
         ])
         ordersChart = await Order.aggregate([
-          { $match: { ...find } },
+          { $match: { ...find} },
           {
             $group: {
               _id: groupBy,
@@ -180,7 +188,30 @@ module.exports = {
           },
           { $sort: { _id: 1 } },
         ])
+        if (filterType === 'custom' && find.orderDate?.$gte && find.orderDate?.$lte) {
+          const startDate = new Date(find.orderDate.$gte);
+          const endDate = new Date(find.orderDate.$lte);
+          
+          // Function to fill missing dates with zero values
+          const fillMissingDates = (data, valueField) => {
+              const dateMap = new Map(data.map(item => [item._id, item[valueField]]));
+              const filledData = [];
+              
+              for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                  const dateStr = d.toISOString().split('T')[0];
+                  filledData.push({
+                      _id: dateStr,
+                      [valueField]: dateMap.get(dateStr) || 0
+                  });
+              }
+              
+              return filledData;
+          };
+          
+          salesChart = fillMissingDates(salesChart, 'totalSales');
+          ordersChart = fillMissingDates(ordersChart, 'totalOrders');
       }
+      
       chartData = {
         salesChart,
         ordersChart

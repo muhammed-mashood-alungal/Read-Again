@@ -59,7 +59,6 @@ const SalesReport = () => {
        }catch(err){
           toast.error(err?.response?.data?.message)
        }
-        
         console.log('Generating report', { dateRange, startDate, endDate });
     }
     if(dateRange != 'custom'){
@@ -75,7 +74,8 @@ const handleCustomSalesReport=async()=>{
    if(dateRange == 'custom' && startDate && endDate  && (startDate < endDate)){
     const {data}=await axiosAdminInstance.post(`/sales-report/${dateRange}`,{startDate,endDate})
     setSalesReport(data?.salesReport)
-    
+    setChartData(data?.chartData)
+    setDateRange('custom')
    }else{
     return toast.error("Enter Valid Starting and Ending Date")
    }

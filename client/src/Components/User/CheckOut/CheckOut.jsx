@@ -211,6 +211,12 @@ const Checkout = () => {
           <div className="table-responsive">
           <Table borderless className="mb-3">
           <tbody>
+            <tr>
+              <th className="text-start">Index</th>
+              <th className="text-start">Book</th>
+              <th className='text-start'>Quantity</th>
+              <th className='text-start'>Total</th>
+            </tr>
             {cart?.items?.map((item,i)=>{
                return  <tr>
                <td className="text-start" >
@@ -220,7 +226,8 @@ const Checkout = () => {
                 <img src={item?.productId?.images[0].secure_url} style={{width:"25px",height:"25px"}} className='me-2'/>
                  <strong>{item?.productId?.title}</strong>
                </td>
-               <td className="text-end">₹{getPrice(item.productId)}</td>
+               <td className="text-start">{item.quantity}</td>
+               <td className="text-start">₹{getPrice(item.productId)}</td>
              </tr>
             })}
             

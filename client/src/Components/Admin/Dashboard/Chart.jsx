@@ -13,7 +13,7 @@ function Chart({basedOn,chartData}) {
         for(let i= 1 ; i <=24 ; i++){
           lab.push(i+":00")
         }
-        return lab
+        return lab  
       })
     }else if(basedOn == "weekly"){
         setLabels(["Mon","Tue","Wed","Thu","Fri","Sat","Sun"])
@@ -27,12 +27,17 @@ function Chart({basedOn,chartData}) {
       })
     }else if (basedOn == "yearly"){
       setLabels(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"])
+    }else if (basedOn == "custom"){
+      setLabels(()=>{
+        return chartData.salesChart.map((val)=>{
+          return val._id
+        })
+      })
     }
-  })
+  },[basedOn,chartData])
   return (
     <div>
-        e Chart properties
-
+     
 <CChart
   type="line" 
   data={{
@@ -45,14 +50,23 @@ function Chart({basedOn,chartData}) {
         pointBackgroundColor: "rgba(220, 220, 220, 1)",
         pointBorderColor: "#fff",
         data:(function getLabelData(){
-          let data= new Array(labels.length).fill(0)
-          for(let i =0 ; i < chartData?.salesChart?.length ; i++){
-            const index = chartData.salesChart[i]?._id - 1
-            if (index !== -1) {
-              data[index] = chartData?.salesChart[i]?.totalSales; 
+          if(basedOn != 'custom'){
+            let data= new Array(labels.length).fill(0)
+            for(let i =0 ; i < chartData?.salesChart?.length ; i++){
+              const index = chartData.salesChart[i]?._id - 1
+              if (index !== -1) {
+                data[index] = chartData?.salesChart[i]?.totalSales; 
+              }
             }
+            return data
+          }else{
+              let data= new Array(labels.length).fill(0)
+              for(let i =0 ; i < chartData?.ordersChart?.length ; i++){
+                  data[i] = chartData?.salesChart[i]?.totalSales; 
+              }
+              return data
           }
-          return data
+         
         })()
       },
       {
@@ -62,6 +76,7 @@ function Chart({basedOn,chartData}) {
         pointBackgroundColor: "rgba(151, 187, 205, 1)",
         pointBorderColor: "#fff",
         data:(function getLabelData(){
+          if(basedOn != 'custom'){
           let data= new Array(labels.length).fill(0)
           for(let i =0 ; i < chartData?.ordersChart?.length ; i++){
             const index = chartData.ordersChart[i]?._id - 1
@@ -70,6 +85,13 @@ function Chart({basedOn,chartData}) {
             }
           }
           return data
+        }else{
+          let data= new Array(labels.length).fill(0)
+          for(let i =0 ; i < chartData?.ordersChart?.length ; i++){
+              data[i] = chartData?.ordersChart[i]?.totalOrders;
+          }
+          return data
+        }
         })()
       },
     ],

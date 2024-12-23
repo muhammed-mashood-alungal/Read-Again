@@ -11,12 +11,7 @@ module.exports = {
             let { ISBN, title, author, category, language, description, publicationDate, formats } = req.body;
             console.log("hellllllllllllllllo")
             const imagePaths = [];
-            // for (let i = 1; i <= 5; i++) {
-            //     const field = `image-${i}`;
-            //     if (req.files[field]) {
-            //         req.files[field].forEach(file => imagePaths.push(file.filename));
-            //     }
-            // }
+         
             if (req.files && req.files.length > 0) {
                 for (let i = 0; i < req.files.length; i++) {
                     const b64 = Buffer.from(req.files[i].buffer).toString("base64");
@@ -47,20 +42,11 @@ module.exports = {
                 formats: formats,
                 stockStatus
             }
-            const book = await Book.create(newBook);
-
-            const oldPath = path.join(__dirname, '..', `public/images/books/${book.ISBN}`);
-            const newPath = path.join(__dirname, '..', `public/images/books/${book._id}`);
-            console.log(oldPath, newPath)
-            if (fs.existsSync(oldPath)) {
-                console.log("exists")
-                fs.renameSync(oldPath, newPath);
-            }
+            const book = await Book.create(newBook)
 
             res.status(201).json({ message: "Book created successfully", book })
         } catch (err) {
-            console.log(err)
-            res.status(500).json({ message: "Somthing went wrong" })
+            res.status(500).json({ message: "Somthing went wrong" }) 
         }
     },
     async getAllBooks(req, res) {
