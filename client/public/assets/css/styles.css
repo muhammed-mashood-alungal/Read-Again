@@ -880,7 +880,8 @@ table {
 }
 
 .showcase__img {
-  width: 86px;
+  width: 60px;
+  border-radius: 10px;
 }
 
 .showcase__content {

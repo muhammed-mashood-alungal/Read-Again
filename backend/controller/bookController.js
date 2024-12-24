@@ -327,20 +327,20 @@ module.exports = {
     },
     async getShowcaseData(req, res) {
         try {
-            console.log("_________________________")
             const books = await Book.find({"formats.physical.price": {$ne: 0}}).populate("category");
     
-            const categories = ["Fincance", "Self-Help", "Fiction"];
+            const categories = ["Finance", "Self-Help", "Fiction" ,"Non-Fiction"]
     
 
             const showcaseData = categories.map((categoryTitle) => {
                 const categoryBooks = books.filter(book => book.category.name === categoryTitle);
     
                 const products = categoryBooks.map(book => ({
-                    imgSrc: book.image, 
-                    name: book.title, 
-                    newPrice: `$${book?.formats?.physical?.offerPrice}`, 
-                    oldPrice: `$${(book?.formats?.physical?.price)}`, 
+                    _id:book._id,
+                    images: book.images, 
+                    title: book.title, 
+                    formats:book.formats,
+                    appliedOffer:book.appliedOffer
                 }));
     
                 return {

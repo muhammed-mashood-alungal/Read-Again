@@ -40,6 +40,7 @@ import OfferForm from './Components/Admin/OfferManagement/OfferForm/OfferForm';
 import OrderSuccess from './Components/User/OrderSuccess/OrderSuccess';
 import OrderSuccessPage from './Pages/Userpages/OrderSuccessPage';
 import ScrollToTop from './Components/ScrollToTop';
+import NotFound from './Components/NotFound';
 
 function App() {
   const dispatch = useDispatch()
@@ -74,6 +75,7 @@ function App() {
           <Route path='/checkout' element={<CheckOutPage />} />
           <Route path='/order-success' element={<OrderSuccessPage />} />
           <Route path='/book-details/:bookId' element={<DetailsPage />} />
+          <Route path="*" element={<NotFound/>} />
         </Routes>
         <ForgetPassProvider>
           <Routes>

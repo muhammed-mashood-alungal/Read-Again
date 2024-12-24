@@ -1,27 +1,26 @@
 import React from 'react';
 import CIcon from '@coreui/icons-react';
 import { cibFacebook, cibInstagram, cibTwitter, cibYoutube } from '@coreui/icons';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 
 const Footer = () => {
+  const {isLoggedIn} = useSelector(state=>state.auth)
   return (
     <footer className=" container">
       <div className="footer__container grid">
-        
-        {/* Logo and Contact Section */}
+
         <div className="footer__content">
           <a href="index.html" className="footer__logo">
             <img src="/assets/img/logo.jpg" alt="Logo" className="footer__logo-img" />
           </a>
           <h4 className="footer__subtitle">Contact</h4>
           <p className="footer__description">
-            <span>Address:</span> 13 Tlemcen Road, Street 32, Beb-Wahren
+            <span>Address:</span> Kozhikod , Kerala , India
           </p>
           <p className="footer__description">
-            <span>Phone:</span> +01 2222 365 / (+91) 01 2345 6789
-          </p>
-          <p className="footer__description">
-            <span>Hours:</span> 10:00 - 18:00, Mon - Sat
+            <span>Phone:</span> +91 1212121212
           </p>
           
           {/* Social Links */}
@@ -53,12 +52,14 @@ const Footer = () => {
         <div className="footer__content">
           <h3 className="footer__title">My Account</h3>
           <ul className="footer__links">
-            <li><a href="#" className="footer__link">Sign In</a></li>
-            <li><a href="#" className="footer__link">View Cart</a></li>
-            <li><a href="#" className="footer__link">My Wishlist</a></li>
-            <li><a href="#" className="footer__link">Track My Order</a></li>
-            <li><a href="#" className="footer__link">Help</a></li>
-            <li><a href="#" className="footer__link">Order</a></li>
+            {
+              !isLoggedIn &&  <li><a href="#" className="footer__link">Sign In</a></li>
+            }
+           
+            <li><Link to="/cart" className="footer__link">View Cart</Link></li>
+            <li><Link to="/wishlist" className="footer__link">My Wishlist</Link></li>
+            <li><Link to="/account?tab=wallet" className="footer__link">Wallet</Link></li>
+            <li><Link to="/account?tab=orders" className="footer__link">Order</Link></li>
           </ul>
         </div>
 
@@ -71,8 +72,7 @@ const Footer = () => {
 
       {/* Footer Bottom */}
       <div className="footer__bottom">
-        <p className="copyright">&copy; 2024 Evara. All rights reserved</p>
-        <span className="designer">Designed by Crypticalcoder</span>
+        <p className="copyright">&copy; 2024 Read Again.</p>
       </div>
     </footer>
   );
