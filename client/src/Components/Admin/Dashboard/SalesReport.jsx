@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react'
 import {
   CCard,
   CCardBody,
-  CCardHeader,
   CCol,
   CRow,
   CTable,
@@ -17,11 +16,9 @@ import {
   CButton
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilFilter, cilSearch } from '@coreui/icons'
+import { cilSearch } from '@coreui/icons'
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants'
-import ReportPDF from './SalesPDFDocument'
-import ReactPDF, { pdf, PDFDownloadLink } from '@react-pdf/renderer';
-import { saveAs } from 'file-saver';
+import {  PDFDownloadLink } from '@react-pdf/renderer';
 import SalesPDFDocument from './SalesPDFDocument'
 import { toast } from 'react-toastify'
 import Chart from './Chart'
@@ -59,7 +56,6 @@ const SalesReport = () => {
        }catch(err){
           toast.error(err?.response?.data?.message)
        }
-        console.log('Generating report', { dateRange, startDate, endDate });
     }
     if(dateRange != 'custom'){
         generateSalesReport()
@@ -132,7 +128,6 @@ const handleCustomSalesReport=async()=>{
              </CRow>
        
      </div>
-        {/* Sales Summary */}
         <CRow className="mb-4">
           <CCol sm={6} md={3}>
             <div className="border p-3 rounded text-center">
@@ -160,7 +155,7 @@ const handleCustomSalesReport=async()=>{
           </CCol>
         </CRow>
 
-        {/* Orders Table */}
+       
         <div className="mb-3 d-flex justify-content-between align-items-center">
           <h5>Orders</h5>
           <div className="d-flex">
@@ -226,14 +221,6 @@ const handleCustomSalesReport=async()=>{
         )}
       </PDFDownloadLink>
                     <Chart basedOn={dateRange} chartData={chartData}/>
-                  {/* <CChartLine
-                    data={salesData.chartData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                    }}
-                    height={300}
-                  /> */}
       </CCardBody>
     </CCard>
   )

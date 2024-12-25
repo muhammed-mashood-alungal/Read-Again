@@ -4,7 +4,6 @@ const GoogleSignInButton = () => {
   return (
     <button 
       className="google-btn flex items-center justify-center gap-2 w-full max-w-md px-4 py-2 text-gray-600 bg-white rounded-full border border-gray-300 hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      onClick={() => console.log('Google sign-in clicked')}
     >
       <svg 
         className="w-5 h-5" 

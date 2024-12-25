@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import CIcon from '@coreui/icons-react';
-import { cilArrowThickFromRight } from '@coreui/icons';
 import { Col, Container, Row } from 'reactstrap';
 import { CButton, CTable } from '@coreui/react';
 import { toast } from 'react-toastify';
-import CouponDetails from '../../CouponManagement/CouponDetails';
-import { axiosCouponInstance, axiosOfferInstance } from '../../../../redux/Constants/axiosConstants';
-import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
-import OfferForm from '../OfferForm/OfferForm';
-import ViewOffer from '../ViewOffer/ViewOffer';
+import { axiosOfferInstance } from '../../../../redux/Constants/axiosConstants';
+import ConfirmationModal from '../../../CommonComponents/ConfirmationModal/ConfirmationModal';
 import { useNavigate } from 'react-router-dom';
 
 
 function ListOffers() {
-  const [currentAction, setCurrrentAction] = useState("list-offers")
   const [selectedOfferId, setSelectedOfferId] = useState(null)
   const [offers, setOffers] = useState([])
   const [offerData, setOfferData] = useState({})
@@ -28,7 +22,6 @@ function ListOffers() {
         const { data } = await axiosOfferInstance.get(`/?page=${currentPage}&limit=${limit}`)
         setOffers(data.offers)
         let pages = Math.ceil(data?.totalOffers / limit)
-        console.log(pages)
         setTotalPages(pages)
       } catch (err) {
         toast.error(err?.response?.data?.message)
@@ -38,16 +31,16 @@ function ListOffers() {
   }, [currentPage])
 
   const handleSearch = async (e) => {
-      try {
-        const name = e.target.value
-        const response = await axiosOfferInstance.get(`/?page=${currentPage}&limit=${limit}&name=${name}`)
-        let pages = Math.ceil(response?.data?.totalOffers / limit)
-        setTotalPages(pages)
-        setOffers(response?.data?.offers)
-      } catch (err) {
-        console.log(err)
-      }
+    try {
+      const name = e.target.value
+      const response = await axiosOfferInstance.get(`/?page=${currentPage}&limit=${limit}&name=${name}`)
+      let pages = Math.ceil(response?.data?.totalOffers / limit)
+      setTotalPages(pages)
+      setOffers(response?.data?.offers)
+    } catch (err) {
+      console.log(err)
     }
+  }
 
   const handleOfferActivation = async () => {
     try {
@@ -68,22 +61,9 @@ function ListOffers() {
     setSelectedOfferId(null)
   }
 
-  const handleCoupenAdd = () => {
-    ///adddd...
-  }
-
   const confirmAction = (offerId) => {
     setSelectedOfferId(offerId)
   }
-  const showUpdateForm = (offerData) => {
-    setOfferData(offerData)
-    setCurrrentAction("update-offer")
-  }
-  const viewOfferData = (couponData) => {
-    setOfferData(couponData)
-    setCurrrentAction("view-offer")
-  }
-
 
   return (
     <Container className='content'>
@@ -169,14 +149,14 @@ function ListOffers() {
                     </CTable>
                   </div>
                   <div className="pagination">
-               <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-                 Previous
-               </button>
-               <span> Page {currentPage} of {totalPages} </span>
-               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
-                 Next
-               </button>
-             </div>
+                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                      Previous
+                    </button>
+                    <span> Page {currentPage} of {totalPages} </span>
+                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                      Next
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

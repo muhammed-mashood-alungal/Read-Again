@@ -3,24 +3,20 @@ import Header from '../../Components/User/Header/Header'
 
 import Footer from '../../Components/User/Footer/Footer'
 import ProductFilter from '../../Components/User/ProductFilter/ProductFilter'
-import Breadcrumbs from '../../Components/User/Breadcrumb/Breadcrump'
 import { axiosBookInstance } from '../../redux/Constants/axiosConstants'
-import ProductLoading from '../../Components/ProductsLoading'
-import { Container } from 'reactstrap'
+import ProductLoading from '../../Components/LoadingComponents/ProductsLoading'
 function LibraryPage() {
   const [filteredBooks, setFilteredBooks] = useState([])
   const [filterQuery, setFilterQuery] = useState('')
-  const [searchQuery, setSearchQuery] = useState("")
   const [count, setCount] = useState(0)
-  const [currentPage,setCurrentPage]=useState(1)
-  const [totalPages ,setTotalPages]=useState(0)
-  const limit=8
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const limit = 8
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axiosBookInstance.get(`/list/filtered-books/${filterQuery}&limit=${limit}&page=${currentPage}`)
-        console.log(response.data.books)
-        let pages= Math.ceil(response?.data?.totalBooks/limit)
+        let pages = Math.ceil(response?.data?.totalBooks / limit)
         setTotalPages(pages)
         setFilteredBooks(response.data.books)
       } catch (err) {
@@ -29,7 +25,7 @@ function LibraryPage() {
     }
     fetchProducts()
 
-  }, [filterQuery, count ,currentPage])
+  }, [filterQuery, count, currentPage])
 
   const updateQuery = (query) => {
     setFilterQuery(query)
@@ -52,24 +48,24 @@ function LibraryPage() {
     <>
       <Header />
       <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} />
-      <Suspense fallback={<ProductLoading/>}>
-     
-      {
-        filteredBooks.length > 0 ?
-        <ProductList books={filteredBooks} title={''} /> :
-          <h5 className='empty-msg'>No Products Found</h5>
-      }
-       </Suspense>
-     
-      <div className="text-center">
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span className='primary-badge ms-1 me-1'> Page {currentPage} of {totalPages} </span>
-        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
-          Next
-        </button>
-      </div>
+      <Suspense fallback={<ProductLoading />}>
+        {
+          filteredBooks.length > 0 ?
+            <>
+              <ProductList books={filteredBooks} title={''} />
+              <div className="text-center">
+                <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                  Previous
+                </button>
+                <span className='primary-badge ms-1 me-1'> Page {currentPage} of {totalPages} </span>
+                <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                  Next
+                </button>
+              </div>
+            </> :
+            <h3 className='empty-msg m-5'>No Products Found</h3>
+        }
+      </Suspense>
       <Footer />
     </>
   )

@@ -5,8 +5,6 @@ const Breadcrumb = ({idName}) => {
   const {pathname} = useLocation()
   const unWantedPaths =['book-details']
   const pathnames = pathname.split('/').filter((x)=> x && !unWantedPaths.includes(x))
-
-  console.log(pathnames)
   let breadcrumpPath=''
   return (
     <section className="breadcrumb flex container ">
@@ -15,7 +13,6 @@ const Breadcrumb = ({idName}) => {
         breadcrumpPath += `/${name}`
         const isLast = index ===pathnames.length-1
         return isLast ?(
-          
           <span key={breadcrumpPath} className="breadcrumb__link">/ {idName ? idName : name}</span>
         ): (
           <span key={breadcrumpPath}>
@@ -23,8 +20,6 @@ const Breadcrumb = ({idName}) => {
           </span>
         )
        })}
-     
-      
     </section>
   );
 };

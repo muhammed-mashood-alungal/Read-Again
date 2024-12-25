@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
-import { Row, Col, Container } from 'reactstrap';
-import Navbar from '../../Components/Admin/Navbar/Navbar';
-import './AdminPage.css';
+import './AdminLayout.css';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../../Components/Admin/Sidebar/Sidebar';
-import { getUserData, removeAuth, setAuth } from '../../redux/Actions/userActions';
+import { removeAuth, setAuth } from '../../redux/Actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosAuthInstance } from '../../redux/Constants/axiosConstants';
-import ListUsers from '../../Components/Admin/UsersManagment/ListUsers/ListUsers';
 import AdminHeader from '../../Components/Admin/AdminHeader/AdminHeader';
 
 const AdminPage = () => {
@@ -16,7 +13,6 @@ const AdminPage = () => {
   const {isLoggedIn , role} = useSelector(state=>state.auth)
   
   useEffect(()=>{
-    console.log(isLoggedIn,role)
     if(isLoggedIn && role != "ADMIN"){
       navigate('/')
     }else if(!isLoggedIn){
@@ -42,17 +38,6 @@ const AdminPage = () => {
   
 
   return (
-    // <Container fluid className="admin-container">
-    //   <Row>
-    //     <Col md={12}>
-    //      <Navbar/>
-    //     </Col>
-    //     <Row className='admin-main'>
-    //       <Col md={2}> <Sidebar/></Col>
-    //       <Col md={10}> <Outlet/> </Col>
-    //     </Row>
-    //    </Row>
-    // </Container>
     <div>
     <Sidebar  />
     <div className="wrapper d-flex flex-column min-vh-100">
@@ -60,7 +45,6 @@ const AdminPage = () => {
       <div className="body flex-grow-1 mt-5">
         <Outlet />
       </div>
-      {/* <AppFooter /> */}
     </div>
   </div>
   );

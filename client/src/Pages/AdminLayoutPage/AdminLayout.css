@@ -1,50 +1,11 @@
-/* AdminPage.css */
 
-/* Global Styles for Admin Layout */
 .admin-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensure full height */
+    min-height: 100vh;
     background-color: #2d2d2d;
   }
   
-  /* Admin Navbar Styles */
-  /* .navbar {
-    z-index: 100;
-    background-color:rgb(29, 29, 29);
-    color: white;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .navbar .navbar-toggler {
-    background: none;
-    border: none;
-  }
-  
-  .navbar .navbar-nav {
-    display: flex;
-    align-items: center;
-  }
-  
-  .navbar .navbar-nav-right {
-    display: flex;
-  }
-  
-  .navbar .nav-link {
-    color: white;
-    font-size: 16px;
-    margin-right: 10px;
-    text-decoration: none;
-  }
-  
-  .navbar .nav-link:hover {
-    color: #ffab00; /* Hover color */
-  
-  
-  /* Sidebar Styles */
  
   .right-sidebar{
     padding: 18px;

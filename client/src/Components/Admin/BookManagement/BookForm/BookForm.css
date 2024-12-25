@@ -1,13 +1,16 @@
-.remove-btn{
-  color:red;
+.remove-btn {
+  color: red;
   font-size: 18px;
 }
-.book-image-input{
-    margin-top: 8px;
+
+.book-image-input {
+  margin-top: 8px;
 }
-.book-image{
+
+.book-image {
   margin-top: 3px;
 }
-.description{
+
+.description {
   height: 300px;
 }

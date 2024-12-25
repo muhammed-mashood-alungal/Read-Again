@@ -216,7 +216,6 @@ module.exports = {
         salesChart,
         ordersChart
       }
-      console.log(chartData)
       res.status(200).json({ success: true, salesReport, chartData: chartData })
     } catch (error) {
       console.log(error)

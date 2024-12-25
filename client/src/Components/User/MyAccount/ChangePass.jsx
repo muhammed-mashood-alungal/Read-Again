@@ -10,23 +10,18 @@ function ChangePass({email}) {
     const [newPass,setNewPass]=useState("")
     const [confirmPass,setConfirmPass] = useState("")
     const navigate= useNavigate()
-
-    const navigateToVerify=()=>{
-      navigate('/forgotten-password/verify',{state:{email:email}})
-    }
+    
     const handleChangePass=async(e)=>{
      try{
         e.preventDefault()
         const result = validateChangePass(currentPass,newPass,confirmPass)
         if(result.success){
             await axiosUserInstance.put(`/${email}/change-pass`,{currentPass,newPass})
-            
             toast.success("Successfully Updated")
         }else{
             toast.error(result.message)
         }
      }catch(err){
-        console.log(err)
         toast.error(err?.response?.data?.message)
      }
     }
@@ -49,9 +44,13 @@ function ChangePass({email}) {
                   value={confirmPass}
                   onChange={(e)=>{setConfirmPass(e.target.value)}}
                   />
-                  
                   <div className="form__btn">
-                  <Link to={'/forgotten-password/verify'} >Forgotten Password ? </Link>
+                  <span
+                  onClick={
+                    ()=>{
+                      navigate('/forgotten-password/verify',{state:{origin:"my-account",email:email}})
+                    }
+                  } className='no-underline link-button' >Forgotten Password ? </span>
                   <br />
                     <button className="primary-btn">Save</button>
                   </div>

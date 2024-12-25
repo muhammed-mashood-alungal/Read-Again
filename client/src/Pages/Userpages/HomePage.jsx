@@ -1,14 +1,13 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import Header from '../../Components/User/Header/Header'
 import Banner from '../../Components/User/Banner/Banner'
-import Categories from '../../Components/User/Categories/Categories'
-//import ProductList from '../../Components/User/ProductsList/ProductsList'
 import Showcase from '../../Components/User/Showcase/Showcase'
 import Footer from '../../Components/User/Footer/Footer'
 import { axiosAdminInstance, axiosAuthInstance, axiosBookInstance } from '../../redux/Constants/axiosConstants'
 import { useDispatch } from 'react-redux'
 import { removeAuth, setAuth } from '../../redux/Actions/userActions'
-import ProductLoading from '../../Components/ProductsLoading'
+import ProductLoading from '../../Components/LoadingComponents/ProductsLoading'
+import CategoryLoading from '../../Components/LoadingComponents/CategoryLoading'
 
 function HomePage() {
   const [justPublished, setJustPublished] = useState([])
@@ -54,22 +53,19 @@ function HomePage() {
     fecthShowCase()
 
   }, [])
+  const Categories = React.lazy(() => import('../../Components/User/Categories/Categories'))
   const ProductList = React.lazy(() => import('../../Components/User/ProductsList/ProductsList'))
   return (
     <>
       <Header />
       <Banner />
-
-      <Suspense fallback={<h1>Loading</h1>}>
+      <Suspense fallback={<CategoryLoading />}>
         <Categories />
       </Suspense>
       <Suspense fallback={<ProductLoading />}>
         <ProductList books={justPublished} title={'Just Published'} />
       </Suspense>
       <Showcase data={showCaseData} />
-
-
-      {/* <Showcase/> */}
       <Footer />
     </>
   )

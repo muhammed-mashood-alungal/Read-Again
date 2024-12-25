@@ -85,7 +85,6 @@ const OrderInvoicePDF = ({ orderData }) => (
     <Page size="A4" style={styles.page}>
       <Text style={styles.title}>Order Invoice</Text>
 
-      {/* Order Information Section */}
       <View style={styles.section}>
         <Text style={styles.label}>Order ID: </Text>
         <Text style={styles.value}>{orderData._id}</Text>
@@ -110,7 +109,6 @@ const OrderInvoicePDF = ({ orderData }) => (
         <Text style={styles.label}>Payment Status: </Text>
         <Text style={styles.value}>{orderData?.paymentStatus}</Text>
       </View>
-      {/* Products Table */}
       <View style={styles.table}>
         <View style={[styles.tableRow, styles.tableHeader]}>
           <Text style={styles.productCell}>Product</Text>
@@ -130,7 +128,7 @@ const OrderInvoicePDF = ({ orderData }) => (
         ))}
       </View>
 
-      {/* Order Summary */}
+   
       <View style={styles.summary}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Subtotal:</Text>
@@ -152,7 +150,7 @@ const OrderInvoicePDF = ({ orderData }) => (
         </View>
       </View>
 
-      {/* Footer */}
+      
       <View style={styles.footer}>
         <Text>Thank you for your purchase!</Text>
         

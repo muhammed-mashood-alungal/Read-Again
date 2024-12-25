@@ -3,10 +3,9 @@ import { Container, Table, Button } from 'reactstrap';
 import { axiosWishlistInstance } from '../../../redux/Constants/axiosConstants';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { bookImages } from '../../../redux/Constants/imagesDir';
 import { toast } from 'react-toastify';
-import { addToCart, decCartItemCount, decWishlistItemsCount } from '../../../redux/Actions/userActions';
-import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal';
+import { addToCart, decWishlistItemsCount } from '../../../redux/Actions/userActions';
+import ConfirmationModal from '../../CommonComponents/ConfirmationModal/ConfirmationModal';
 
 const WishlistItems = () => {
   const {userId } = useSelector(state=>state.auth)
@@ -42,19 +41,16 @@ const WishlistItems = () => {
        }
 
        const isSuccess = dispatch(addToCart(userId,itemInfo))
-       console.log(isSuccess)
        if(isSuccess) {
         removeItemFromWishlist(itemId)
        }
        
     } catch (error) {
-      console.log(error)
       toast.error(error?.response?.data?.message)
     }
   }
   const removeItemFromWishlist =async (itemId)=>{
     try{
-      console.log(itemId)
       setSelectedItemId(null)
       if(!userId){
         navigate('/login')
@@ -135,7 +131,6 @@ const WishlistItems = () => {
           </Table>
         </div>
       }
-       
       </Container>
     </section>
   );

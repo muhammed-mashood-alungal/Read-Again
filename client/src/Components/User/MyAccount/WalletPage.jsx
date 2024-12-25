@@ -41,22 +41,18 @@ const WalletPage = ({}) => {
           const response = await axiosUserInstance.get(`/wallet/${userId}`);
           setWallet(response?.data?.wallet);
         } catch (err) {
-          console.log(err)
-          // toast.error(err?.response?.data?.message);
+          toast.error(err?.response?.data?.message);
         }
       }
+      if(userId){
         getUserWallet();
+      }
+       
    
     }, [userId]);
 
 
-  const handleAddMoney = () => {
-   ///
-  };
 
-  const handleWithdraw = () => {
-   ///
-  };
 
   const getTransactionBadgeColor = (type) => {
     switch(type) {
@@ -78,22 +74,6 @@ const WalletPage = ({}) => {
               <div className="d-flex align-items-center">
                 <CIcon icon={cilWallet} className="me-2" size="xl"/>
                 <h3 className="mb-0">My Wallet</h3>
-              </div>
-              <div>
-                <CButton 
-                  color="primary" 
-                  className="me-2"
-                  onClick={() => setIsAddMoneyModal(true)}
-                >
-                  <CIcon icon={cilPlus} className="me-1"/> Add Money
-                </CButton>
-                <CButton 
-                  color="danger" 
-                  variant="outline"
-                  onClick={() => setIsWithdrawModal(true)}
-                >
-                  <CIcon icon={cilCreditCard} className="me-1"/> Withdraw
-                </CButton>
               </div>
             </CCardHeader>
             <CCardBody>
@@ -160,55 +140,7 @@ const WalletPage = ({}) => {
           </CCard>
         </CCol>
       </CRow>
-
-      {/* Add Money Modal */}
-      <CModal 
-        visible={isAddMoneyModal} 
-        onClose={() => setIsAddMoneyModal(false)}
-      >
-        <CModalHeader>
-          <CModalTitle>Add Money to Wallet</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CFormLabel>Enter Amount</CFormLabel>
-          <CFormInput 
-            type="number" 
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount to add"
-          />
-          <div className="mt-3 d-grid">
-            <CButton color="primary" onClick={handleAddMoney}>
-              Add Money
-            </CButton>
-          </div>
-        </CModalBody>
-      </CModal>
-
-      {/* Withdraw Modal */}
-      <CModal 
-        visible={isWithdrawModal} 
-        onClose={() => setIsWithdrawModal(false)}
-      >
-        <CModalHeader>
-          <CModalTitle>Withdraw from Wallet</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CFormLabel>Enter Amount</CFormLabel>
-          <CFormInput 
-            type="number" 
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount to withdraw"
-          />
-          <div className="mt-3 d-grid">
-            <CButton color="danger" onClick={handleWithdraw}>
-              Withdraw
-            </CButton>
-          </div>
-        </CModalBody>
-      </CModal>
-    </CContainer>
+          </CContainer>
   );
 };
 

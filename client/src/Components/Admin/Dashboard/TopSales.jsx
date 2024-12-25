@@ -10,8 +10,7 @@ import {
   CTableBody,
   CTableRow,
   CTableHeaderCell,
-  CTableDataCell,
-  CProgress
+  CTableDataCell
 } from '@coreui/react';
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';

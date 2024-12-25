@@ -1,6 +1,6 @@
 import React from 'react'; 
 import { Link } from 'react-router-dom';
-
+import './Banner.css'
 const Banner = () => {
   
   return (
@@ -17,9 +17,11 @@ const Banner = () => {
           <Link to={'/library'}>
           <button className="primary-btn">Shop Now</button>
           </Link>
-         
         </div>
+        <div>
+
         <img src="assets/img/creative-composition-world-book-day_23-2148883765.png" className="home__img" alt="hats" />
+        </div>
       </div>
     </section>
   );

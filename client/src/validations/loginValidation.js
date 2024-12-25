@@ -1,5 +1,3 @@
-
-
   function validateLogin(formData){
    const { email ,password } = formData
    const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

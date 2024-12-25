@@ -1,9 +1,5 @@
-import React, { useEffect } from 'react'
-import { dotPulse } from 'ldrs'
-
+import React from 'react'
 import { InfinitySpin } from 'react-loader-spinner';
-
-
 
 function LoadingComponent() {
     return (

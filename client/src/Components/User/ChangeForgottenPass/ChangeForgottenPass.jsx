@@ -1,37 +1,43 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, FormGroup } from 'reactstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { changePass } from '../../../redux/Actions/userActions';
 import { validateChangePassword } from '../../../validations/passwordValidations';
 import { toast } from 'react-toastify';
 
-const ChangePassword = () => {
+const ChangeForgottenPass = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const {forgetPassEmail} = useContext(ForgetPasswordContext)
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const location =useLocation()
+  const forgetPassEmail = location?.state?.forgetPassEmail
+  const origin = location?.state?.origin
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   useEffect(()=>{
     if(!forgetPassEmail){
-      navigate('/forgotten-password/verify')
+      navigate('/forgotten-password/verify',{state:{origin:"login"}})
     }
   },[])
 
   const handleChangePassword =async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
+    e.preventDefault()
+    setLoading(true)
+
     const result = validateChangePassword(newPassword,confirmPassword)
     if (result.success) {
       const success =  dispatch(changePass(forgetPassEmail,newPassword))
-      setLoading(false);
+      setLoading(false)
       if(success){
-        navigate('/')
+        toast.success("Password Changed Successfully")
+        if(origin == "my-account"){
+          navigate('/account?tab=change-password')
+        }else{
+          navigate('/login')
+        }
+        
       }else{
         toast.error("Something Went Wrong")
       }
@@ -46,8 +52,7 @@ const ChangePassword = () => {
       <Row className="justify-content-center align-items-center vh-100">
         <Col xs="10" sm="8" md="6" lg="4" className="login bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Change Password</h3>
-          {loading && <p>Loading....</p>} 
-          {error && <p>{error}</p>}
+          {loading && <p>Loading....</p>}
           
           <Form onSubmit={handleChangePassword}>
             <FormGroup>
@@ -92,4 +97,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword;
+export default ChangeForgottenPass;

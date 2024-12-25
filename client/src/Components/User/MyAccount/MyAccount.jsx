@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { axiosAuthInstance, axiosOrderInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
-import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import UpdateProfile from './UpdateProfile';
@@ -15,15 +14,15 @@ const MyAccount = () => {
   const [orders, setOrders] = useState([])
   const { isLoggedIn, userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const [currentOrderPage,setCurrentOrderPage]=useState(1)
-  const [totalPages,setTotalPages]=useState(1)
+  const [currentOrderPage, setCurrentOrderPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [searchParams, setSearchParams] = useSearchParams();
-  const limit = 10 
+  const limit = 10
   const activeTab = searchParams.get('tab') || 'dashboard';
   const dispatch = useDispatch()
   const handleTabClick = (target) => {
     setSearchParams({ tab: target });
-  };
+  }
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -37,34 +36,34 @@ const MyAccount = () => {
         const response = await axiosUserInstance.get(`/${userId}`);
         setProfileData(response?.data?.userData);
       } catch (err) {
-       // toast.error(err?.response?.data?.error);
+        console.log(err)
       }
-    };
-    if(isLoggedIn){
+    }
+    if (isLoggedIn) {
       getProfileData();
     }
-    
-  }, [userId,isLoggedIn,activeTab]);
+
+  }, [userId, isLoggedIn, activeTab]);
 
   useEffect(() => {
     const getUserOrderHistory = async () => {
       try {
-          const { data } = await axiosOrderInstance.get(`/${userId}/?page=${currentOrderPage}&limit=${limit}`)
-          setOrders(data.orders)
-          let pages = Math.ceil(data?.totalOrders / limit)
-          setTotalPages(pages)
+        const { data } = await axiosOrderInstance.get(`/${userId}/?page=${currentOrderPage}&limit=${limit}`)
+        setOrders(data.orders)
+        let pages = Math.ceil(data?.totalOrders / limit)
+        setTotalPages(pages)
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
-    };
-    if(isLoggedIn){
+    }
+    if (isLoggedIn) {
       getUserOrderHistory();
     }
-  }, [userId,activeTab,currentOrderPage]);
+  }, [userId, activeTab, currentOrderPage]);
 
   const handleLogOut = async () => {
     try {
-      const response = await axiosAuthInstance.get('/logout');
+      await axiosAuthInstance.get('/logout');
       dispatch(removeAuth());
     } catch (error) {
       console.error("Logout failed", error.response?.data || error.message);
@@ -97,13 +96,13 @@ const MyAccount = () => {
             className={`account__tab ${activeTab === 'address' ? 'active-tab' : ''}`}
             onClick={() => handleTabClick('address')}
           >
-            <i className="fi fi-rs-marker"></i> Address 
+            <i className="fi fi-rs-marker"></i> Address
           </p>
           <p
             className={`account__tab ${activeTab === 'wallet' ? 'active-tab' : ''}`}
             onClick={() => handleTabClick('wallet')}
           >
-            <i className="fi fi-rs-marker"></i> Wallet 
+            <i className="fi fi-rs-marker"></i> Wallet
           </p>
           {profileData.password && (
             <p
@@ -139,13 +138,13 @@ const MyAccount = () => {
 
           {activeTab === 'orders' && (
             <div className={`tab__content ${activeTab === 'orders' ? 'active-tab' : ''}`} id="orders">
-              <OrderHistory orders={orders} setCurrentOrderPage={setCurrentOrderPage} currentOrderPage={currentOrderPage} totalPages={totalPages}/>
+              <OrderHistory orders={orders} setCurrentOrderPage={setCurrentOrderPage} currentOrderPage={currentOrderPage} totalPages={totalPages} />
             </div>
           )}
 
           {activeTab === 'update-profile' && (
             <div className={`tab__content ${activeTab === 'update-profile' ? 'active-tab' : ''}`} id="update-profile">
-              <UpdateProfile  profileData={profileData} />
+              <UpdateProfile profileData={profileData} />
             </div>
           )}
           {activeTab === 'address' && (
@@ -154,11 +153,11 @@ const MyAccount = () => {
             </div>
           )}
 
-         {activeTab === 'wallet' && (
+          {activeTab === 'wallet' && (
             <div className={`tab__content ${activeTab === 'wallet' ? 'active-tab' : ''}`} id="wallet">
-             <WalletPage/>
+              <WalletPage />
             </div>
-          )} 
+          )}
 
           {activeTab === 'change-password' && (
             <div className={`tab__content ${activeTab === 'change-password' ? 'active-tab' : ''}`} id="change-password">

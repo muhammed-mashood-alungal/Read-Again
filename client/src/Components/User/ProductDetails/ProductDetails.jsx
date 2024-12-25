@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { bookImages } from "../../../redux/Constants/imagesDir";
 import './ProductDetails.css'
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, resetCartStates } from "../../../redux/Actions/userActions";
+import { addToCart } from "../../../redux/Actions/userActions";
 import { toast } from 'react-toastify';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from "react-router-dom";
-import { axiosBookInstance, axiosUserInstance } from "../../../redux/Constants/axiosConstants";
-import { CFormInput } from "@coreui/react";
+import { axiosBookInstance } from "../../../redux/Constants/axiosConstants";
 import { validateImage } from "../../../validations/imageValidation";
 import CIcon from "@coreui/icons-react";
 import { cilImagePlus, cilTrash, cilUser } from "@coreui/icons";
@@ -31,17 +29,11 @@ const ProductDetails = ({ bookData }) => {
   const [rating, setRating] = useState(2)
   const [reviewText, setReviewText] = useState("")
   const [reviews, setReviews] = useState([])
-  const [prodRating,setProdRating]=useState(0)
+  const [prodRating, setProdRating] = useState(0)
   const [selectedImage, setSelectedImage] = useState(null)
-  const handleSetImage = (file) => {
-    if (!validateImage(file)) {
-      toast.error("Make sure the image is either .png , .jpg or .jpeg")
-      return
-    }
-    setReviewImage(file)
-  }
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
   useEffect(() => {
     if (bookData && bookData.formats && selectedFormat) {
       setPrice(bookData.formats[selectedFormat]?.offerPrice);
@@ -73,11 +65,18 @@ const ProductDetails = ({ bookData }) => {
         ...prevZoom,
         backgroundImage: `url(${bookData?.images[0]?.secure_url})`,
       }))
-      
+
     }
-    console.log(bookData.averageRating)
     setProdRating(bookData.averageRating)
-  }, [bookData]);
+  }, [bookData])
+
+  const handleSetImage = (file) => {
+    if (!validateImage(file)) {
+      toast.error("Make sure the image is either .png , .jpg or .jpeg")
+      return
+    }
+    setReviewImage(file)
+  }
 
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value)
@@ -85,8 +84,8 @@ const ProductDetails = ({ bookData }) => {
   const submitReview = async (e) => {
     try {
       e.preventDefault()
-      if(!userId){
-        return  toast.error("Login For add Your Review")
+      if (!userId) {
+        return toast.error("Login For add Your Review")
       }
       const formData = new FormData()
       formData.append("rating", rating)
@@ -149,12 +148,11 @@ const ProductDetails = ({ bookData }) => {
 
 
   const handleImageClick = (index) => {
-    let newArr = [...images];
-    let temp = newArr[0];
-    newArr[0] = newArr[index];
-    newArr[index] = temp;
-    setImages([...newArr]);
-    console.log(newArr)
+    let newArr = [...images]
+    let temp = newArr[0]
+    newArr[0] = newArr[index]
+    newArr[index] = temp
+    setImages([...newArr])
 
     setZoom((prevZoom) => ({
       ...prevZoom,
@@ -176,7 +174,6 @@ const ProductDetails = ({ bookData }) => {
 
 
   const getPrice = (book) => {
-    console.log(book?.appliedOffer)
     if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
       return book.formats.physical.offerPrice
     }
@@ -184,7 +181,6 @@ const ProductDetails = ({ bookData }) => {
   }
 
   const buyNow = () => {
-    console.log(bookData?.formats?.physical?.price, quantity)
     try {
       const cart = {}
       cart.totalAmount = getPrice(bookData) * parseInt(quantity)
@@ -196,22 +192,20 @@ const ProductDetails = ({ bookData }) => {
       }]
       navigate('/checkout', { state: { cart } })
     } catch (err) {
-      console.log(err)
       toast.error(err?.response?.data.message)
     }
   }
 
-  const handleRemoveReview=async(reviewId)=>{
-    try{
+  const handleRemoveReview = async (reviewId) => {
+    try {
       await axiosBookInstance.delete(`/reviews/${reviewId}/remove`)
       toast.success("Remove Removed Successfully")
-      setReviews((reviews)=>{
-        return reviews.filter((review)=>{
-          return review._id  != reviewId 
+      setReviews((reviews) => {
+        return reviews.filter((review) => {
+          return review._id != reviewId
         })
       })
-    }catch(error){
-      console.log(error)
+    } catch (error) {
       toast.error(error?.message)
     }
   }
@@ -262,16 +256,15 @@ const ProductDetails = ({ bookData }) => {
               </div>
               <div>
                 <Stack spacing={1}>
-                  <Rating name="half-rating-read" value={prodRating?.toFixed()}  readOnly />
+                  <Rating name="half-rating-read" value={prodRating?.toFixed()} readOnly />
                 </Stack>
-              
+
               </div>
             </div>
             <p className="short__description">
               {bookData?.description}
             </p>
-            {/* <p className="meta__list flex"><span>Languages :</span> English, Malayalam, Hindi</p> */}
-            <ul className="products__list">
+             <ul className="products__list">
               <li className="list__item flex">
                 <i className="fi-rs-crown"></i>Gift Wrapping Available
               </li>
@@ -306,7 +299,6 @@ const ProductDetails = ({ bookData }) => {
               </ul>
             </div>
 
-            {/* Quantity and Actions */}
             <div className="details__action">
               <input type="number" className="quantity"
                 value={quantity}
@@ -324,7 +316,6 @@ const ProductDetails = ({ bookData }) => {
         </div>
       </section>
 
-      {/* Details Tab Section */}
       <section className="details__tab container">
         <div className="detail__tabs">
           <span className={`detail__tab ${activeTab === "info" ? "active-tab" : ""}`} onClick={() => handleTabClick("info")}>Additional Info</span>
@@ -332,7 +323,6 @@ const ProductDetails = ({ bookData }) => {
         </div>
 
         <div className="details__tabs-content">
-          {/* Additional Info Tab */}
           {activeTab === "info" && (
             <div className={`details__tab-content ${activeTab == 'info' && "active-tab"}`} id="info">
               <table className="info__table mb-4">
@@ -353,8 +343,7 @@ const ProductDetails = ({ bookData }) => {
               </table>
             </div>
           )}
-
-          {/* Reviews Tab */}
+          
           {activeTab === "reviews" && (
             <div className={`details__tab-content ${activeTab == 'reviews' && "active-tab"}`} id="reviews">
               <div className="reviews__container grid">
@@ -371,33 +360,33 @@ const ProductDetails = ({ bookData }) => {
                     reviews.map((review) => {
                       return <div className="review__single d-flex justify-content-between">
                         <div>
-                        <h2 className="review__title">
-                          <CIcon icon={cilUser} className="me-1" />
-                          {review.userId?.username}</h2>
-                        <Stack spacing={1} className="mb-2">
-                          <Rating name="half-rating-read" defaultValue={review.rating} readOnly size="small" />
-                        </Stack>
-                        {
-                          review?.image?.secure_url &&
-                          <img src={review?.image?.secure_url}
-                            alt="Reviewer"
-                            className="review-images"
-                            onClick={() => setSelectedImage(review?.image?.secure_url)
-                            } />
-                        }
-                        
-                        
-                        <p className="review__description">{review.reviewText}</p>
-                        <span className="review__date">{new Date(review.createdAt).toLocaleString()}</span>
+                          <h2 className="review__title">
+                            <CIcon icon={cilUser} className="me-1" />
+                            {review.userId?.username}</h2>
+                          <Stack spacing={1} className="mb-2">
+                            <Rating name="half-rating-read" defaultValue={review.rating} readOnly size="small" />
+                          </Stack>
+                          {
+                            review?.image?.secure_url &&
+                            <img src={review?.image?.secure_url}
+                              alt="Reviewer"
+                              className="review-images"
+                              onClick={() => setSelectedImage(review?.image?.secure_url)
+                              } />
+                          }
+
+
+                          <p className="review__description">{review.reviewText}</p>
+                          <span className="review__date">{new Date(review.createdAt).toLocaleString()}</span>
                         </div>
                         <div>
-                        {
-                          review?.userId?._id == userId && <span className="review-img-remove"
-                            onClick={()=>{handleRemoveReview(review._id)}}
-                          >
-                            <CIcon icon={cilTrash} className="me-2" />
-                            Remove Your Review </span>
-                        }
+                          {
+                            review?.userId?._id == userId && <span className="review-img-remove"
+                              onClick={() => { handleRemoveReview(review._id) }}
+                            >
+                              <CIcon icon={cilTrash} className="me-2" />
+                              Remove Your Review </span>
+                          }
                         </div>
                       </div>
                     })

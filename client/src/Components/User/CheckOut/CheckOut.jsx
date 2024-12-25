@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Table } from 'reactstrap';
+import { Button, Table } from 'reactstrap';
 import Addresses from '../MyAccount/Addresses';
 import { toast } from 'react-toastify';
-import { axiosCartInstance, axiosCouponInstance, axiosOrderInstance, axiosRazorpayInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosCouponInstance, axiosOrderInstance, axiosRazorpayInstance, axiosUserInstance } from '../../../redux/Constants/axiosConstants';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { bookImages } from '../../../redux/Constants/imagesDir';
 import { useRazorpay } from 'react-razorpay';
 
 const Checkout = () => {
@@ -21,6 +20,7 @@ const Checkout = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
   const [walletBalance, setWalletBalance] = useState(0)
   const { Razorpay } = useRazorpay()
+
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login')
@@ -31,11 +31,9 @@ const Checkout = () => {
   useEffect(() => {
     const getProfileData = async () => {
       try {
-        console.log(userId)
         const response = await axiosUserInstance.get(`/${userId}`)
         setAddresses(response?.data?.userData?.addresses)
       } catch (err) {
-        console.log(err)
         if (userId) {
           toast.error(err?.response?.data?.error)
         }
@@ -67,7 +65,6 @@ const Checkout = () => {
     try {
       setIsPlacingOrder(true)
       cart.items = cart.items.map((item) => {
-
         return {
           ...item,
           bookId: item.productId?._id,
@@ -91,14 +88,12 @@ const Checkout = () => {
         try {
           const result = await handleOnlinePayment(orderDetails.payableAmount)
           if (result.success) {
-            console.log("orderId :", data.orderId)
             await axiosOrderInstance.patch(`/${data.orderId}/payment-success`)
             toast.success("Payment Successful");
           } else {
             toast.error("Payment Failed. You can Retry on Order Page")
           }
         } catch (error) {
-
           toast.error("Payment failed, please try again.");
         } finally {
           navigate('/order-success', { state: { orderId: data.orderId } })
@@ -107,12 +102,8 @@ const Checkout = () => {
       }
       navigate('/order-success', { state: { orderId: data.orderId } })
       setIsPlacingOrder(false)
-
-
-
     } catch (err) {
       setIsPlacingOrder(false)
-      console.log(err)
       toast.error(err?.response?.data?.message)
     }
   }
@@ -131,7 +122,6 @@ const Checkout = () => {
         const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_ID;
         const { data } = await axiosRazorpayInstance.post('/create-order', { amount: amount * 100 })
         const order = data
-        console.log(order)
         const options = {
           key: RAZORPAY_KEY_ID,
           amount: order.amount,
@@ -174,10 +164,8 @@ const Checkout = () => {
             error: response.error,
           })
         })
-
-
       } catch (err) {
-        console.log(err)
+        toast.error(err)
       }
     })
   }
@@ -187,7 +175,6 @@ const Checkout = () => {
         return toast.error("Enter a coupon code")
       }
       const { data } = await axiosCouponInstance.post('/verify-coupon', { coupon, amount: cart.totalAmount })
-      //console.log(data.discountedPrice)
       setTotalAmount(x => x - data.discountedPrice)
       setIssCouponApplied(true)
     } catch (error) {
@@ -209,55 +196,55 @@ const Checkout = () => {
         <div className="checkout__group">
           <h3 className="section__title">Cart Totals</h3>
           <div className="table-responsive">
-          <Table borderless className="mb-3">
-          <tbody>
-            <tr>
-              <th className="text-start">Index</th>
-              <th className="text-start">Book</th>
-              <th className='text-start'>Quantity</th>
-              <th className='text-start'>Total</th>
-            </tr>
-            {cart?.items?.map((item,i)=>{
-               return  <tr>
-               <td className="text-start" >
-                 <strong>{i+1}</strong>
-               </td>
-               <td className="text-start" >
-                <img src={item?.productId?.images[0].secure_url} style={{width:"25px",height:"25px"}} className='me-2'/>
-                 <strong>{item?.productId?.title}</strong>
-               </td>
-               <td className="text-start">{item.quantity}</td>
-               <td className="text-start">₹{getPrice(item.productId)}</td>
-             </tr>
-            })}
-            
-          </tbody>
-        </Table>
-        <Table borderless className="mb-3">
-          <tbody>
-            <tr>
-              <td className="text-start" style={{ width: '50%' }}>
-                <strong>Cart Total</strong>
-              </td>
-              <td className="text-end">₹{cart?.totalAmount}</td>
-            </tr>
-            <tr>
-              <td className="text-start">
-                <strong>Shipping</strong>
-              </td>
-              <td className="text-end">Free Shipping</td>
-            </tr>
-            <tr className="border-top">
-              <td className="text-start">
-                <strong>Total</strong>
-              </td>
-              <td className="text-end">
-                <strong>₹{totalAmount}</strong>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
-      </div>
+            <Table borderless className="mb-3">
+              <tbody>
+                <tr>
+                  <th className="text-start">Index</th>
+                  <th className="text-start">Book</th>
+                  <th className='text-start'>Quantity</th>
+                  <th className='text-start'>Total</th>
+                </tr>
+                {cart?.items?.map((item, i) => {
+                  return <tr>
+                    <td className="text-start" >
+                      <strong>{i + 1}</strong>
+                    </td>
+                    <td className="text-start" >
+                      <img src={item?.productId?.images[0].secure_url} style={{ width: "25px", height: "25px" }} className='me-2' />
+                      <strong>{item?.productId?.title}</strong>
+                    </td>
+                    <td className="text-start">{item.quantity}</td>
+                    <td className="text-start">₹{getPrice(item.productId)}</td>
+                  </tr>
+                })}
+
+              </tbody>
+            </Table>
+            <Table borderless className="mb-3">
+              <tbody>
+                <tr>
+                  <td className="text-start" style={{ width: '50%' }}>
+                    <strong>Cart Total</strong>
+                  </td>
+                  <td className="text-end">₹{cart?.totalAmount}</td>
+                </tr>
+                <tr>
+                  <td className="text-start">
+                    <strong>Shipping</strong>
+                  </td>
+                  <td className="text-end">Free Shipping</td>
+                </tr>
+                <tr className="border-top">
+                  <td className="text-start">
+                    <strong>Total</strong>
+                  </td>
+                  <td className="text-end">
+                    <strong>₹{totalAmount}</strong>
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
           <div>
 
             <div className=''>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {Link, useLocation, useNavigate} from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Container,
   Row,
@@ -11,133 +11,126 @@ import './EmailVerification.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUser, getOtp } from '../../../redux/Actions/userActions';
 import { axiosUserInstance } from '../../../redux/Constants/axiosConstants';
-import { verifyEmail } from '../../../validations/verifyEmail'; 
-import { ForgetPasswordContext } from '../../../contexts/forgetPassword';
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
-const EmailVerification = (props) => {
+const EmailVerification = () => {
   const location = useLocation();
   const org = location.state?.origin;
-  const userData = location.state?.userData; 
-  const [origin,setOrigin]=useState(org || "")
+  const userData = location.state?.userData;
+  const [origin, setOrigin] = useState(org || "")
   const navigate = useNavigate()
-  const dispatch= useDispatch()
-  const formData = useSelector(state=>state.registrationData)
-  const {isLoggedIn} = useSelector(state=>state.auth)
-  const [email,setEmail] = useState("")
-  const {loading ,error} = useSelector(state=>state.getOtp)
-  const [verificationLoading ,setVerificationLoading] = useState(false)
-  const [verifyError , setVerifyError] = useState("")
+  const dispatch = useDispatch()
+  const formData = useSelector(state => state.registrationData)
+  const { isLoggedIn } = useSelector(state => state.auth)
+  const [email, setEmail] = useState("")
+  const { loading, error } = useSelector(state => state.getOtp)
+  const [verificationLoading, setVerificationLoading] = useState(false)
+  const [verifyError, setVerifyError] = useState("")
   const [sended, setSended] = useState(false)
   const [otp, setOtp] = useState("");
-  const [timer , setTimer]=useState(-1)
+  const [timer, setTimer] = useState(-1)
 
-  useEffect(()=>{
-    if(origin == "register"){
-     setEmail(formData?.email)
-    }else{
-     setEmail(userData?.email)
+  useEffect(() => {
+    if (origin == "register") {
+      setEmail(formData?.email)
+    } else {
+      setEmail(userData?.email)
     }
-   },[])
+  }, [])
 
-   useEffect(()=>{
-    if(isLoggedIn && origin == "register"){
+  useEffect(() => {
+    if (isLoggedIn && origin == "register") {
       navigate('/')
     }
-   },[isLoggedIn])
+  }, [isLoggedIn])
 
- 
-  
-  useEffect(()=>{
-    if(error || verifyError){
-        toast.error(error || verifyError)
+
+
+  useEffect(() => {
+    if (error || verifyError) {
+      toast.error(error || verifyError)
     }
-  },[error,verifyError])
-  
-  
-  
-  const resendOtp= ()=>{
+  }, [error, verifyError])
+
+
+
+  const resendOtp = () => {
     dispatch(getOtp(email))
     setTimer(60)
     setSended(true)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setSended(true)
     setTimer(60)
-  },[])
-  
-  useEffect(()=>{
-  if(timer > -1 ){
-    setTimeout(()=>{
-      setTimer(timer=>timer-1)
-      
-    },1000)
-  }
-  if(timer ==0){
-    setSended(false)
-    setOtp("")
-  } 
-  },[timer])
+  }, [])
+
+  useEffect(() => {
+    if (timer > -1) {
+      setTimeout(() => {
+        setTimer(timer => timer - 1)
+
+      }, 1000)
+    }
+    if (timer == 0) {
+      setSended(false)
+      setOtp("")
+    }
+  }, [timer])
 
 
- 
-  const verifyOtp = async (e) => { 
+
+  const verifyOtp = async (e) => {
     e.preventDefault()
-    if(otp.length < 6){
+    if (otp.length < 6) {
       setVerifyError("OTP must be 6 digits")
       return
     }
     setVerificationLoading(true)
-    
-    try{
-      const response = await axiosUserInstance.post(`/${email}/verify-otp`, {otp})
-      if(response.data.success){
+
+    try {
+      const response = await axiosUserInstance.post(`/${email}/verify-otp`, { otp })
+      if (response.data.success) {
         setVerificationLoading(false)
-        console.log(origin)
-        if(origin == "register"){
-         return  createUserAndNavigate()
-        }else{
-          try{
-            await axiosUserInstance.put(`/${userData?._id}/edit`,userData) 
+        if (origin == "register") {
+          return createUserAndNavigate()
+        } else {
+          try {
+            await axiosUserInstance.put(`/${userData?._id}/edit`, userData)
             navigate('/account')
             toast.success("Updated Successfully")
-          }catch(err){
-             console.log(err)
-             toast.error("Somthing Went Wrong ..!")
+          } catch (err) {
+            toast.error("Somthing Went Wrong ..!")
           }
         }
-        
+
       }
-    }catch(err){
-      console.log(err?.response)
+    } catch (err) {
       setVerificationLoading(false)
       toast.error(err?.response?.data?.message)
     }
-    
+
   };
-  const createUserAndNavigate=async()=>{
-    try{
-      const created= await dispatch(createUser(formData))
-      toast.success("User Created Successfully",{
+  const createUserAndNavigate = async () => {
+    try {
+      const created = await dispatch(createUser(formData))
+      toast.success("User Created Successfully", {
         autoClose: 1500
       })
-      setTimeout(()=>{
+      setTimeout(() => {
         navigate('/')
-      },[1500])
-    }catch(err){
-     console.log(err)
+      }, [1500])
+    } catch (err) {
+      console.log(err)
     }
-    
-  }
-  const handleOtp=(e)=>{
-    const value=e.target.value
-     if(/^\d*$/.test(value) && value.length <= 6) {
-        setOtp(value);
-      }
-  }
- 
 
+  }
+  const handleOtp = (e) => {
+    const value = e.target.value
+    if (/^\d*$/.test(value) && value.length <= 6) {
+      setOtp(value);
+    }
+  }
 
 
   return (
@@ -157,24 +150,21 @@ const EmailVerification = (props) => {
                 required
               />
             </FormGroup>
-           
+
             <div className='space-between mt-4 p-2'>
               <div>
-              <Link onClick={()=>{navigate(-1)}} className='no-underline'>Back</Link>
-              
+                <Link onClick={() => { navigate(-1) }} className='no-underline'>Back</Link>
               </div>
               <div >
-                <span className='text-secondary'> Resend in : {sended && timer > -1  && timer }</span>
+                <span className='text-secondary'> Resend in : {sended && timer > -1 && timer}</span>
               </div>
-           
-            <div>
-           
-            <Link color="primary"  className=" primary-btn no-underline" role='submit' onClick={ sended ? verifyOtp : resendOtp}>
-                           {sended ? "Register" : "Resend"}
-              </Link>
+              <div>
+                <Link color="primary" className=" primary-btn no-underline" role='submit' onClick={sended ? verifyOtp : resendOtp}>
+                  {sended ? "Register" : "Resend"}
+                </Link>
+              </div>
             </div>
-            </div>
-            
+
           </Form>
         </Col>
       </Row>

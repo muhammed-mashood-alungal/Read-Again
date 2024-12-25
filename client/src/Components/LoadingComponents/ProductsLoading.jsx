@@ -9,8 +9,7 @@ const ProductLoading = () => {
       {[...Array(8)].map((_, index) => (
         <CCol key={index}>
           <CCard>
-            <CPlaceholder 
-            
+            <CPlaceholder
               component="img"
               animation="glow"
               xs={12}

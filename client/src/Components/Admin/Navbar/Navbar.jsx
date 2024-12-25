@@ -18,7 +18,6 @@ const Navbar = () => {
               <i className="mdi mdi-view-grid"></i>
             </a>
           </li>
-          {/* Add additional icons and dropdown menus here */}
         </ul>
         <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
           <span className="mdi mdi-format-line-spacing"></span>

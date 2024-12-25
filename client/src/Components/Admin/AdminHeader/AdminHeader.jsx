@@ -11,21 +11,17 @@ import {
   CHeaderNav,
   CHeaderToggler,
   CNavLink,
-  CNavItem, 
+  CNavItem,
   useColorModes,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
   cilAccountLogout,
-  cilBell,
   cilContrast,
-  cilEnvelopeOpen,
-  cilList,
-  cilMenu,
   cilMoon,
   cilSun,
 } from '@coreui/icons'
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 import { axiosAuthInstance } from '../../../redux/Constants/axiosConstants'
 import { removeAuth } from '../../../redux/Actions/userActions'
 
@@ -35,7 +31,6 @@ const AdminHeader = () => {
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
 
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -44,17 +39,17 @@ const AdminHeader = () => {
     })
   }, [])
 
-  const handleLogout=async()=>{
-    try{
-       await axiosAuthInstance.get('/logout')
-       dispatch(removeAuth())
-    }catch(error){
+  const handleLogout = async () => {
+    try {
+      await axiosAuthInstance.get('/logout')
+      dispatch(removeAuth())
+    } catch (error) {
       toast.error("Something Went Wrong...!")
     }
   }
 
   return (
-    <CHeader  className="mb-4 p-1 z-100 ms-5 position-fixed w-100 z-1000" ref={headerRef} >
+    <CHeader className="mb-4 p-1 z-100 ms-5 position-fixed w-100 z-1000" ref={headerRef} >
       <CContainer className=" px-4" fluid>
         <CHeaderNav className="d-none d-md-flex p-3">
           <CNavItem>
@@ -70,7 +65,7 @@ const AdminHeader = () => {
           <CNavItem>
             <CNavLink onClick={handleLogout} >
               <CIcon icon={cilAccountLogout} size="lg" />&nbsp;
-              Logout 
+              Logout
             </CNavLink>
           </CNavItem>
         </CHeaderNav>
@@ -123,9 +118,6 @@ const AdminHeader = () => {
           </li>
         </CHeaderNav>
       </CContainer>
-      {/* <CContainer className="px-4" fluid>
-        <AppBreadcrumb />
-      </CContainer> */}
     </CHeader>
   )
 }

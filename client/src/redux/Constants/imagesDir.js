@@ -1,1 +1,0 @@
-export const bookImages="http://localhost:5000/public/images/books/"

@@ -5,19 +5,19 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../../Components/User/Header/Header'
 
 function LoginPage() {
-  const {isLoggedIn} = useSelector(state=>state.auth)
-  const navigate= useNavigate()
+  const { isLoggedIn } = useSelector(state => state.auth)
+  const navigate = useNavigate()
 
-  useEffect(()=>{
-     if(isLoggedIn){
-       navigate('/')
-     }
-  },[])
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/')
+    }
+  }, [])
 
   return (
     <>
-    <Header/>
-    <UserLogin/>
+      <Header />
+      <UserLogin />
     </>
   )
 }

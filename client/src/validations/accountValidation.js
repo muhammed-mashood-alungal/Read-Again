@@ -4,7 +4,6 @@ export async function validateUpdateProfile(formData,currentEmail){
    const {username, email  } = formData
    const usernameReg = /^[A-Za-z\s]*$/;
    const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-   const numberReg = /^\d{10}$/;
    if(username.trim() == ""){
      return {success:false , message : "Please Enter an Username"}
    }
@@ -22,13 +21,11 @@ export async function validateUpdateProfile(formData,currentEmail){
      }
      try{
       const response=await axiosUserInstance.get(`/${email}/exist`)
-      console.log(response)
       if(response?.data?.user?.email){
         return {success:false , message : "This Email already Exists"}
       }
         return {success:true}
      }catch(err){
-      console.log(err.response.status)
       if(err.response.status == 409 ){
         return {success:false , message : "This Email already Exists"}
        }

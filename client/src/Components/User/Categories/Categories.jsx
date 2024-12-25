@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import './Categories.css'; 
-import { axiosAdminInstance, axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
+import { axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, CardImg, Col, Row } from 'reactstrap';
-import CategoryLoading from '../../CategoryLoading';
+import CategoryLoading from '../../LoadingComponents/CategoryLoading';
+import { toast } from 'react-toastify';
 
 const CategoriesSection = () => {
   const [categories,setCategories] = useState([])
-  const [err,setErr] = useState("")
+
   useEffect(()=>{
     async function fetchCategories(){
       try{
         const response = await axiosCategoryInstance.get('/listed')
         setCategories(response.data.categories)
        }catch(err){
-          setErr(err.response?.data?.message)
+        toast.error(err.response?.data?.message)
        }
     }
     fetchCategories()
   },[])
+
   return (
     <section className="categories container section">
       <h3 className="section__title">

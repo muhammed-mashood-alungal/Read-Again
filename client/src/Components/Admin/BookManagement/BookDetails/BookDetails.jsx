@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './BookDetails.css'
-import { bookImages } from '../../../../redux/Constants/imagesDir'
 import {
   CCard,
   CCardBody,
@@ -19,13 +17,12 @@ import {
   CButton
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { 
-  cilBook, 
-  cilUser, 
-  cilCalendar, 
-  cilTag, 
+import {
+  cilBook,
+  cilCalendar,
+  cilTag,
   cilBarcode,
-  cilInfo, 
+  cilInfo,
   cilDollar,
   cilArrowThickFromRight
 } from '@coreui/icons';
@@ -35,14 +32,14 @@ const BookDetails = ({ }) => {
   const navigate = useNavigate()
   return (
     <CContainer className='mt-5'>
-        <CButton onClick={()=>{navigate('/admin/books')}}>
-              <CIcon icon={cilArrowThickFromRight} /> Go Back
-        </CButton>
+      <CButton onClick={() => { navigate('/admin/books') }}>
+        <CIcon icon={cilArrowThickFromRight} /> Go Back
+      </CButton>
       <CRow>
         <CCol md={4}>
           <CCard className="mb-4">
-            <CCardImage 
-              orientation="top" 
+            <CCardImage
+              orientation="top"
               src={book?.images[0]?.secure_url}
               alt={book?.title || 'Book Cover'}
             />
@@ -65,12 +62,12 @@ const BookDetails = ({ }) => {
                 {book.images.slice(1).map((imageName, index) => (
                   <img
                     key={index}
-                    src={book?.images[index+1]?.secure_url}
+                    src={book?.images[index + 1]?.secure_url}
                     alt={`Book Image ${index + 2}`}
-                    style={{ 
-                      width: '100px', 
-                      height: '100px', 
-                      objectFit: 'cover' 
+                    style={{
+                      width: '100px',
+                      height: '100px',
+                      objectFit: 'cover'
                     }}
                     className="img-thumbnail"
                   />

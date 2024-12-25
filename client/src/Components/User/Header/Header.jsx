@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { getUserData, removeAuth, setCartItemsCount, setWishlistItemsCount } from '../../../redux/Actions/userActions';
-import { axiosAuthInstance, axiosBookInstance, axiosCartInstance, axiosUserInstance, axiosWishlistInstance } from '../../../redux/Constants/axiosConstants';
+import { removeAuth, setCartItemsCount, setWishlistItemsCount } from '../../../redux/Actions/userActions';
+import { axiosAuthInstance, axiosBookInstance, axiosCartInstance, axiosWishlistInstance } from '../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
-import { CListGroup, CListGroupItem } from '@coreui/react';
-import { bookImages } from '../../../redux/Constants/imagesDir';
 
 import './Header.css'
 import {
@@ -17,13 +15,10 @@ import {
   NavItem,
   Input,
   ListGroup,
-  ListGroupItem,
-  Badge,
-  Container
+  ListGroupItem
 } from 'reactstrap';
 
-const Header = ({ setSearchQuery }) => {
-  // Keep all your existing state and hooks
+const Header = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { isLoggedIn, userId } = useSelector(state => state.auth);
   const { cartCount } = useSelector(state => state.cartItemsCount);
@@ -35,21 +30,20 @@ const Header = ({ setSearchQuery }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchCartAndWishlistCount() {
       try {
-        const [cartResponse,wishlistResponse]=await Promise.all([
-           axiosCartInstance.get(`/${userId}/cart-items-count`),
-           axiosWishlistInstance.get(`/${userId}/wishlist-items-count`)
+        const [cartResponse, wishlistResponse] = await Promise.all([
+          axiosCartInstance.get(`/${userId}/cart-items-count`),
+          axiosWishlistInstance.get(`/${userId}/wishlist-items-count`)
         ])
         dispatch(setCartItemsCount(cartResponse?.data?.cartItemsCount))
         dispatch(setWishlistItemsCount(wishlistResponse?.data?.totalItems))
       } catch (err) {
         console.log(err)
-        //toast.error(err?.response?.data?.message)
       }
     }
-    
+
     if (userId) {
       fetchCartAndWishlistCount()
     }
@@ -75,15 +69,14 @@ const Header = ({ setSearchQuery }) => {
 
   const searchForProducts = async (e) => {
     try {
-        const value = e.target.value
-        setSearchedProduct(value)
-        const { data } = await axiosBookInstance.get(`/search/?title=${value}`)
-        setSearchedProducts(data.products)
+      const value = e.target.value
+      setSearchedProduct(value)
+      const { data } = await axiosBookInstance.get(`/search/?title=${value}`)
+      setSearchedProducts(data.products)
     } catch (err) {
-        console.log(err)
-        toast.error("Something Went Wrong")
+      toast.error("Something Went Wrong")
     }
-}
+  }
 
   return (
     <header className="header">
@@ -95,13 +88,11 @@ const Header = ({ setSearchQuery }) => {
             alt="website logo"
           />
         </NavbarBrand>
-        
         <NavbarToggler onClick={() => setMenuOpen(!isMenuOpen)} />
-        
         <Collapse isOpen={isMenuOpen} navbar>
           <Nav className="me-auto" navbar>
             <NavItem>
-              <Link 
+              <Link
                 to={'/'}
                 className={`nav-link ${activeTab === "Home" ? "active-link" : ""}`}
                 onClick={() => setActiveTab("Home")}
@@ -109,9 +100,9 @@ const Header = ({ setSearchQuery }) => {
                 Home
               </Link>
             </NavItem>
-            
+
             <NavItem>
-              <Link 
+              <Link
                 to={'/library'}
                 className={`nav-link ${activeTab === "Library" ? "active-link" : ""}`}
                 onClick={() => setActiveTab("Library")}
@@ -119,10 +110,10 @@ const Header = ({ setSearchQuery }) => {
                 Library
               </Link>
             </NavItem>
-            
+
             {isLoggedIn && (
               <NavItem>
-                <Link 
+                <Link
                   to='/account'
                   className={`nav-link ${activeTab === "Account" ? "active-link" : ""}`}
                   onClick={() => setActiveTab("Account")}
@@ -131,11 +122,11 @@ const Header = ({ setSearchQuery }) => {
                 </Link>
               </NavItem>
             )}
-            
+
             {!isLoggedIn && (
               <>
                 <NavItem>
-                  <Link 
+                  <Link
                     to='/register'
                     className={`nav-link ${activeTab === "SignUp" ? "active-link" : ""}`}
                     onClick={() => setActiveTab("SignUp")}
@@ -144,7 +135,7 @@ const Header = ({ setSearchQuery }) => {
                   </Link>
                 </NavItem>
                 <NavItem>
-                  <Link 
+                  <Link
                     to='/login'
                     className={`nav-link ${activeTab === "Login" ? "active-link" : ""}`}
                     onClick={() => setActiveTab("Login")}
@@ -154,10 +145,10 @@ const Header = ({ setSearchQuery }) => {
                 </NavItem>
               </>
             )}
-            
+
             {isLoggedIn && (
               <NavItem>
-                <Link 
+                <Link
                   onClick={handleLogOut}
                   className="nav-link"
                 >
@@ -166,7 +157,7 @@ const Header = ({ setSearchQuery }) => {
               </NavItem>
             )}
           </Nav>
-          
+
           <div className="header__search position-relative mb-3 mb-md-0">
             <Input
               type="text"
@@ -185,15 +176,15 @@ const Header = ({ setSearchQuery }) => {
                       navigate(`/book-details/${product._id}`)
                       setSearchedProduct('')
                       setSearchedProducts([])
-                      
+
                     }}
                     className="d-flex align-items-center"
                   >
-                    <img 
+                    <img
                       src={product.images[0].secure_url}
-                      alt="book-img" 
+                      alt="book-img"
                       className="me-2"
-                      style={{width: '30px'}}
+                      style={{ width: '30px' }}
                     />
                     {product.title}
                   </ListGroupItem>
@@ -201,7 +192,7 @@ const Header = ({ setSearchQuery }) => {
               </ListGroup>
             )}
           </div>
-          
+
           <div className="header__user-actions d-flex align-items-center mt-3 mt-md-0">
             <Link to={"/wishlist"} className="header__action-btn ms-2" title="Wishlist">
               <img src="/assets/img/icon-heart.svg" alt="Wishlist" />

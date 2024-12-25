@@ -23,7 +23,7 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
 
         const canvas = document.createElement('canvas');
         const image = imgRef.current;
-        
+
         const scaleX = image.naturalWidth / image.width;
         const scaleY = image.naturalHeight / image.height;
 
@@ -34,8 +34,8 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
             height: crop.height * scaleY,
         };
 
-        // Set output size to match the crop size while maintaining square shape
-        const outputSize = 300; // Fixed output size
+
+        const outputSize = 300;
         canvas.width = outputSize;
         canvas.height = outputSize;
 
@@ -60,17 +60,17 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
 
     const handleImageLoad = (image) => {
         imgRef.current = image;
-        
+
         if (!isInitialized) {
             const { width, height } = image;
-            
-            // Calculate initial size (1/3 of the smaller dimension)
+
+
             const initialSize = Math.min(width, height) / 3;
-            
-            // Calculate center position
+
+
             const x = (width - initialSize) / 2;
             const y = (height - initialSize) / 2;
-            
+
             const initialCrop = {
                 unit: 'px',
                 width: initialSize,
@@ -79,7 +79,7 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
                 y: y,
                 aspect: 1
             };
-            
+
             setCrop(initialCrop);
             setCompletedCrop(initialCrop);
             setIsInitialized(true);
@@ -93,7 +93,7 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
         setIsInitialized(false);
         imgRef.current = null;
     };
-    
+
     const handleClose = () => {
         resetStates();
         onClose();
@@ -101,18 +101,18 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
 
     const handlePreviewClick = () => {
         if (!completedCrop || !imgRef.current) return;
-        
+
         const canvas = generateCroppedImage(completedCrop, imgRef);
         if (!canvas) return;
 
         canvas.toBlob(
             (blob) => {
                 if (!blob) return;
-                
+
                 if (previewUrl) {
                     URL.revokeObjectURL(previewUrl);
                 }
-                
+
                 const newPreviewUrl = URL.createObjectURL(blob);
                 setPreviewUrl(newPreviewUrl);
             },
@@ -139,33 +139,32 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
     };
 
     const handleCropChange = (newCrop) => {
-        // Ensure the crop remains within the image bounds
         if (imgRef.current) {
             const { width: imgWidth, height: imgHeight } = imgRef.current;
-            
-            // Adjust crop if it exceeds image boundaries
+
+
             let adjustedCrop = { ...newCrop };
-            
+
             if (adjustedCrop.x < 0) adjustedCrop.x = 0;
             if (adjustedCrop.y < 0) adjustedCrop.y = 0;
-            
-            // Ensure crop doesn't exceed image dimensions
+
+
             if (adjustedCrop.x + adjustedCrop.width > imgWidth) {
                 adjustedCrop.width = imgWidth - adjustedCrop.x;
-                adjustedCrop.height = adjustedCrop.width; // Maintain square
+                adjustedCrop.height = adjustedCrop.width;
             }
             if (adjustedCrop.y + adjustedCrop.height > imgHeight) {
                 adjustedCrop.height = imgHeight - adjustedCrop.y;
-                adjustedCrop.width = adjustedCrop.height; // Maintain square
+                adjustedCrop.width = adjustedCrop.height;
             }
-            
-            // Set minimum size
-            const minSize = 50; // Minimum size in pixels
+
+
+            const minSize = 50
             if (adjustedCrop.width < minSize) {
                 adjustedCrop.width = minSize;
                 adjustedCrop.height = minSize;
             }
-            
+
             setCrop(adjustedCrop);
         } else {
             setCrop(newCrop);
@@ -179,12 +178,12 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
                     <div className="react-crop-container">
                         <div>
                             <div>
-                            <h3>Crop Image</h3>
-                            <button onClick={handleSaveClick} className='crop-btn'>
-                            Save
-                        </button>
+                                <h3>Crop Image</h3>
+                                <button onClick={handleSaveClick} className='crop-btn'>
+                                    Save
+                                </button>
                             </div>
-                           
+
                             <ReactCrop
                                 crop={crop}
                                 onChange={handleCropChange}
@@ -192,8 +191,8 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
                                     setCompletedCrop(c);
                                 }}
                                 aspect={1}
-                                minWidth={50}     // Minimum size allowed
-                                ruleOfThirds     // Adds rule of thirds grid
+                                minWidth={50}
+                                ruleOfThirds
                             >
                                 <img
                                     ref={imgRef}
@@ -204,22 +203,17 @@ const CropImage = ({ isOpen, imageSrc, onClose, onCropComplete }) => {
                                 />
                             </ReactCrop>
                         </div>
-                        
+
                         {previewUrl && (
                             <div className="preview-container">
                                 <h4>Preview:</h4>
-                                <img 
-                                    src={previewUrl} 
-                                    alt="Preview" 
+                                <img
+                                    src={previewUrl}
+                                    alt="Preview"
                                     className='preview-img'
                                 />
                             </div>
                         )}
-                    </div>
-
-                    <div className="button-container crop-btn-container">
-                        
-                        
                     </div>
                 </div>
             </div>

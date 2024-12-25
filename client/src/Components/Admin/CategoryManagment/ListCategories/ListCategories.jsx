@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './ListCategories.css';
 import { Col, Container, Row } from 'reactstrap';
-import { axiosAdminInstance, axiosCategoryInstance, axiosUserInstance } from '../../../../redux/Constants/axiosConstants'
-import CategoryForm from '../CategoryForm/CategoryForm';
-import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
+import {  axiosCategoryInstance } from '../../../../redux/Constants/axiosConstants'
+import ConfirmationModal from '../../../CommonComponents/ConfirmationModal/ConfirmationModal';
 import { CButton, CTable } from '@coreui/react';
 import { toast } from 'react-toastify';
-import CIcon from '@coreui/icons-react';
-import { cilArrowThickFromRight } from '@coreui/icons';
 import { useNavigate } from 'react-router-dom';
 
 const CategoryManagement = () => {
-  const [categories, setCategories] = useState([]);
-  const [categoryData, setCategoryData] = useState({})
-  const [err, setErr] = useState("")
+  const [categories, setCategories] = useState([])
   const [isChildUpdated, setIsChildUpdated] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [currentAction, setCurrrentAction] = useState("list-categories")
@@ -27,16 +22,13 @@ const CategoryManagement = () => {
           setCategories(response.data.categories)
         }
       } catch (err) {
-        setErr(err.response.data.message)
+        toast.error(err.response.data.message)
       }
     }
     fetchCategories()
 
   }, [isChildUpdated])
 
-  const handleChildUpdate = (updated) => {
-    setIsChildUpdated(!isChildUpdated);
-  };
 
   const handleCategoryListing = async () => {
     try {
@@ -47,19 +39,9 @@ const CategoryManagement = () => {
         })
       })
     } catch (err) {
-      setErr(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message)
     } finally {
       setSelectedCategoryId(null)
-    }
-  };
-  const showUpdateForm = async (id) => {
-    try {
-      const response = await axiosCategoryInstance.get(`/${id}`)
-      console.log(response.data.categoryData)
-      setCategoryData(response.data.categoryData)
-      setCurrrentAction("update")
-    } catch (err) {
-      toast.error("Something went Wrong")
     }
   }
   const handleSearch = async (e) => {
@@ -132,7 +114,6 @@ const CategoryManagement = () => {
                             <tr key={category._id}>
                               <td>
                                 <img src={category.image.secure_url} alt="Category" className="category-image" />
-
                               </td>
                               <td>{category.name}</td>
                               <td>{category.createdAt}</td>

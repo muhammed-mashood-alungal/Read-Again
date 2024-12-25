@@ -6,9 +6,9 @@ import WishlistItems from '../../Components/User/WishlistItems/WishlistItems'
 function WishlistPage() {
   return (
     <>
-    <Header/>
-    <WishlistItems/>
-    <Footer/>
+      <Header />
+      <WishlistItems />
+      <Footer />
     </>
   )
 }

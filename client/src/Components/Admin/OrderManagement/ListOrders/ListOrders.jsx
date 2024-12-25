@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import OrderDetails from '../OrderDetails/OrderDetails';
 import { Col, Container, Row } from 'reactstrap';
 import { axiosOrderInstance } from '../../../../redux/Constants/axiosConstants';
 import { toast } from 'react-toastify';
-import ConfirmationModal from '../../../ConfirmationModal/ConfirmationModal';
-import {  CCard, 
-  CCardBody, 
-  CCardHeader, 
-  CCol, 
-  CFormCheck, 
-  CRow ,
-  CTable ,
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CFormCheck,
+  CRow,
+  CTable,
   CButton
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilArrowThickFromRight } from '@coreui/icons';
 import { useNavigate } from 'react-router-dom';
 function ListOrders() {
   const [orders, setOrders] = useState([])
-  const [showOrderDetails, setShowOrderDetails] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [selectedOrder, setSelectedOrder] = useState({})
-  const [showModal, setShowModal] = useState(false)
   const [orderStatus, setOrderStatus] = useState('all')
   const [paymentStatus, setPaymentStatus] = useState('all')
   const limit = 10
@@ -35,17 +29,15 @@ function ListOrders() {
         let pages = Math.ceil(data?.totalOrders / limit)
         setTotalPages(pages)
       } catch (err) {
-        console.log(err)
         toast.error(err?.response?.data?.message)
       }
     }
     fetchAllOrders()
-  }, [currentPage,orderStatus,paymentStatus])
+  }, [currentPage, orderStatus, paymentStatus])
+
   return (
     <Container className='content'>
-
       <Row className="category-management">
-
         <Col>
           <div className="row p-3">
             <div className="col-12 grid-margin">
@@ -63,78 +55,78 @@ function ListOrders() {
                         </CCardHeader>
                         <CCardBody>
                           <CRow>
-                          <CCol>
-                          <div className="d-grid gap-2">
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusAll"
-                              label="All"
-                              checked={orderStatus === 'all'}
-                              onChange={() => setOrderStatus('all')}
-                            />
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusOrdered"
-                              label="Ordered"
-                              checked={orderStatus === 'ordered'}
-                              onChange={() => setOrderStatus('ordered')}
-                            />
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusShipped"
-                              label="Shipped"
-                              checked={orderStatus === 'shipped'}
-                              onChange={() => setOrderStatus('shipped')}
-                            />
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusDelivered"
-                              label="Delivered"
-                              checked={orderStatus === 'delivered'}
-                              onChange={() => setOrderStatus('delivered')}
-                            />
-                          </div>
-                          </CCol>
-                          <CCol>
-                          <div className="d-grid gap-2">
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusOrdered"
-                              label="Canceled"
-                              checked={orderStatus === 'canceled'}
-                              onChange={() => setOrderStatus('canceled')}
-                            />
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusShipped"
-                              label="Returned"
-                              checked={orderStatus === 'returned'}
-                              onChange={() => setOrderStatus('returned')}
-                            />
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusDelivered"
-                              label="Return Requested"
-                              checked={orderStatus === 'return requested'}
-                              onChange={() => setOrderStatus('return requested')}
-                            />
-                            <CFormCheck
-                              type="radio"
-                              name="orderStatus"
-                              id="orderStatusDelivered"
-                              label="Return Rejected"
-                              checked={orderStatus === 'return rejected'}
-                              onChange={() => setOrderStatus('return rejected')}
-                            />
-                          </div>
-                          </CCol>
+                            <CCol>
+                              <div className="d-grid gap-2">
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusAll"
+                                  label="All"
+                                  checked={orderStatus === 'all'}
+                                  onChange={() => setOrderStatus('all')}
+                                />
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusOrdered"
+                                  label="Ordered"
+                                  checked={orderStatus === 'ordered'}
+                                  onChange={() => setOrderStatus('ordered')}
+                                />
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusShipped"
+                                  label="Shipped"
+                                  checked={orderStatus === 'shipped'}
+                                  onChange={() => setOrderStatus('shipped')}
+                                />
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusDelivered"
+                                  label="Delivered"
+                                  checked={orderStatus === 'delivered'}
+                                  onChange={() => setOrderStatus('delivered')}
+                                />
+                              </div>
+                            </CCol>
+                            <CCol>
+                              <div className="d-grid gap-2">
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusOrdered"
+                                  label="Canceled"
+                                  checked={orderStatus === 'canceled'}
+                                  onChange={() => setOrderStatus('canceled')}
+                                />
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusShipped"
+                                  label="Returned"
+                                  checked={orderStatus === 'returned'}
+                                  onChange={() => setOrderStatus('returned')}
+                                />
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusDelivered"
+                                  label="Return Requested"
+                                  checked={orderStatus === 'return requested'}
+                                  onChange={() => setOrderStatus('return requested')}
+                                />
+                                <CFormCheck
+                                  type="radio"
+                                  name="orderStatus"
+                                  id="orderStatusDelivered"
+                                  label="Return Rejected"
+                                  checked={orderStatus === 'return rejected'}
+                                  onChange={() => setOrderStatus('return rejected')}
+                                />
+                              </div>
+                            </CCol>
                           </CRow>
                         </CCardBody>
                       </CCard>
@@ -206,8 +198,6 @@ function ListOrders() {
                               <td>{order.totalAmount}</td>
                               <td>
                                 <CButton onClick={() => {
-                                  // setSelectedOrder(order)
-                                  // setShowOrderDetails(true)
                                   navigate('/admin/orders/view', { state: { selectedOrder: order } })
                                 }}
                                   color="info" variant="outline"

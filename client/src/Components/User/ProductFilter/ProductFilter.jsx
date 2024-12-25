@@ -3,50 +3,50 @@ import './ProductFilter.css'
 import { toast } from 'react-toastify';
 import { axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilter , faAngleDown ,faAngleUp } from '@fortawesome/free-solid-svg-icons'
+import { faFilter, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'
 import { useSearchParams } from 'react-router-dom';
 
 
-const ProductFilter = ({ onFilter ,setSearchQuery}) => {
+const ProductFilter = ({ onFilter, setSearchQuery }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState("")
-  const [searchParams, setSearchParams] = useSearchParams();
-  
-    const queryCategory = searchParams.get('category') 
-    useEffect(()=>{
-      if(queryCategory){
-        setActiveFilters({...activeFilters,category:queryCategory})
-      }
-    },[])
+  const [searchParams, setSearchParams] = useSearchParams()
+  const queryCategory = searchParams.get('category')
+
+  useEffect(() => {
+    if (queryCategory) {
+      setActiveFilters({ ...activeFilters, category: queryCategory })
+    }
+  }, [])
+
   const [activeFilters, setActiveFilters] = useState({
     sort: 'Default',
     price: {},
     category: 'All'
   });
-  const [categories , setCategories] = useState([])
+  const [categories, setCategories] = useState([])
 
-  useEffect(()=>{
-    async function fetchCategories(){
-      try{
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
         const response = await axiosCategoryInstance.get('/listed')
-        if(response.status == 200){
-          setCategories([{name:"All"},...response.data.categories])
+        if (response.status == 200) {
+          setCategories([{ name: "All" }, ...response.data.categories])
         }
-       }catch(err){
-          toast.error(err?.response?.data?.message || "Something Went Wrong")
-       }
+      } catch (err) {
+        toast.error(err?.response?.data?.message || "Something Went Wrong")
+      }
     }
     fetchCategories()
-  },[])
+  }, [])
 
 
   useEffect(() => {
-    console.log(activeFilters)
     onFilter(`?sortBy=${activeFilters.sort}&price=${JSON.stringify(activeFilters.price)}&category=${activeFilters.category}`)
   }, [activeFilters])
-  useEffect(()=>{
+  useEffect(() => {
     setSearchQuery(search)
-  },[search])
+  }, [search])
 
   const sortOptions = [
     'Default',
@@ -66,50 +66,28 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
     ['₹500.00 - ₹1000.00', { $gt: 500, $lt: 1000 }],
     ['₹1000.00+', { $gt: 1000 }]
   ];
-  
 
-  const authorTypes = [
-    'Award Winner',
-    'Highly recommended',
-    'New Author'
-  ];
 
-  const topFilters = ['language', 'Format', 'Language', 'Age Group'];
-  
-  
 
   return (
 
     <div className="filter-container container mt-3">
       {
-       
-          <button onClick={() => { setIsOpen(!isOpen) }} className="chip">
-            
-            <FontAwesomeIcon icon={faFilter} />  Filter {
-              isOpen ?   <FontAwesomeIcon icon={faAngleUp} /> :  <FontAwesomeIcon icon={faAngleDown} />
-            }
-            
-          </button>
+        <button onClick={() => { setIsOpen(!isOpen) }} className="chip">
+          <FontAwesomeIcon icon={faFilter} />  Filter {
+            isOpen ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />
+          }
+        </button>
       }
       {
         isOpen &&
 
         <>
           <div className="filter-header">
-            {/* <div className="top-filters">
-              {topFilters.map(filter => (
-                <button key={filter} className="chip">
-                  {filter}
-                </button>
-              ))}
-            </div> */}
-            {/* <button className="trending-button">
-              Trending
-            </button> */}
-             <input
+            <input
               type="text"
               value={search}
-              onChange={(e)=>{setSearch(e.target.value)}}
+              onChange={(e) => { setSearch(e.target.value) }}
               placeholder="Search For Items..."
               className="form__input mt-3"
             />
@@ -137,24 +115,24 @@ const ProductFilter = ({ onFilter ,setSearchQuery}) => {
             <div className="filter-section">
               <h3>Price</h3>
               <div className="options-list">
-  {priceRanges.map(range => (
-    <label key={range[0]} className="option-item">
-      <input
-        type="radio"
-        name="price"
-        value={JSON.stringify(range[1])} // Serialize value
-        checked={JSON.stringify(activeFilters.price) === JSON.stringify(range[1])} // Compare serialized strings
-        onChange={(e) =>
-          setActiveFilters({
-            ...activeFilters,
-            price: JSON.parse(e.target.value) // Parse back into an object
-          })
-        }
-      />
-      {range[0]}
-    </label>
-  ))}
-</div>
+                {priceRanges.map(range => (
+                  <label key={range[0]} className="option-item">
+                    <input
+                      type="radio"
+                      name="price"
+                      value={JSON.stringify(range[1])}
+                      checked={JSON.stringify(activeFilters.price) === JSON.stringify(range[1])}
+                      onChange={(e) =>
+                        setActiveFilters({
+                          ...activeFilters,
+                          price: JSON.parse(e.target.value)
+                        })
+                      }
+                    />
+                    {range[0]}
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="filter-section">

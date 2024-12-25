@@ -5,7 +5,7 @@ import ProductDetails from '../../Components/User/ProductDetails/ProductDetails'
 import { useParams } from 'react-router-dom'
 import { axiosBookInstance } from '../../redux/Constants/axiosConstants'
 import ProductList from '../../Components/User/ProductsList/ProductsList'
-import Breadcrumb from '../../Components/User/Breadcrumb/Breadcrump'
+import { toast } from 'react-toastify'
 
 function DetailsPage() {
   const {bookId} = useParams()
@@ -16,9 +16,8 @@ function DetailsPage() {
       try{
         const response = await axiosBookInstance.get(`/${bookId}`)
         setBookData(response.data.bookData)
-        console.log(response.data.bookData)
       }catch(err){
-        console.log(err)
+        toast.error(err)
       }
     }
     fetchBookDetails(bookId)
@@ -33,9 +32,7 @@ function DetailsPage() {
         ]
 
         const response = await axiosBookInstance.post(`/list/related-books/${bookId}`,{tags})
-        console.log(response.data.books)
         setRelated(response.data.books)
-        console.log(response.data.books)
       }catch(err){
         console.log(err)
       }
@@ -46,7 +43,6 @@ function DetailsPage() {
   return (
     <>
      <Header/>
-     {/* <Breadcrumb idName={bookData.title}/> */}
      <ProductDetails bookData={bookData}/>
      <Suspense fallback={<h1>loading...</h1>}>  
      <ProductList books={related} title={'Related Books'}/>

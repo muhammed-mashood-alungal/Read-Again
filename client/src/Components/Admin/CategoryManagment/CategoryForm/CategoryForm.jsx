@@ -19,7 +19,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import { cilArrowThickFromRight } from '@coreui/icons';
 
-const CategoryForm = ({ onChildUpdate}) => {
+const CategoryForm = () => {
   const location = useLocation()
   const categoryData= location?.state?.categoryData
   const [name, setName] = useState("")
@@ -68,22 +68,17 @@ const CategoryForm = ({ onChildUpdate}) => {
       formData.append("name",name)
       
       
-      console.log(formData)
-      const token=localStorage.getItem("token")
       const response = await axiosCategoryInstance.post('/create',formData,{
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
         }
-      });
-      console.log(response.data)
+      })
       if(response.status ==200){
         navigate('/admin/category')
         toast.success("Created Successfully")
         
       }
     }catch(err){
-      console.log(err)
       toast.error(err?.response?.data?.message)
     }
   };
@@ -102,22 +97,14 @@ const CategoryForm = ({ onChildUpdate}) => {
       if (image) {
         formData.append('image', image)
       }
-      
-      console.log(categoryData._id)
       const token= localStorage.getItem("token")
-      const response = await axiosCategoryInstance.put(`/${categoryData._id}/edit`,formData,{
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      console.log(response.data)
+      const response = await axiosCategoryInstance.put(`/${categoryData._id}/edit`,formData)
       if(response.status ==200){
         navigate('/admin/category')
         toast.success("Category Saved Successfully")
         setIsCreateForm(true)
       }
     }catch(err){
-      console.log(err)
       toast.error(err?.respons?.data?.message)
     }
   };
@@ -143,21 +130,16 @@ const CategoryForm = ({ onChildUpdate}) => {
         setIsModalOpen(true);
  }
  const handleCropComplete = (croppedImage) => {
- console.log(croppedImage)
   setImage(croppedImage)
   setImageUrl(URL.createObjectURL(croppedImage))
-  setIsModalOpen(false);
-  // Update imageUrls array
+  setIsModalOpen(false)
   if(!isCreateForm){
     const oldUrl = URL.createObjectURL(selectedImage)
     const formData = new FormData()
     formData.append("oldUrl",oldUrl)
     formData.append("newImage",croppedImage)
-   // axiosBookInstance.put('/update-book-image',formData)
-    
   }
-  
-};
+}
   
 
 return (

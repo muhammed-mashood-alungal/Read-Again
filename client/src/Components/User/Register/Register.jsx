@@ -42,10 +42,8 @@ const Register = () => {
   };
 
   const handleRegister =async (e) => {
-    console.log(formData)
     e.preventDefault();
    const result =await  validateRegister(formData)
-   console.log(result)
    if(!result.success){
     toast.error(result.message);
    }else{
@@ -60,7 +58,6 @@ const Register = () => {
       <Row className="justify-content-center align-items-center register-div">
         <Col xs="10" sm="8" md="6" lg="4" className="register bg-white p-4 shadow rounded">
           <h3 className="text-center mb-4">Create an Account</h3>
-   
           <Form onSubmit={handleRegister}>
             <FormGroup>
               <input

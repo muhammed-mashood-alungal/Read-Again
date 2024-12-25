@@ -5,49 +5,34 @@ import {
   CCardHeader,
   CCol,
   CContainer,
-  CRow,
-  CButton,
-  CForm,
-  CFormInput,
-  CFormSelect,
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CBadge
+  CRow
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { 
-  cilCart, 
-  cilDollar, 
-  cilChartLine, 
-  cilFolderOpen, 
-  cilFilter 
+import {
+  cilCart,
+  cilDollar,
+  cilChartLine
 } from '@coreui/icons';
-import Chart from './Chart';
 
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
 import SalesReport from './SalesReport';
 import { toast } from 'react-toastify';
 import TopSales from './TopSales';
-//import { CChartLine } from '@coreui/coreui-chartjs-react';
 
 const Dashboard = () => {
-  
-   const [overall,setOverall] = useState({})
-   useEffect(()=>{
-     const fetchOverallState=async()=>{
-        try{
-          const {data} = await axiosAdminInstance.get('/overall-stats')
-          setOverall(data.overall)
-        }catch(err){
-            toast.error(err?.response?.data?.message)
-        }
-     }
-     fetchOverallState()
-   },[])
+
+  const [overall, setOverall] = useState({})
+  useEffect(() => {
+    const fetchOverallState = async () => {
+      try {
+        const { data } = await axiosAdminInstance.get('/overall-stats')
+        setOverall(data.overall)
+      } catch (err) {
+        toast.error(err?.response?.data?.message)
+      }
+    }
+    fetchOverallState()
+  }, [])
 
   return (
     <CContainer>
@@ -57,7 +42,7 @@ const Dashboard = () => {
         </CCol>
       </CRow>
 
-      {/* Key Metrics */}
+
       <CRow>
         <CCol sm={3}>
           <CCard>
@@ -105,23 +90,23 @@ const Dashboard = () => {
         </CCol>
       </CRow>
 
-      {/* Sales Report Section */}
+
       <CRow className="mt-4">
         <CCol>
           <CCard>
             <CCardHeader>Sales Report</CCardHeader>
             <CCardBody>
-          
+
               <CCard className='mt-3'>
-                 <SalesReport/>
+                <SalesReport />
               </CCard>
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
-     <CCard className='mt-3'>
-      <TopSales/>
-     </CCard>
+      <CCard className='mt-3'>
+        <TopSales />
+      </CCard>
     </CContainer>
   );
 };
