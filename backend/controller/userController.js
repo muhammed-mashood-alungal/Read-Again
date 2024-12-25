@@ -429,7 +429,7 @@ module.exports = {
       if(!wallet){
        return  res.status(200).json({ success: true, wallet: {balance:0 , transactions:[]} })
       }
-      const transactions = await Transactions.find({ walletId: wallet._id }).populate("associatedOrder")
+      const transactions = await Transactions.find({ walletId: wallet._id }).populate("associatedOrder").sort({createdAt:-1})
       const walletData = wallet.toObject()
       walletData.transactions = transactions
       res.status(200).json({ success: true, wallet: walletData })

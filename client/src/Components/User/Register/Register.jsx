@@ -107,7 +107,7 @@ const Register = () => {
               Submit & Register
             </button><br />
             
-            <Link to={'/login'}>Already Have an Account ? </Link>
+            <Link to={'/login'} className='no-underline'>Already Have an Account ? </Link>
           </Form>
           <Link to="http://localhost:5000/api/users/auth/google" className='no-underline'>
             <GoogleSignInButton/>

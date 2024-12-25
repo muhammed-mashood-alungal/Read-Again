@@ -14,8 +14,6 @@ import { userLogin } from '../../../redux/Actions/userActions';
 import { useNavigate  ,Link, useLocation} from 'react-router-dom';
 import GoogleSignInButton from '../GoogleButton/GoogleButton';
 import {  toast } from 'react-toastify';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse } from '@fortawesome/free-solid-svg-icons'
 import { validateLogin } from '../../../validations/loginValidation';
 
 const UserLogin = () => {
@@ -82,9 +80,9 @@ const UserLogin = () => {
               Login
             </Button>
             <br />
-            <Link to={"/forgotten-password/verify"}>Forgotten Password ? </Link>
+            <Link to={"/forgotten-password/verify"} className='no-underline'>Forgotten Password ? </Link>
             <br />
-            <Link to={"/register"}>Create An Account</Link>
+            <Link to={"/register"} className='no-underline'>Create An Account</Link>
           </Form>
           <Link to="http://localhost:5000/api/users/auth/google" className='no-underline'>
             <GoogleSignInButton/>

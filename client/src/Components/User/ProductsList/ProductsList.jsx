@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, addToWishlist } from '../../../redux/Actions/userActions';
 import { toast } from 'react-toastify';
 import { Rating, Stack } from '@mui/material';
+import ProductLoading from '../../ProductsLoading';
 const ProductList = ({books,title}) => {
 
   const {userId} = useSelector(state=>state.auth)
@@ -54,7 +55,7 @@ const ProductList = ({books,title}) => {
         <h3 className="section__title">
         <span>{title}</span>
          </h3>
-          {books?.length > 0  && books?.map((book, index) => (
+          {books?.length > 0  ? books?.map((book, index) => (
             <Col key={book._id} md="4" lg="3" xs="6"className="mb-4">
               <Link to={`/book-details/${book._id}`} className='no-underline'>
               <div className="product__item">
@@ -84,7 +85,7 @@ const ProductList = ({books,title}) => {
               </div>
               </Link>
             </Col>
-          ))}
+          )) : <ProductLoading/> }
         </Row>
       </section>
     </Container>

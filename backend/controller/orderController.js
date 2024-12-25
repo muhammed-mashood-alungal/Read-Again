@@ -43,6 +43,9 @@ module.exports = {
             } else {
                 delete orderDetails.coupon
             }
+           
+            const response = await Order.create({ userId, ...orderDetails, shippingAddress })
+            const cart = await Cart.findOne({ userId })
             if(orderDetails.paymentMethod == "Wallet"){
                 const wallet = await Wallet.findOne({userId})
                 if(!wallet){
@@ -51,12 +54,19 @@ module.exports = {
                 if(wallet.balance < orderDetails.payableAmount){
                   return res.status(400).json({ success: false, message: " Wallet Haven't Sufficient balance" })
                 }
+                var newTransaction=  await Transaction.create({
+                    userId,
+                    walletId:wallet._id,
+                    type:"debit" , 
+                    amount : orderDetails.payableAmount ,
+                    associatedOrder:response._id
+                })
                 wallet.balance -= orderDetails.payableAmount
-                orderDetails.paymentStatus= "Success"
+                
+                response.paymentStatus= "Success"
+                await response.save()
                 await wallet.save()
               }
-            const response = await Order.create({ userId, ...orderDetails, shippingAddress })
-            const cart = await Cart.findOne({ userId })
            
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })

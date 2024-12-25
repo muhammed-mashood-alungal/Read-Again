@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import Header from '../../Components/User/Header/Header'
-import ProductList from '../../Components/User/ProductsList/ProductsList'
+
 import Footer from '../../Components/User/Footer/Footer'
 import ProductFilter from '../../Components/User/ProductFilter/ProductFilter'
 import Breadcrumbs from '../../Components/User/Breadcrumb/Breadcrump'
 import { axiosBookInstance } from '../../redux/Constants/axiosConstants'
+import ProductLoading from '../../Components/ProductsLoading'
+import { Container } from 'reactstrap'
 function LibraryPage() {
-  const [justPublished, setJustPublished] = useState([])
+  const [filteredBooks, setFilteredBooks] = useState([])
   const [filterQuery, setFilterQuery] = useState('')
   const [searchQuery, setSearchQuery] = useState("")
   const [count, setCount] = useState(0)
@@ -20,7 +22,7 @@ function LibraryPage() {
         console.log(response.data.books)
         let pages= Math.ceil(response?.data?.totalBooks/limit)
         setTotalPages(pages)
-        setJustPublished(response.data.books)
+        setFilteredBooks(response.data.books)
       } catch (err) {
         console.log(err)
       }
@@ -35,7 +37,7 @@ function LibraryPage() {
 
   const onSearch = (name) => {
     if (name.trim()) {
-      setJustPublished(books => {
+      setFilteredBooks(books => {
         return books.filter((book) => {
           return book.title.includes(name)
         })
@@ -45,16 +47,19 @@ function LibraryPage() {
     }
 
   }
+  const ProductList = React.lazy(() => import('../../Components/User/ProductsList/ProductsList'))
   return (
     <>
       <Header />
-      {/* <Breadcrumbs/> */}
       <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} />
+      <Suspense fallback={<ProductLoading/>}>
+     
       {
-        justPublished.length > 0 ?
-        <ProductList books={justPublished} title={''} /> :
-        <h2 className='empty-msg m-5'>No Books Found </h2>
+        filteredBooks.length > 0 ?
+        <ProductList books={filteredBooks} title={''} /> :
+          <h5 className='empty-msg'>No Products Found</h5>
       }
+       </Suspense>
      
       <div className="text-center">
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>

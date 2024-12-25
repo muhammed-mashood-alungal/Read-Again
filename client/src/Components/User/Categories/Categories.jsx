@@ -3,6 +3,7 @@ import './Categories.css';
 import { axiosAdminInstance, axiosCategoryInstance } from '../../../redux/Constants/axiosConstants';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, CardImg, Col, Row } from 'reactstrap';
+import CategoryLoading from '../../CategoryLoading';
 
 const CategoriesSection = () => {
   const [categories,setCategories] = useState([])
@@ -23,9 +24,13 @@ const CategoriesSection = () => {
       <h3 className="section__title">
         <span>Popular</span> Categories
       </h3>
+      {
+        categories.length == 0 && <CategoryLoading/>
+      }
       <div className="categories__container">
       <Row className="justify-content-between g-4">
-      {categories?.map((category) => (
+        
+      { categories.length > 0 && categories?.map((category) => (
         <Col xs="6" md="2" key={category.name}>
           <Link 
             to={`/library/?category=${category.name}`} 
@@ -46,7 +51,7 @@ const CategoriesSection = () => {
             </Card>
           </Link>
         </Col>
-      ))}
+      ))  }
     </Row>
       
       </div>

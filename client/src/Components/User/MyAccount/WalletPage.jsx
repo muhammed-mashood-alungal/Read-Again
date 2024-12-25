@@ -41,7 +41,8 @@ const WalletPage = ({}) => {
           const response = await axiosUserInstance.get(`/wallet/${userId}`);
           setWallet(response?.data?.wallet);
         } catch (err) {
-           toast.error(err?.response?.data?.message);
+          console.log(err)
+          // toast.error(err?.response?.data?.message);
         }
       }
         getUserWallet();

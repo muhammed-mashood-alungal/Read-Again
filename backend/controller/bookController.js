@@ -182,7 +182,7 @@ module.exports = {
     async getJustPublishedBooks(req, res) {
         try {
             const books = await Book.find({ isDeleted: false, "formats.physical.stock": { $gt: 0 } }).populate("appliedOffer")
-                .sort({ createdAt: -1 }).limit(8)
+            .sort({ createdAt: -1 }).limit(8)
             res.status(200).json({ books: books })
         } catch (err) {
             console.log(err)
