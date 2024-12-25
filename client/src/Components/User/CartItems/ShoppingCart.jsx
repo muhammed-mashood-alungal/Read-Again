@@ -142,7 +142,7 @@ const ShoppingCart = () => {
     navigate('/checkout', { state: { cart } })
   }
   const getPrice = (book) => {
-    console.log(book?.appliedOffer?.isActive)
+   
     if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
       return book.formats.physical.offerPrice
     }
@@ -214,9 +214,9 @@ const ShoppingCart = () => {
 
                         </td>
                         <td
-                          className={`${item?.productId?.stockStatus == "Stock Out" && "stock-out"}
-                          ${item?.productId?.stockStatus == "Hurry Up" && 'hurry-up'}
-                          ${item?.productId?.stockStatus == "In Stock" && 'in-stock'}`
+                          className={`${item?.productId?.stockStatus == "Stock Out" && "prod-stock-out"}
+                          ${item?.productId?.stockStatus == "Hurry Up" && 'prod-hurry-up'}
+                          ${item?.productId?.stockStatus == "In Stock" && 'prod-in-stock'}`
                           }
                         >{item?.productId?.stockStatus}</td>
                         <td>

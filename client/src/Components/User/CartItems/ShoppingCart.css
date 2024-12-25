@@ -9,3 +9,13 @@
     padding: 10px;
     border-radius: 15px;
 }
+
+.prod-stock-out{
+    color:red !important;
+  }
+  .prod-hurry-up{
+    color:#f58b00 !important;
+  }
+  .prod-in-stock{
+    color: green !important;
+  }

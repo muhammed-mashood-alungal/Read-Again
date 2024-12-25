@@ -41,10 +41,17 @@ module.exports={
         }
     },
     async getUserWishlist(req,res){
-        try{
+        try{ 
             const {userId} = req.params
-            console.log(userId)
-            const wishlist = await Wishlist.findOne({userId}).populate("items")
+          const wishlist = await Wishlist.findOne({ userId })
+            .populate({
+                path: "items",
+                populate: {
+                    path: "appliedOffer", 
+                    model: "Offer",
+                },
+            });
+            console.log(wishlist)
             res.status(200).json({success:true , wishlist : wishlist.items})
         }catch(err){
             res.status(400).json({message:"Something Went Wrong "})

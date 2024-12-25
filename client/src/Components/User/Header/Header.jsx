@@ -181,7 +181,12 @@ const Header = ({ setSearchQuery }) => {
                   <ListGroupItem
                     key={product._id}
                     action
-                    onClick={() => navigate(`/book-details/${product._id}`)}
+                    onClick={() => {
+                      navigate(`/book-details/${product._id}`)
+                      setSearchedProduct('')
+                      setSearchedProducts([])
+                      
+                    }}
                     className="d-flex align-items-center"
                   >
                     <img 

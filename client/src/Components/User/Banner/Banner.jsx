@@ -1,6 +1,8 @@
 import React from 'react'; 
+import { Link } from 'react-router-dom';
 
 const Banner = () => {
+  
   return (
     <section className="home section--lg">
       <div className="home__container container grid">
@@ -12,7 +14,10 @@ const Banner = () => {
           <p className="home__description">
             Save more with coupons & up to 20% off
           </p>
-          <button href="#" className="primary-btn">Shop Now</button>
+          <Link to={'/library'}>
+          <button className="primary-btn">Shop Now</button>
+          </Link>
+         
         </div>
         <img src="assets/img/creative-composition-world-book-day_23-2148883765.png" className="home__img" alt="hats" />
       </div>

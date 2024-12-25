@@ -139,7 +139,7 @@ const OrderInvoicePDF = ({ orderData }) => (
         {orderData.coupon && (
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Coupon Discount :</Text>
-            <Text style={styles.summaryValue}>-{orderData?.totalAmount?.toFixed(2) - orderData?.totalAmount?.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>-{orderData?.totalAmount?.toFixed(2) - orderData?.payableAmount?.toFixed(2)}</Text>
           </View>
         )}
          <View style={[styles.summaryRow, { marginTop: 5, borderTopWidth: 1 }]}>

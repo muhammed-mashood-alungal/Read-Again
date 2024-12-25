@@ -14,27 +14,27 @@ module.exports = {
         try {
             const { userId } = req.params
             const orderDetails = req.body
-            if(orderDetails.paymentMethod == "COD" && orderDetails.payableAmount > 1000){
-              return  res.status(400).json({message:"Cash On delivery Not Available for Order above Rs 1000"})
+            if (orderDetails.paymentMethod == "COD" && orderDetails.payableAmount > 1000) {
+                return res.status(400).json({ message: "Cash On delivery Not Available for Order above Rs 1000" })
             }
             const address = await Address.findOne({ userId, isDefault: true })
-            if(!address){
-                return res.status(400).json({message:"Address Not Found"})
+            if (!address) {
+                return res.status(400).json({ message: "Address Not Found" })
             }
             const shippingAddress = getAddressString(address)
-            const user = await User.findOne({_id:userId})
-            
+            const user = await User.findOne({ _id: userId })
+
             if (orderDetails.coupon) {
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
-                 orderDetails.totalDiscount = orderDetails.totalAmount - orderDetails.payableAmount 
-                 console.log(orderDetails.totalDiscount)
+                orderDetails.totalDiscount = orderDetails.totalAmount - orderDetails.payableAmount
+                console.log(orderDetails.totalDiscount)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
-                } else { 
-                    if(user.usedCoupons.includes(couponData._id)){
-                    return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
+                } else {
+                    if (user.usedCoupons.includes(couponData._id)) {
+                        return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} coupon is Already Once Used.` })
                     }
-                    user.usedCoupons =[...user.usedCoupons,couponData._id]
+                    user.usedCoupons = [...user.usedCoupons, couponData._id]
                     couponData.currentUsage += 1
                     await user.save()
                     await couponData.save()
@@ -43,46 +43,46 @@ module.exports = {
             } else {
                 delete orderDetails.coupon
             }
-           
+
             const response = await Order.create({ userId, ...orderDetails, shippingAddress })
             const cart = await Cart.findOne({ userId })
-            if(orderDetails.paymentMethod == "Wallet"){
-                const wallet = await Wallet.findOne({userId})
-                if(!wallet){
-                  return res.status(400).json({ success: false, message: "No Wallet For this User" })
+            if (orderDetails.paymentMethod == "Wallet") {
+                const wallet = await Wallet.findOne({ userId })
+                if (!wallet) {
+                    return res.status(400).json({ success: false, message: "No Wallet For this User" })
                 }
-                if(wallet.balance < orderDetails.payableAmount){
-                  return res.status(400).json({ success: false, message: " Wallet Haven't Sufficient balance" })
+                if (wallet.balance < orderDetails.payableAmount) {
+                    return res.status(400).json({ success: false, message: " Wallet Haven't Sufficient balance" })
                 }
-                var newTransaction=  await Transaction.create({
+                var newTransaction = await Transaction.create({
                     userId,
-                    walletId:wallet._id,
-                    type:"debit" , 
-                    amount : orderDetails.payableAmount ,
-                    associatedOrder:response._id
+                    walletId: wallet._id,
+                    type: "debit",
+                    amount: orderDetails.payableAmount,
+                    associatedOrder: response._id
                 })
                 wallet.balance -= orderDetails.payableAmount
-                
-                response.paymentStatus= "Success"
+
+                response.paymentStatus = "Success"
                 await response.save()
                 await wallet.save()
-              }
-           
+            }
+
             for (let i = 0; i < orderDetails.items.length; i++) {
                 const book = await Book.findOne({ _id: orderDetails.items[i].bookId, isDeleted: false })
 
                 if (!book) {
                     return res.status(400).json({ success: false, message: `Some Books are No Longer Available.` })
                 }
-                if ( cart && book.formats.physical.stock < orderDetails.items[i].quantity) {
+                if (cart && book.formats.physical.stock < orderDetails.items[i].quantity) {
                     cart.items[i].quantity = book.formats.physical.stock
-                    cart.totalQuantity = cart.totalQuantity -(orderDetails.items[i].quantity - book.formats.physical.stock)
+                    cart.totalQuantity = cart.totalQuantity - (orderDetails.items[i].quantity - book.formats.physical.stock)
                     cart.save()
                     return res.status(400).json({ success: false, message: `${book.title} Have not much Stock` })
-          
+
                 }
                 book.formats.physical.stock = book?.formats?.physical?.stock - orderDetails.items[i].quantity
-                if(book.appliedOffer){
+                if (book.appliedOffer) {
                     response.totalDiscount += book.formats.physical.price - book.formats.physical.offerPrice
                     console.log(response.totalDiscount)
                     response.save()
@@ -96,11 +96,11 @@ module.exports = {
                 }
                 book.save()
             }
-            
-            if(cart){
+
+            if (cart) {
                 await cart.deleteOne()
             }
-            res.status(200).json({ success: true, orderId: response._id, user , orderDetails:response})
+            res.status(200).json({ success: true, orderId: response._id, user, orderDetails: response })
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false, message: "Order Placing Failed Please try Again" })
@@ -118,14 +118,14 @@ module.exports = {
 
             order.items = order.items.map((item) => {
                 console.log(item.status)
-                if(item.status != "Canceled"){
+                if (item.status != "Canceled") {
                     item.status = status
                 }
                 //item.status =  (status == "Canceled") ? "Canceled" : status
                 console.log(item.status)
                 return item
             })
-            if(status == "Delivered"){
+            if (status == "Delivered") {
                 order.paymentStatus == "Success"
             }
             order.save()
@@ -145,13 +145,13 @@ module.exports = {
 
             const { userId } = req.params
             const orders = await Order.find({ userId }).sort({ orderDate: -1 }).skip(skip)
-            .limit(limit)
-            .populate("items.bookId")
-            .populate("userId")
-            .populate("coupon")
+                .limit(limit)
+                .populate("items.bookId")
+                .populate("userId")
+                .populate("coupon")
 
-            const totalOrders = await Order.countDocuments({userId})
-            res.status(200).json({ success: true, orders ,totalOrders})
+            const totalOrders = await Order.countDocuments({ userId })
+            res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false })
@@ -159,41 +159,41 @@ module.exports = {
     },
     async getAllOrders(req, res) {
         try {
-            let { page, limit ,orderStatus , paymentStatus } = req.query
+            let { page, limit, orderStatus, paymentStatus } = req.query
             page = parseInt(page)
             limit = parseInt(limit)
             let skip = (page - 1) * limit
-            
-            let find={}
-            if(orderStatus == 'ordered'){
-                find={orderStatus:"Ordered"}
-            }else if(orderStatus == 'shipped'){
-                find={orderStatus:"Shipped"}
-            }else if(orderStatus == 'delivered'){
-                find={orderStatus:"Delivered"}
-            }else if(orderStatus == 'canceled'){
-                find={orderStatus:"Canceled"}
-            }else if(orderStatus == "returned"){
-                find={orderStatus:"Returned"}
-            }else if(orderStatus == "return requested"){
-                find={orderStatus:"Return Requested"}
-            }else if(orderStatus == "return rejected"){
-                find={orderStatus:"Return Rejected"}
+
+            let find = {}
+            if (orderStatus == 'ordered') {
+                find = { orderStatus: "Ordered" }
+            } else if (orderStatus == 'shipped') {
+                find = { orderStatus: "Shipped" }
+            } else if (orderStatus == 'delivered') {
+                find = { orderStatus: "Delivered" }
+            } else if (orderStatus == 'canceled') {
+                find = { orderStatus: "Canceled" }
+            } else if (orderStatus == "returned") {
+                find = { orderStatus: "Returned" }
+            } else if (orderStatus == "return requested") {
+                find = { orderStatus: "Return Requested" }
+            } else if (orderStatus == "return rejected") {
+                find = { orderStatus: "Return Rejected" }
             }
 
-            if(paymentStatus == 'success'){
-                find={...find,paymentStatus:"Success"}
-            }else if(paymentStatus == 'pending'){
-                find={...find,paymentStatus:"Pending"}
-            }else if(paymentStatus == 'refunded'){
-                find={...find,paymentStatus:'Refunded'}
+            if (paymentStatus == 'success') {
+                find = { ...find, paymentStatus: "Success" }
+            } else if (paymentStatus == 'pending') {
+                find = { ...find, paymentStatus: "Pending" }
+            } else if (paymentStatus == 'refunded') {
+                find = { ...find, paymentStatus: 'Refunded' }
             }
             console.log(find)
 
             const orders = await Order.find(find).sort({ orderDate: -1 }).skip(skip).limit(limit)
-            .populate("items.bookId")
-            .populate("userId")
-            .populate('coupon')
+                .populate("items.bookId")
+                .populate("userId")
+                .populate('coupon')
             const totalOrders = await Order.countDocuments(find)
             res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {
@@ -215,12 +215,12 @@ module.exports = {
                 const book = await Book.findOne({ _id: item.bookId });
                 if (book) {
                     book.formats.physical.stock += item.quantity;
-                    if(book.formats.physical.stock <= 0){
+                    if (book.formats.physical.stock <= 0) {
                         book.stockStatus = "Out Of Stock"
-                    }else if(book.formats.physical.stock <= 10){
+                    } else if (book.formats.physical.stock <= 10) {
                         book.stockStatus = "Hurry Up"
-                    }else{
-                         book.stockStatus = "In Stock"
+                    } else {
+                        book.stockStatus = "In Stock"
                     }
                     await book.save();
                 }
@@ -285,7 +285,7 @@ module.exports = {
             for (const item of order.items) {
                 item.status = "Returned";
             }
-            
+
 
             if (order.paymentStatus == "Success") {
                 const amount = order.totalAmount
@@ -333,6 +333,7 @@ module.exports = {
             const order = await Order.findOne({ _id: orderId })
             const coupon = order.coupon
             const couponData = await Coupon.findOne({ _id: coupon })
+            let itemTotal = amount = 0
             for (let i = 0; i < order.items.length; i++) {
                 if (order.items[i].bookId == itemId) {
                     order.items[i].status = "Canceled"
@@ -340,14 +341,14 @@ module.exports = {
                     const book = await Book.findOne({ _id: itemId })
                     book.formats.physical.stock += order.items[i].quantity
                     await book.save()
-                    
+                    itemTotal = order.items[i].totalPrice
                     if (order.paymentStatus == "Success") {
                         const orderTotal = order.totalAmount
-                        const itemTotal = order.items[i].totalPrice
-                      
-                        let amount = itemTotal
+
+
+                        amount = itemTotal
                         if (coupon) {
-                            
+
                             const percentage = couponData.discountValue
                             let orderTotalWithoutDiscount = orderTotal / (1 - percentage / 100)
                             orderTotalWithoutDiscount = orderTotalWithoutDiscount.toFixed()
@@ -355,7 +356,7 @@ module.exports = {
                             var proptionalDiscount = itemTotal / orderTotalWithoutDiscount * totalOrderDiscount
                             amount = itemTotal - proptionalDiscount.toFixed()
 
-                            
+
                         }
                         const userWallet = await Wallet.findOneAndUpdate({ userId: order.userId }, {
                             $inc: {
@@ -369,30 +370,26 @@ module.exports = {
                             amount: amount,
                             associatedOrder: order._id
                         })
-                    } 
-                    order.payableAmount =  order.payableAmount - order.items[i].totalPrice
-                    console.log("coupon +++++++++++++++++++++++++++++++")
-                    console.log(coupon)
-                    console.log("----------------------------------------")
-                    console.log(order.payableAmount , couponData.minimumPrice)
-                   
-                        if(coupon && order.payableAmount < couponData.minimumPrice){
-                            const remainingDiscount = totalOrderDiscount - proptionalDiscount
-     
-                            let newPayableAmount =0
-                            for(let item of order.items){
-                               if(item.status !== 'Canceled'){
-                                 newPayableAmount += item.totalPrice
-                               }
+                    }
+                    order.payableAmount = order.payableAmount - order.items[i].totalPrice
+
+                    if (coupon && order.payableAmount < couponData?.minimumPrice) {
+                        const remainingDiscount = totalOrderDiscount - proptionalDiscount
+
+                        let newPayableAmount = 0
+                        for (let item of order.items) {
+                            if (item.status !== 'Canceled') {
+                                newPayableAmount += item.totalPrice
                             }
-                            order.payableAmount = newPayableAmount
-                            order.coupon=null
-                         }
-                         break;
-                     }
-                    
-                    //order.totalAmount = order.totalAmount - order.items[i].totalPrice
-                
+                        }
+                        order.payableAmount = newPayableAmount
+                        order.coupon = null
+                    }
+                    break;
+                }
+
+                //order.totalAmount = order.totalAmount - order.items[i].totalPrice
+
             }
 
             const itemStatuses = order.items.map(item => item.status)
@@ -402,8 +399,8 @@ module.exports = {
                 order.cancellationReason = "All Items Are Cancelled"
             }
             await order.save()
-
-            res.status(200).json({ success: true, isAllItemsCancelled })
+      
+            res.status(200).json({ success: true, isAllItemsCancelled , newPayableAmount: order.payableAmount})
         } catch (err) {
             console.log(err)
             res.status(400).json({ success: false, message: "Something Went Wrong While Canceling This Item" })
@@ -450,7 +447,7 @@ module.exports = {
                     const book = await Book.findOne({ _id: itemId })
                     book.formats.physical.stock += order.items[i].quantity
                     await book.save()
-                
+
                     if (order.paymentStatus == "Success") {
                         const orderTotal = order.totalAmount
                         const itemTotal = order.items[i].totalPrice
@@ -528,14 +525,14 @@ module.exports = {
             res.status(400).json({ success: fale, message: "Something Went Wrong" })
         }
     },
-    async getOrderData(req,res){
-       try{
-         const {orderId} = req.params
-         const orderData = await Order.findById(orderId).populate("userId").populate("items.bookId")
-         res.status(200).json({success:true , orderData : orderData})
-       }catch(err){
-         console.log(err)
-         res.status(400).json({success:false , message: err?.message || "Something Went Wrong"})
-       }
+    async getOrderData(req, res) {
+        try {
+            const { orderId } = req.params
+            const orderData = await Order.findById(orderId).populate("userId").populate("items.bookId")
+            res.status(200).json({ success: true, orderData: orderData })
+        } catch (err) {
+            console.log(err)
+            res.status(400).json({ success: false, message: err?.message || "Something Went Wrong" })
+        }
     }
 }

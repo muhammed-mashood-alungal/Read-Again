@@ -61,63 +61,67 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App">
-        <ScrollToTop/>
+    <div className="App">
+      <ScrollToTop />
+  
+      {/* User Routes */}
+      <Routes>
+      <Route >
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="/checkout" element={<CheckOutPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/book-details/:bookId" element={<DetailsPage />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+      </Route>
+      <Route path='/admin' element={<AdminPage />}>
+          <Route path='dashboard' element={<Dashboard />} />
+          <Route path='books' element={<ListBooks />} />
+          <Route path='books/add' element={<BookForm />} />
+          <Route path='books/view' element={<BookDetails />} />
+          <Route path='users' element={<ListUsers />} />
+          <Route path='users/view' element={<UserDetails />} />
+          <Route path='category' element={<CategoryManagement />} />
+          <Route path='category/form' element={<CategoryForm />} />
+          <Route path='orders' element={<ListOrders />} />
+          <Route path='orders/view' element={<OrderDetails />} />
+          <Route path='coupons' element={<ListCoupons />} />
+          <Route path='coupons/view' element={<CouponDetails />} />
+          <Route path='coupons/form' element={<CouponForm />} />
+          <Route path='offers' element={<ListOffers />} />
+          <Route path='offers/view' element={<ViewOffer />} />
+          <Route path='offers/form' element={<OfferForm />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+  
+      <ForgetPassProvider>
         <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path='/register' element={<RegisterPage />} />
-          <Route path='/admin/login' element={<AdminLogin />} />
-          <Route path='/library' element={<LibraryPage />} />
-          <Route path='/cart/' element={<CartPage />} />
-          <Route path='/wishlist' element={<WishlistPage />} />
-          <Route path='/account' element={<AccountPage />} />
-          <Route path='/checkout' element={<CheckOutPage />} />
-          <Route path='/order-success' element={<OrderSuccessPage />} />
-          <Route path='/book-details/:bookId' element={<DetailsPage />} />
-          <Route path="*" element={<NotFound/>} />
+          <Route path='/register/verify' element={<EmailVerifyPage />} />
+          <Route path='/forgotten-password/verify' element={<ForgottenPassword />} />
+          <Route path='/forgotten-password/change-password' element={<ChangePassword />} />
         </Routes>
-        <ForgetPassProvider>
-          <Routes>
-            <Route path='/register/verify' element={<EmailVerifyPage />} />
-            <Route path='/forgotten-password/verify' element={<ForgottenPassword />} />
-            <Route path='/forgotten-password/change-password' element={<ChangePassword />} />
-          </Routes>
-        </ForgetPassProvider>
-        <Routes>
-          <Route path='/admin' element={<AdminPage />}>
-           <Route path='dashboard' element={<Dashboard/>} />
-            <Route path='books' element={<ListBooks />} />
-            <Route path='books/add' element={<BookForm/>} />
-            <Route path='books/view' element={<BookDetails/>} />
-            <Route path='users' element={<ListUsers />} />
-            <Route path='users/view' element={<UserDetails />} />
-            <Route path='category' element={<CategoryManagement />} />
-            <Route path='category/form' element={<CategoryForm/>} />
-            <Route path='orders' element={<ListOrders />} />
-            <Route path='orders/view' element={<OrderDetails />} />
-            <Route path='coupons' element={<ListCoupons />} />
-            <Route path='coupons/view' element={<CouponDetails />} />
-            <Route path='coupons/form' element={<CouponForm />} />
-            <Route path='offers' element={<ListOffers />} />
-            <Route path='offers/view' element={<ViewOffer />} />
-            <Route path='offers/form' element={<OfferForm />} />
-          </Route>
-        </Routes>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-      </div>
-    </BrowserRouter>
+      </ForgetPassProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </div>
+  </BrowserRouter>
+  
   );
 }
 

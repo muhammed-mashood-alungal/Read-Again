@@ -31,22 +31,7 @@ module.exports={
         limit = parseInt(limit)
         let skip = (page - 1) * limit
 
-        /*
-         let { page, limit, name } = req.query
-            console.log(req.query)
-            const query = {};
-
-            if (name) {
-                query.title = { $regex: new RegExp(name, "i") };
-            }
-            page = parseInt(page)
-            limit = parseInt(limit)
-            let skip = (page - 1) * limit
-            const allBooks = await Book.find(query).skip(skip).limit(limit).populate("category").populate("appliedOffer")
-            const totalBooks = await Book.countDocuments({})
-
-            res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
-        */
+       
         const coupons = await Coupon.find(query).skip(skip).limit(limit)
         const totalCoupons = await Coupon.countDocuments({})
         console.log(coupons)

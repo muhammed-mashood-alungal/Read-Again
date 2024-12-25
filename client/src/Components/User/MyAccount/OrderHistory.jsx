@@ -23,6 +23,8 @@ import {
 import { cilArrowLeft } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useRazorpay } from 'react-razorpay'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import OrderInvoicePDF from '../OrderInvoicePDF/OrderInvoicePDF'
 
 
 function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalPages }) {
@@ -96,11 +98,16 @@ function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalP
     try {
       console.log(cancellationReason, selectedItemId)
       const { data } = await axiosOrderInstance.put(`/${selectedOrder._id}/items/${selectedItemId}/cancel`, { cancellationReason })
+      console.log(selectedOrder.items[selectedItemId])
       const newOrderData = { ...selectedOrder }
-      console.log(newOrderData.items)
-      newOrderData.items = newOrderData.items?.map((item) => {
-        return item.bookId._id == selectedItemId ? { ...item, status: "Canceled", reason: cancellationReason } : item
-      })
+      for(let i=0 ; i< newOrderData.items.length ; i++){
+        if(newOrderData.items[i].bookId._id == selectedItemId){
+            newOrderData.items[i] = {...newOrderData.items[i] , status: "Canceled", reason: cancellationReason }
+            console.log(data?.minusAmount)
+            newOrderData.payableAmount =data.newPayableAmount
+        }
+      }
+     
       if (data.isAllItemsCancelled) {
         newOrderData.orderStatus = "Canceled"
         newOrderData.cancellationReason = "All Items Cancelled"
@@ -213,8 +220,6 @@ function OrderHistory({ orders ,  setCurrentOrderPage , currentOrderPage ,totalP
              error: response.error,
            })
          })
-   
-           
          }catch(err){
            console.log(err)
          }
@@ -476,6 +481,26 @@ return (
             </CCol>
           </CRow>
         )}
+         <PDFDownloadLink
+        document={<OrderInvoicePDF orderData={selectedOrder} />}
+        fileName={`order-invoice-${new Date().toISOString().split('T')[0]}.pdf`}
+      >
+        {({ blob, url, loading, error }) => (
+          <button 
+            style={{
+              backgroundColor: loading ? '#cccccc' : '#4CAF50',
+              color: 'white',
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+            disabled={loading}
+          >
+            {loading ? 'Generating PDF...' : 'Download Invoice'}
+          </button>
+        )}
+      </PDFDownloadLink>
       </CCardBody>
     </CCard>
   )}
