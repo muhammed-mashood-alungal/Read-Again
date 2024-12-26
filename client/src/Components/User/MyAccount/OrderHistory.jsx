@@ -39,6 +39,9 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
     return false
   }
   const isEligibleForCancel = () => {
+    if(selectedOrder.paymentMethod == "Razorpay" && selectedOrder.paymentStatus == "Pending"){
+      return false
+    }
     if (selectedOrder.orderStatus == "Pending" ||
       selectedOrder.orderStatus == "Ordered"
     ) {
@@ -434,12 +437,12 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
                 )}
 
                 {isEligibleForCancel() && (
-                  <CButton
-                    color="danger"
+                  <button
                     onClick={() => setIsCancelling(true)}
+                    className='mb-3 danger-btn'
                   >
                     Cancel Order
-                  </CButton>
+                  </button>
                 )}
 
                 {selectedOrder.isRejectedOnce && (
