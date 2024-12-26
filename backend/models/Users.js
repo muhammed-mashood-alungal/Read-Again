@@ -20,10 +20,6 @@ const UsersSChema=mongoose.Schema({
         type:String,
         required:[true,"Please define user Role"]
     },
-    memberShipType:{
-        type:String,
-        default:"Basic"
-    },
     usedCoupons:[{
       type:mongoose.Types.ObjectId
     }],

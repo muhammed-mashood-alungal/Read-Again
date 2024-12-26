@@ -35,12 +35,6 @@ function UserDetails({ }) {
                     </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
-                    <CTableHeaderCell>Member Ship</CTableHeaderCell>
-                    <CTableDataCell className="text-end">
-                      {user.memberShipType}
-                    </CTableDataCell>
-                  </CTableRow>
-                  <CTableRow>
                     <CTableHeaderCell>is Blocked</CTableHeaderCell>
                     <CTableDataCell className="text-end">
                       {user.isBlocked ? "True" : "False"}

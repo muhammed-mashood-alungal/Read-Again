@@ -7,12 +7,9 @@ const { sendOTP,
         setNewPassword,
         verifyEmailExist,
         getUserData,
-        deleteUser, 
-        recoverUser,
         blockUser, 
         unBlockUser,
-        verifyToken, 
-        logout,
+        verifyToken,
         editProfile,
         createAddress,
         changePassword,
@@ -26,7 +23,7 @@ const { sendOTP,
 const passport = require('passport')
 const { getAllUsers } = require('../controller/adminController')
 const { googleAuthCallback } = require('../middlewares/googleAuthCallback')
-const { isAdmin } = require('../middlewares/auth')
+const { isAdmin, protect } = require('../middlewares/auth')
 const router = express.Router()
 
 router.get('/',isAdmin,getAllUsers)
@@ -42,7 +39,7 @@ router.put('/:userId/unblock',isAdmin,unBlockUser)
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/auth/google/callback',googleAuthCallback);
 router.get('/verify-token', verifyToken)
-router.put('/:userId/edit',editProfile)
+router.put('/:userId/edit',protect,editProfile)
 
 router.put('/:email/new-password',setNewPassword)
 router.put('/:email/change-pass',changePassword)

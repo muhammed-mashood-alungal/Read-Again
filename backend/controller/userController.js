@@ -1,17 +1,15 @@
 const Otp = require("../models/Otps");
 const User = require("../models/Users");
-const { hashPassword, verifyPassword } = require("../utils/bcrypt");
-const { generateToken, verifyToken } = require("../utils/jwt");
+const { hashPassword } = require("../utils/bcrypt");
+const { generateToken } = require("../utils/jwt");
 const transporter = require("../utils/nodemailer");
 const bcrypt = require('bcrypt');
-const Category = require("../models/Category");
 const Address = require("../models/Address");
 const Wallet = require("../models/Wallet")
 const Transactions = require("../models/WalletTransactions");
 const { getAddressString } = require("../services/userServices");
 const Coupon = require("../models/Coupon");
-const Review = require("../models/Reviews");
-const { handleUpload } = require("../utils/cloudinary");
+
 module.exports = {
   async sendOTP(req, res) {
     try {
@@ -29,8 +27,7 @@ module.exports = {
         otp: otp,
         email: email
       }
-      console.log(data)
-      const result = await Otp.create(data)
+      await Otp.create(data)
       await transporter.sendMail({
         from: 'muhdmashoodalungal@gmail.com',
         to: email,
@@ -40,7 +37,6 @@ module.exports = {
 
       res.status(200).json({ success: true })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong while creting OTP" })
     }
 
@@ -51,11 +47,9 @@ module.exports = {
       const { otp } = req.body
       const { email } = req.params
       const doc = await Otp.findOne({ email: email })
-      console.log(doc)
       if (!doc) {
         return res.status(400).json({ success: false, message: "OTP verification failed" })
       }
-      console.log(doc.otp, otp)
       if (doc.otp == otp) {
         return res.status(200).json({ success: true })
       } else {
@@ -67,7 +61,6 @@ module.exports = {
   },
   async createUser(req, res) {
     try {
-      console.log("helloooi")
       const { email } = req.body.userData
       const password = await hashPassword(req.body.userData.password)
       const user = await User.findOne({ email })
@@ -100,25 +93,19 @@ module.exports = {
         return res.status(400).json({ success: false, message: "something went wrong" })
       }
     } catch (err) {
-      console.log(err)
       return res.status(400).json({ success: false, message: err ? err : "Somthing went Wrong" })
     }
   },
   async isEmailExist(req, res) {
     try {
       const { email } = req.params
-      console.log(email)
       const user = await User.findOne({ email })
-      console.log(user, user?.password)
       if (user && user?.password) {
-        console.log("user exist")
         return res.status(409).json({ exist: true, user })
       } else {
-        console.log("user doesn't exist")
         return res.status(200).json({ exist: false, user })
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json({ exist: false, message: err })
     }
 
@@ -126,7 +113,6 @@ module.exports = {
 
   async verifyEmailExist(req, res) {
     const { email } = req.params
-    console.log(email)
     const user = await User.findOne({ email })
 
     if (user) {
@@ -139,13 +125,11 @@ module.exports = {
     try {
       const { email, password } = req.body.userData
       const doc = await User.findOne({ email })
-      console.log(doc)
       if (doc.isBlocked) {
         return res.status(401).json({ success: false, message: "You are temporarily Banned " })
       }
       if (doc) {
         const isMatched = await bcrypt.compare(password, doc.password)
-        console.log(isMatched)
         if (isMatched) {
           const { password, ...userInfo } = doc
           const token = await generateToken({ id: doc._id, role: doc.role })
@@ -158,7 +142,6 @@ module.exports = {
       }
       return res.status(401).json({ success: false, message: "Invalid Creditial" })
     } catch (err) {
-      console.log(err)
       return res.status(401).json({ success: false, message: "Invalid Creditial" })
     }
   },
@@ -166,7 +149,6 @@ module.exports = {
     try {
       const { email } = req.params
       const { password } = req.body
-      console.log(email, password)
       const hashed = await hashPassword(password)
       const userData = await User.updateOne({ email }, {
         $set: {
@@ -180,7 +162,6 @@ module.exports = {
       })
       res.status(200).json({ success: true })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong !" })
     }
   },
@@ -188,13 +169,9 @@ module.exports = {
     try {
       const { currentPass, newPass } = req.body
       const { email } = req.params
-      console.log(req.body)
-      console.log(email)
       const userDoc = await User.findOne({ email: email })
-      console.log(userDoc, currentPass)
       const isMatched = await bcrypt.compare(currentPass, userDoc.password)
       if (isMatched) {
-        console.log("Matched")
         const hashed = await hashPassword(newPass)
         userDoc.password = hashed
         userDoc.save()
@@ -202,20 +179,15 @@ module.exports = {
       } else {
         return res.status(400).json({ success: false, message: "Current Password Doesn't Match" })
       }
-
-
-
     } catch (err) {
-      console.log(err)
       return res.status(400).json({ success: false, message: "Something Went Wrong While changing Pass" })
     }
   },
   async findOrCreateGoogleUser(profile) {
     try {
-      let user = await User.findOne({ email: profile.emails[0].value });
-
+      let user = await User.findOne({ email: profile.emails[0].value })
       if (user && user.isBlocked) {
-        return { success: false, message: "Your account is banned." };
+        return { success: false, message: "Your account is banned." }
       }
 
       if (!user) {
@@ -225,21 +197,18 @@ module.exports = {
           username: profile.displayName,
           role: "USER",
         });
-        await user.save();
+        await user.save()
       } else if (!user.googleId) {
         user = await User.findOneAndUpdate(
           { email: profile.emails[0].value },
           { googleId: profile.id },
           { new: true }
-        );
+        )
       }
+      const token = await generateToken({ id: user._id, role: user.role })
 
-
-      const token = await generateToken({ id: user._id, role: user.role });
-
-      return { success: true, user, token };
+      return { success: true, user, token }
     } catch (error) {
-      console.error("Error in google auth:", error.message);
       return { success: false, message: error.message };
     }
   }
@@ -260,7 +229,6 @@ module.exports = {
 
       res.status(200).json({ success: true, userData: data })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ success: false, error: "Something went Wrong" })
     }
   },
@@ -281,7 +249,6 @@ module.exports = {
   async unBlockUser(req, res) {
     try {
       const { userId } = req.params
-      console.log(userId)
       await User.updateOne({ _id: userId }, {
         $set: {
           isBlocked: false
@@ -313,7 +280,6 @@ module.exports = {
   },
   logout(req, res) {
     try {
-
       res.clearCookie('token', {
         httpOnly: true,
         secure: false,
@@ -331,8 +297,7 @@ module.exports = {
       const { userId } = req.params
       let { email, username } = req.body
       if (email) newData.email = email
-      console.log(email, userId)
-      const newUserData = await User.findOneAndUpdate({ _id: userId }, {
+      await User.findOneAndUpdate({ _id: userId }, {
         $set: {
           username: username,
           email: newData.email
@@ -341,7 +306,6 @@ module.exports = {
 
       res.status(200).json({ success: true })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong While Updating User data" })
     }
   },
@@ -353,10 +317,8 @@ module.exports = {
       let newAddress
       if (addresses.length > 0) {
         for (let address of addresses) {
-          console.log(address)
           const existingAddress = getAddressString(address)
           const newAdd = getAddressString(addressData)
-
           if (existingAddress == newAdd) {
             return res.status(400).json({ success: false, message: "Address Should be Unique" })
           }
@@ -370,7 +332,6 @@ module.exports = {
       }
       res.status(200).json({ success: true, newAddress: newAddress })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong While adding Address" })
     }
   },
@@ -378,10 +339,8 @@ module.exports = {
     try {
       const { userId } = req.params
       const addresses = Address.find({ userId: userId })
-      console.log(addresses)
       res.status(200).json({ addresses })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ succes: false, message: "Something Went Wrong While Fetching Address" })
     }
   },
@@ -394,19 +353,15 @@ module.exports = {
       })
       res.status(200).json({ success: true })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ succes: false, message: "Something went wrong while updating the Address " })
     }
   },
   async deleteAddress(req, res) {
     try {
-      console.log(req.params)
       const { addressId } = req.params
-      console.log(addressId)
       await Address.deleteOne({ _id: addressId })
       res.status(200).json({ success: true })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ succes: false, message: "Somthing went Wrong While Deleting Address" })
     }
   },
@@ -418,7 +373,6 @@ module.exports = {
       await Address.findOneAndUpdate({ _id: addressId }, { isDefault: true })
       res.status(200).json({ success: true })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ message: "Somthing Went Wrong" })
     }
   },
@@ -434,7 +388,6 @@ module.exports = {
       walletData.transactions = transactions
       res.status(200).json({ success: true, wallet: walletData })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ succes: false, message: "Something went Wrong" })
     }
   },
@@ -443,7 +396,6 @@ module.exports = {
       const { userId } = req.params
       const user = await User.findById(userId)
       const availableCoupons = await Coupon.find({ _id: { $nin: [user.usedCoupons] }, isActive: true })
-      console.log(availableCoupons)
       res.status(200).json({ success: true, availableCoupons })
     } catch (err) {
       res.status(400).json({ success: false, availableCoupons: [] })
@@ -455,7 +407,6 @@ module.exports = {
       const wallet =await Wallet.findOne({userId})
       res.status(200).json({success:true,balance:wallet?.balance || 0})
     } catch (error) {
-      console.log(error)
       res.status(400).json({succes:false,message:error?.message})
     }
   }

@@ -2,7 +2,6 @@ const Address = require("../models/Address")
 const Book = require("../models/Books")
 const Cart = require("../models/Cart")
 const Order = require("../models/Order")
-const jwt = require("jsonwebtoken")
 const User = require("../models/Users")
 const Coupon = require("../models/Coupon")
 const Wallet = require("../models/Wallet")
@@ -27,7 +26,6 @@ module.exports = {
             if (orderDetails.coupon) {
                 const couponData = await Coupon.findOne({ code: orderDetails.coupon })
                 orderDetails.totalDiscount = orderDetails.totalAmount - orderDetails.payableAmount
-                console.log(orderDetails.totalDiscount)
                 if (!couponData || !couponData.isActive || couponData.currentUsage >= couponData.maxUsage) {
                     return res.status(400).json({ success: false, message: `The ${orderDetails.coupon} Coupon No Longer Available.` })
                 } else {
@@ -54,7 +52,7 @@ module.exports = {
                 if (wallet.balance < orderDetails.payableAmount) {
                     return res.status(400).json({ success: false, message: " Wallet Haven't Sufficient balance" })
                 }
-                var newTransaction = await Transaction.create({
+                await Transaction.create({
                     userId,
                     walletId: wallet._id,
                     type: "debit",
@@ -84,7 +82,6 @@ module.exports = {
                 book.formats.physical.stock = book?.formats?.physical?.stock - orderDetails.items[i].quantity
                 if (book.appliedOffer) {
                     response.totalDiscount += book.formats.physical.price - book.formats.physical.offerPrice
-                    console.log(response.totalDiscount)
                     response.save()
                 }
                 if (book.formats.physical.stock == 0) {
@@ -102,14 +99,12 @@ module.exports = {
             }
             res.status(200).json({ success: true, orderId: response._id, user, orderDetails: response })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false, message: "Order Placing Failed Please try Again" })
         }
     },
     async changeStatus(req, res) {
         try {
             const { orderId, status } = req.params
-            console.log(orderId, status)
             const order = await Order.findOneAndUpdate({ _id: orderId }, {
                 $set: {
                     orderStatus: status
@@ -117,12 +112,9 @@ module.exports = {
             })
 
             order.items = order.items.map((item) => {
-                console.log(item.status)
                 if (item.status != "Canceled") {
                     item.status = status
                 }
-                //item.status =  (status == "Canceled") ? "Canceled" : status
-                console.log(item.status)
                 return item
             })
             if (status == "Delivered") {
@@ -132,7 +124,6 @@ module.exports = {
             res.status(200).json({ success: true })
         }
         catch (err) {
-            console.log(err)
             res.status(400).json({ message: 'Something went wrong while changing order status' })
         }
     },
@@ -153,7 +144,6 @@ module.exports = {
             const totalOrders = await Order.countDocuments({ userId })
             res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false })
         }
     },
@@ -188,7 +178,6 @@ module.exports = {
             } else if (paymentStatus == 'refunded') {
                 find = { ...find, paymentStatus: 'Refunded' }
             }
-            console.log(find)
 
             const orders = await Order.find(find).sort({ orderDate: -1 }).skip(skip).limit(limit)
                 .populate("items.bookId")
@@ -197,7 +186,6 @@ module.exports = {
             const totalOrders = await Order.countDocuments(find)
             res.status(200).json({ success: true, orders, totalOrders })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false })
         }
     },
@@ -222,7 +210,7 @@ module.exports = {
                     } else {
                         book.stockStatus = "In Stock"
                     }
-                    await book.save();
+                    await book.save()
                 }
             }
 
@@ -243,11 +231,9 @@ module.exports = {
                 order.paymentStatus = "Refunded"
             }
             order.payableAmount = 0
-            console.log(order.payableAmount)
             await order.save()
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ message: "Something Went Wrong" })
         }
     },
@@ -255,7 +241,6 @@ module.exports = {
         try {
             const { orderId } = req.params
             const { returnReason } = req.body
-            console.log(returnReason)
             const order = await Order.findOne({ _id: orderId })
             order.orderStatus = "Return Requested"
             order.returnReason = returnReason
@@ -269,7 +254,6 @@ module.exports = {
             await order.save()
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ message: "Something Went Wrong" })
         }
     },
@@ -294,7 +278,6 @@ module.exports = {
                         balance: amount
                     }
                 }, { upsert: true, new: true })
-                console.log(userWallet)
                 await Transaction.create({
                     userId: order.userId,
                     walletId: userWallet._id,
@@ -306,7 +289,6 @@ module.exports = {
             order.paymentStatus = "Refunded"
             res.status(200).json({ success: true })
         } catch {
-            console.log(err)
             res.status(400).json({ message: "Something Went Wrong While Returning Order" })
         }
     },
@@ -322,7 +304,6 @@ module.exports = {
             })
             res.status(200).json({ success: true })
         } catch {
-            console.log(err)
             res.status(400).json({ message: "Something Went Wrong While Rejecting Return Order" })
         }
     },
@@ -344,7 +325,6 @@ module.exports = {
                     itemTotal = order.items[i].totalPrice
                     if (order.paymentStatus == "Success") {
                         const orderTotal = order.totalAmount
-
 
                         amount = itemTotal
                         if (coupon) {
@@ -374,7 +354,6 @@ module.exports = {
                     order.payableAmount = order.payableAmount - order.items[i].totalPrice
 
                     if (coupon && order.payableAmount < couponData?.minimumPrice) {
-                        const remainingDiscount = totalOrderDiscount - proptionalDiscount
 
                         let newPayableAmount = 0
                         for (let item of order.items) {
@@ -387,9 +366,6 @@ module.exports = {
                     }
                     break;
                 }
-
-                //order.totalAmount = order.totalAmount - order.items[i].totalPrice
-
             }
 
             const itemStatuses = order.items.map(item => item.status)
@@ -399,47 +375,32 @@ module.exports = {
                 order.cancellationReason = "All Items Are Cancelled"
             }
             await order.save()
-      
-            res.status(200).json({ success: true, isAllItemsCancelled , newPayableAmount: order.payableAmount})
+
+            res.status(200).json({ success: true, isAllItemsCancelled, newPayableAmount: order.payableAmount })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false, message: "Something Went Wrong While Canceling This Item" })
         }
     },
     async returnOrderItem(req, res) {
         try {
-            console.log("returning order")
             const { orderId, itemId } = req.params
             const { returnReason } = req.body
             const order = await Order.findOne({ _id: orderId })
             for (let i = 0; i < order.items.length; i++) {
                 if (order.items[i].bookId == itemId) {
-                    console.log("Done")
                     order.items[i].status = "Return Requested"
                     order.items[i].reason = returnReason
-                    // const book=await Book.findOne({_id:itemId})
-                    // book.formats.physical.stock += order.items[i].quantity
-                    // await book.save()
-                    // break;
                 }
             }
-            // const itemStatuses = order.items.map(item=>item.status)
-            // const isAllItemsCancelled = itemStatuses.every((status)=>status == "Canceled")
-            // if(isAllItemsCancelled){
-            //     order.orderStatus = "Canceled"
-            //     order.cancellationReason = "All Items Are Cancelled"
-            // }
             await order.save()
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false, message: "Something Went Wrong While Canceling This Item" })
         }
     },
     async approveItemReturn(req, res) {
         try {
             const { orderId, itemId } = req.params
-            console.log(itemId, orderId)
             const order = await Order.findOne({ _id: orderId })
             for (let i = 0; i < order.items.length; i++) {
                 if (order.items[i].bookId == itemId) {
@@ -455,7 +416,6 @@ module.exports = {
                         let amount = itemTotal
                         if (coupon) {
                             const couponData = await Coupon.findOne({ _id: coupon })
-
                             const percentage = couponData.discountValue
                             let orderTotalWithoutDiscount = orderTotal / (1 - percentage / 100)
                             orderTotalWithoutDiscount = orderTotalWithoutDiscount.toFixed()
@@ -468,7 +428,6 @@ module.exports = {
                                 balance: amount
                             }
                         }, { upsert: true, new: true })
-                        console.log(userWallet)
                         await Transaction.create({
                             userId: order.userId,
                             walletId: userWallet._id,
@@ -490,7 +449,6 @@ module.exports = {
             await order.save()
             res.status(200).json({ success: true, isAllItemsReturned })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false, message: "Something Went Wrong" })
         }
     },
@@ -506,14 +464,12 @@ module.exports = {
             await order.save()
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false, message: "Something Went Wrong" })
         }
     },
     async paymentSuccess(req, res) {
         try {
             const { orderId } = req.params
-            console.log(orderId)
             await Order.updateOne({ _id: orderId }, {
                 $set: {
                     paymentStatus: "Success"
@@ -521,7 +477,6 @@ module.exports = {
             })
             res.status(200).json({ success: true })
         } catch (error) {
-            console.log(error)
             res.status(400).json({ success: fale, message: "Something Went Wrong" })
         }
     },
@@ -531,7 +486,6 @@ module.exports = {
             const orderData = await Order.findById(orderId).populate("userId").populate("items.bookId")
             res.status(200).json({ success: true, orderData: orderData })
         } catch (err) {
-            console.log(err)
             res.status(400).json({ success: false, message: err?.message || "Something Went Wrong" })
         }
     }

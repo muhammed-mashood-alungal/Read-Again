@@ -19,7 +19,6 @@ module.exports = {
               book.formats[key].offerPrice = offerPrice.toFixed()
               await book.save()
             }
-
           }
         }
       } else if (offerData.applicableTo == "PRODUCT") {
@@ -30,9 +29,7 @@ module.exports = {
           for (let key of formatsKeys) {
             const format = book.formats[key]
             const originalPrice = format.price || 0
-
-            const offerPrice = Math.max(originalPrice - (originalPrice * (newOffer.discountValue / 100)),originalPrice-newOffer.maxDiscount)
-            
+            const offerPrice = Math.max(originalPrice - (originalPrice * (newOffer.discountValue / 100)), originalPrice - newOffer.maxDiscount)
             book.formats[key].offerPrice = offerPrice.toFixed()
           }
           book.save()
@@ -40,7 +37,6 @@ module.exports = {
       }
       res.status(200).json({ success: true })
     } catch (error) {
-      console.log(error)
       res.status(400).json({ success: false, message: "Something Went Wrong" })
     }
   },
@@ -50,7 +46,7 @@ module.exports = {
       page = parseInt(page)
       limit = parseInt(limit)
       let skip = (page - 1) * limit
-      let query ={}
+      let query = {}
       if (name) {
         query.name = { $regex: new RegExp(name, "i") };
       }
@@ -61,7 +57,6 @@ module.exports = {
       const totalOffers = await Offer.countDocuments({})
       res.status(200).json({ success: true, offers: offers, totalOffers })
     } catch (error) {
-      console.log(error)
       res.status(400).json({ success: false, message: "Something Went wrong" })
     }
   },
@@ -97,7 +92,6 @@ module.exports = {
       await offer.save()
       res.status(200).json({ success: true })
     } catch (error) {
-      console.log(error)
       res.status(400).json({ message: "Something went Wrong" })
     }
   },
@@ -120,10 +114,8 @@ module.exports = {
             for (let key of formatsKeys) {
               const format = book.formats[key]
               const originalPrice = format.price || 0
-             // const offerPrice = originalPrice - (originalPrice * (newOffer.discountValue / 100))
-            const offerPrice = Math.max(originalPrice - (originalPrice * (newOfferData.discountValue / 100)),originalPrice-newOfferData.maxDiscount)
+              const offerPrice = Math.max(originalPrice - (originalPrice * (newOfferData.discountValue / 100)), originalPrice - newOfferData.maxDiscount)
               book.formats[key].offerPrice = offerPrice.toFixed()
-              console.log()
               await book.save()
             }
           }
@@ -137,16 +129,13 @@ module.exports = {
             const format = book.formats[key]
             const originalPrice = format.price || 0
             const offerPrice = originalPrice - (originalPrice * (newOfferData.discountValue / 100))
-            console.log(offerPrice)
             book.formats[key].offerPrice = offerPrice.toFixed()
           }
           book.save()
         }
       }
-
       res.status(200).json({ success: true })
     } catch (error) {
-      console.log(error)
       res.status(400).json({ message: "Something Went Wrong" })
     }
   }

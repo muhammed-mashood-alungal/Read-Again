@@ -14,7 +14,6 @@ const couponRoutes = require('./Routes/couponsRoutes')
 const wishlistRoutes = require('./Routes/wishlistRoutes')
 const offerRoutes = require('./Routes/offerRoutes')
 const razorpayRoutes = require('./Routes/razorpayRoutes')
-const testingRoutes = require('./Routes/testingRoutes')
 const cors = require('cors')
 const path= require("path")
 const passport = require('passport');
@@ -22,26 +21,23 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
  
 
-  
- 
 app.use(cookieParser());
 app.use(express.urlencoded({extended : true}))
 app.use(express.json())
-app.use('/public/images', express.static(path.join(__dirname, 'public/images')));
-
+app.use('/public/images', express.static(path.join(__dirname, 'public/images')))
 connectDB() 
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 app.use(passport.initialize());
 app.use(session({
-    secret: 'your_secret_key',  
+    secret: process.env.SESSION_SECRET,  
     resave: true,
     saveUninitialized: true
 }));
 app.use(passport.session());
 require('./utils/passport.js');
 
-//Routes
+//ROUTES
 app.use('/api/users',userRoutes)
 app.use('/api/admin',adminRoutes)
 app.use('/api/books',bookRoutes)

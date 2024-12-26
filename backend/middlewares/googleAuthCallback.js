@@ -16,11 +16,11 @@ const googleAuthCallback = (req, res, next) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: true
-    });
+    })
     
     return res.redirect('http://localhost:3000/');
     
-  })(req, res, next);
+  })(req, res, next)
 };
 
 module.exports = {

@@ -129,7 +129,7 @@ const ListUsers = () => {
                         <tr>
                           <th>Name</th>
                           <th>Email</th>
-                          <th>Membership</th>
+                          <th>Is Active</th>
                           <th>View Profile</th>
                           <th>Block User</th>
                         </tr>
@@ -141,7 +141,11 @@ const ListUsers = () => {
                               <span>{user.username}</span>
                             </td>
                             <td>{user.email}</td>
-                            <td>{user.memberShipType}</td>
+                            <td>
+                              {
+                                !user.isBlocked ? "Acitive" : "Blocked"
+                              }
+                            </td>
                             <td>
                               <CButton color="info" variant="outline"
                                 onClick={() => navigate('/admin/users/view', { state: { user: user } })}

@@ -37,7 +37,8 @@ function UpdateProfile({ profileData }) {
             await axiosUserInstance.put(`/${formData?._id}/edit`, formData)
             toast.success("Updated Successfully")
           } catch (err) {
-            toast.error(err)
+            console.log(err)
+            toast.error(err?.response?.data.message || "Something Went Wrong")
           }
         }
       } else {

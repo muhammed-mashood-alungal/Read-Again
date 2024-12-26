@@ -1,10 +1,9 @@
-const Category = require("../models/Category")
+
 const User = require("../models/Users")
 const bcrypt = require('bcrypt')
 const { generateToken } = require("../utils/jwt")
 const jwt = require('jsonwebtoken')
 const Order = require("../models/Order")
-const Coupon = require("../models/Coupon")
 module.exports = {
   async getAllUsers(req, res) {
     try {
@@ -27,20 +26,17 @@ module.exports = {
       const users = await User.find({ ...query, role: "USER" }, {
         password: 0
       }).skip(skip).limit(limit)
-      console.log(users)
       const totalUsers = await User.countDocuments({ role: "USER" })
 
       res.status(200).json({ success: true, users, totalUsers: totalUsers })
     } catch (err) {
-      console.log(err)
       res.status(400)
       throw new Error("Somthing went Wrong while fetching user data")
     }
   },
+
   async checkAuth(req, res) {
-    console.log("check-auth")
     const token = req.cookies.token
-    console.log(token)
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -59,7 +55,6 @@ module.exports = {
   async adminLogin(req, res) {
     try {
       const { email, password } = req.body
-      console.log(email, password)
       const Admin = await User.findOne({ role: "ADMIN" })
       if (!Admin) return res.status(401).json({ message: "Invalid Credential" })
       if (Admin?.email == email) {
@@ -76,7 +71,6 @@ module.exports = {
       }
       return res.status(401).json({ message: "Invalid Credential" })
     } catch (err) {
-      console.log(err)
       return res.status(401).json({ message: "Invalid Credential" })
     }
   },
@@ -89,7 +83,7 @@ module.exports = {
       let find = {}
       switch (filterType) {
         case 'daily':
-          find = { orderDate: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }}
+          find = { orderDate: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) } }
           break;
         case 'weekly':
           const weekAgo = new Date()
@@ -116,8 +110,7 @@ module.exports = {
           find
       }
       const orders = await Order.find({ ...find, orderStatus: "Delivered" }).populate("items.bookId").populate("userId")
-      let totalRevenue  = totalSales = itemsSold = totalDiscount = 0
-      console.log(orders)
+      let totalRevenue = totalSales = itemsSold = totalDiscount = 0
       for (const order of orders) {
         totalRevenue += order.totalAmount;
         totalDiscount += order.totalDiscount || 0
@@ -142,110 +135,101 @@ module.exports = {
 
 
       let salesChart = ordersChart = []
-     
-        let groupBy
-        if (filterType === 'daily') {
-         groupBy = {
+
+      let groupBy
+      if (filterType === 'daily') {
+        groupBy = {
           $dateToString: {
-            format: "%H", 
+            format: "%H",
             date: "$orderDate",
             timezone: "Asia/Kolkata",
           }
         }
-        } else if (filterType === 'weekly') {
-          groupBy = { $dayOfWeek: "$orderDate" }
-        } else if (filterType === 'monthly') {
-          groupBy = { $dayOfMonth: "$orderDate" }
-        } else if (filterType === 'yearly') {
-          groupBy = { $month: "$orderDate" }
-        }else if(filterType === 'custom'){
-          groupBy = {
-            $dateToString: {
-                format: "%Y-%m-%d",
-                date: "$orderDate",
-                timezone: "Asia/Kolkata"
-            }
+      } else if (filterType === 'weekly') {
+        groupBy = { $dayOfWeek: "$orderDate" }
+      } else if (filterType === 'monthly') {
+        groupBy = { $dayOfMonth: "$orderDate" }
+      } else if (filterType === 'yearly') {
+        groupBy = { $month: "$orderDate" }
+      } else if (filterType === 'custom') {
+        groupBy = {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$orderDate",
+            timezone: "Asia/Kolkata"
+          }
         };
-        }
-        console.log( groupBy)
-        salesChart = await Order.aggregate([
-          { $match: { ...find ,orderStatus: "Delivered"}  },
-          {
-            $group: {
-              _id: groupBy,
-              totalSales: { $sum: 1 },
-            },
-          },
-          { $sort: { _id: 1 } },
-        ])
-        ordersChart = await Order.aggregate([
-          { $match: { ...find} },
-          {
-            $group: {
-              _id: groupBy,
-              totalOrders: { $sum: 1 },
-            },
-          },
-          { $sort: { _id: 1 } },
-        ])
-        if (filterType === 'custom' && find.orderDate?.$gte && find.orderDate?.$lte) {
-          const startDate = new Date(find.orderDate.$gte);
-          const endDate = new Date(find.orderDate.$lte);
-          
-          // Function to fill missing dates with zero values
-          const fillMissingDates = (data, valueField) => {
-              const dateMap = new Map(data.map(item => [item._id, item[valueField]]));
-              const filledData = [];
-              
-              for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                  const dateStr = d.toISOString().split('T')[0];
-                  filledData.push({
-                      _id: dateStr,
-                      [valueField]: dateMap.get(dateStr) || 0
-                  });
-              }
-              
-              return filledData;
-          };
-          
-          salesChart = fillMissingDates(salesChart, 'totalSales');
-          ordersChart = fillMissingDates(ordersChart, 'totalOrders');
       }
-      
+      salesChart = await Order.aggregate([
+        { $match: { ...find, orderStatus: "Delivered" } },
+        {
+          $group: {
+            _id: groupBy,
+            totalSales: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ])
+      ordersChart = await Order.aggregate([
+        { $match: { ...find } },
+        {
+          $group: {
+            _id: groupBy,
+            totalOrders: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ])
+      if (filterType === 'custom' && find.orderDate?.$gte && find.orderDate?.$lte) {
+        const startDate = new Date(find.orderDate.$gte);
+        const endDate = new Date(find.orderDate.$lte);
+
+        const fillMissingDates = (data, valueField) => {
+          const dateMap = new Map(data.map(item => [item._id, item[valueField]]));
+          const filledData = [];
+
+          for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const dateStr = d.toISOString().split('T')[0];
+            filledData.push({
+              _id: dateStr,
+              [valueField]: dateMap.get(dateStr) || 0
+            });
+          }
+
+          return filledData;
+        };
+
+        salesChart = fillMissingDates(salesChart, 'totalSales');
+        ordersChart = fillMissingDates(ordersChart, 'totalOrders');
+      }
+
       chartData = {
         salesChart,
         ordersChart
       }
       res.status(200).json({ success: true, salesReport, chartData: chartData })
     } catch (error) {
-      console.log(error)
       res.status(400).json({ message: "Something Went Wrong" })
     }
   },
   async getOverallStates(req, res) {
     try {
-     // const orderCount = await Order.countDocuments({})
       const salesCount = await Order.countDocuments({ orderStatus: "Delivered" })
       const userCount = await User.countDocuments({})
       const orders = await Order.find({})
       const orderCount = orders.length
-      const totalDiscount = orders.reduce((total,order)=>{
+      const totalDiscount = orders.reduce((total, order) => {
         total += order.totalDiscount || 0
-        if(order.totalDiscount>0){
-           console.log(order._id , order.totalDiscount)
-        }
         return total
-      },0)
-      console.log(orderCount, salesCount, userCount,totalDiscount)
-      res.status(200).json({ overall: { orderCount, salesCount, userCount ,totalDiscount } })
+      }, 0)
+      res.status(200).json({ overall: { orderCount, salesCount, userCount, totalDiscount } })
     } catch (err) {
-      console.log(err)
       res.status(400).json({ message: "Somthing Went Wrong" })
     }
   },
   async topSelling(req, res) {
     try {
-      const [topBooks, topCategories,topAuthors] = await Promise.all([
+      const [topBooks, topCategories, topAuthors] = await Promise.all([
         Order.aggregate([
           { $match: { orderStatus: "Delivered" } },
           { $unwind: "$items" },
@@ -340,10 +324,9 @@ module.exports = {
           }
         ]),
       ])
-      console.log(topBooks,topCategories,topAuthors)
-      res.status(200).json({topBooks,topCategories,topAuthors})
+      res.status(200).json({ topBooks, topCategories, topAuthors })
     } catch (err) {
-      console.log(err)
+      res.status(400).json({ message: "Somthing Went Wrong" })
     }
   }
 
