@@ -82,7 +82,7 @@ const UserLogin = () => {
             <br />
             <Link to={"/register"} className='no-underline'>Create An Account</Link>
           </Form>
-          <Link to="http://localhost:5000/api/users/auth/google" className='no-underline'>
+          <Link to="http://52.95.227.24:5000/api/users/auth/google" className='no-underline'>
             <GoogleSignInButton />
           </Link>
         </Col>

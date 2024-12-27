@@ -5,22 +5,22 @@ const googleAuthCallback = (req, res, next) => {
   passport.authenticate('google', (err, data, info) => {
     if (err) {
       const errorMessage = encodeURIComponent('Authentication error occurred');
-      return res.redirect(`http://localhost:3000/register?error=${errorMessage}`);
+      return res.redirect(`https://www.mashood.site/register?error=${errorMessage}`);
     }
     const { user, token } = data;
     
     if (!user) {
       const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
-      return res.redirect(`http://localhost:3000/register?error=${errorMessage}`);
+      return res.redirect(`https://www.mashood.site/register?error=${errorMessage}`);
     }
     res.cookie('token', token, {
       httpOnly: true,
       secure: true
     })
     
-    return res.redirect('http://localhost:3000/');
+    return res.redirect('https://www.mashood.site');
     
-  })(req, res, next)
+  })(req, res, next);
 };
 
 module.exports = {
