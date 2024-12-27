@@ -48,7 +48,7 @@ function LibraryPage() {
     <>
       <Header />
       <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} />
-      <Suspense fallback={<ProductLoading />}>
+      <Suspense fallback={<ProductLoading/>}>
         {
           filteredBooks.length > 0 ?
             <>

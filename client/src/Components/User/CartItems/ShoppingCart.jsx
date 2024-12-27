@@ -23,20 +23,19 @@ const ShoppingCart = () => {
   const [availableCoupons, setAvailabeCoupons] = useState([])
 
   useEffect(() => {
-    if (!userId) {
-      return
-    } else {
+   
       const fetchCartData = async () => {
         try {
           const { data } = await axiosCartInstance.get(`/${userId}`)
           setCart(data.cart ? data.cart : {})
         } catch (err) {
-          navigate('/login')
           toast.error("Something Went Wrong. Please try later")
         }
       }
-      fetchCartData()
-    }
+      if(userId){
+        fetchCartData()
+      }
+     
   }, [userId])
 
   useEffect(() => {
@@ -146,7 +145,7 @@ const ShoppingCart = () => {
       }
       <Container>
         {
-          cart?.items?.length == 0 ?
+          (cart?.items?.length == 0 || !cart?.items)?
             <h1 className='empty-msg'>Your Cart is Empty</h1>
             :
             <>
@@ -221,7 +220,7 @@ const ShoppingCart = () => {
                     <div class="cart__total">
                       <h3 class="section__title">Available Coupons</h3>
                       {
-                        availableCoupons.length > 0 ? <table class="cart__total-table">
+                        availableCoupons?.length > 0 ? <table class="cart__total-table">
                           {availableCoupons.map((coupon) => {
                             return <tr>
                               <td>
