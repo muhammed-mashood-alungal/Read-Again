@@ -33,7 +33,7 @@ const WishlistItems = () => {
     try {
       if(!userId){
         navigate('/login')
-        toast.error("login First for add To cart")
+        return toast.error("login First for add To cart")
       }
        const itemInfo={
         productId : itemId,
@@ -54,7 +54,7 @@ const WishlistItems = () => {
       setSelectedItemId(null)
       if(!userId){
         navigate('/login')
-        toast.error("login First for Remove From Wislist")
+        return toast.error("login First for Remove From Wislist")
       }
       await axiosWishlistInstance.put(`/${userId}/remove-item`,{itemId})
       setWislist((wishlist)=>{

@@ -217,7 +217,7 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
 
 
   return (
-    <CContainer fluid className="p-3">
+    <CContainer  className="p-3 my-account-container">
       {isCancelling && (
         <ReasonPopUp
           isOpen={true}
@@ -236,11 +236,11 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
       )}
 
       {!isViewOrder ? (
-        <CCard className="shadow-sm">
+        <CCard className="shadow-sm ">
           <CCardHeader className="bg-white d-flex justify-content-between align-items-center">
             <h3 className="mb-0">Your Orders</h3>
           </CCardHeader>
-          <CCardBody>
+          <CCardBody className='order-listing-card'>
             {orders.length === 0 ? (
               <CRow className="justify-content-center">
                 <CCol md={6} className="text-center">

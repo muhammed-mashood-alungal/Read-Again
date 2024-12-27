@@ -42,3 +42,11 @@
     -ms-border-radius: 2.5rem;
     -o-border-radius: 2.5rem;
   } 
+
+@media  (max-width:768px){
+    .cart__btn{
+        position: absolute;
+        bottom: 0.6rem;
+        right: 0.25rem;
+    }
+}

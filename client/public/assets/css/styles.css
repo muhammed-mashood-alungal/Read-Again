@@ -1673,7 +1673,9 @@ table {
 
 .tab__content {
   border: 1px solid var(--border-color-alt);
+ 
 }
+
 
 .tab__header {
   background-color: var(--container-color);
@@ -1981,6 +1983,9 @@ table {
   .container {
     max-width: 570px;
   }
+  .my-account-container{
+    max-width: 360px !important;
+  }
 
   .products__container,
   .showcase__container,
@@ -2000,7 +2005,7 @@ table {
   }
 
   .home__img {
-    max-width: 300px;
+    max-width: 350px;
   }
 }
 
@@ -2009,6 +2014,7 @@ table {
   .category__item {
     padding-bottom: 1rem;
   }
+
 
   .category__img {
     margin-bottom: 1rem;

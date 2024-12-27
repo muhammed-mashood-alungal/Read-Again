@@ -146,9 +146,9 @@ module.exports = {
           return res.status(200).json({ success: true, userInfo, token })
         }
       }
-      return res.status(401).json({ success: false, message: "Invalid Creditial" })
+      return res.status(401).json({ success: false, message: "Invalid Credential" })
     } catch (err) {
-      return res.status(401).json({ success: false, message: "Invalid Creditial" })
+      return res.status(401).json({ success: false, message: "Invalid Credential" })
     }
   },
   async setNewPassword(req, res) {

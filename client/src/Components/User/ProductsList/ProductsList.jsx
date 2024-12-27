@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, addToWishlist } from '../../../redux/Actions/userActions';
 import { toast } from 'react-toastify';
 import { Rating, Stack } from '@mui/material';
-import ProductLoading from '../../LoadingComponents/ProductsLoading';
 
 const ProductList = ({ books, title }) => {
   const { userId } = useSelector(state => state.auth)
@@ -17,7 +16,7 @@ const ProductList = ({ books, title }) => {
   const handleAddToCart = (e, book) => {
     if (!userId) {
       navigate('/login')
-      toast.error("Login First for Add to cart")
+      return toast.error("Login First for Add to cart")
     }
     e.preventDefault()
     const itemInfo = {
@@ -30,7 +29,7 @@ const ProductList = ({ books, title }) => {
   const handleAddToWishlist = (e, itemId) => {
     if (!userId) {
       navigate('/login')
-      toast.error("Login First for Add to Wishlist")
+     return  toast.error("Login First for Add to Wishlist")
     }
     e.preventDefault()
     dispatch(addToWishlist(userId, itemId))
@@ -51,10 +50,12 @@ const ProductList = ({ books, title }) => {
     <Container>
       <section className="products container section">
         <Row>
-          <h3 className="section__title">
-            <span>{title}</span>
-          </h3>
-          {books?.length > 0 ? books?.map((book, index) => (
+          {
+            books.length > 0 && <h3 className="section__title">
+              <span>{title}</span>
+            </h3>
+          }
+          {books?.map((book, index) => (
             <Col key={book._id} md="4" lg="3" xs="6" className="mb-4">
               <Link to={`/book-details/${book._id}`} className='no-underline'>
                 <div className="product__item">
@@ -84,7 +85,7 @@ const ProductList = ({ books, title }) => {
                 </div>
               </Link>
             </Col>
-          )) : <ProductLoading />}
+          ))}
         </Row>
       </section>
     </Container>

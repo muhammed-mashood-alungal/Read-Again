@@ -66,7 +66,7 @@ const WalletPage = ({}) => {
   };
 
   return (
-    <CContainer fluid className="p-3">
+    <CContainer fluid className="p-3 my-account-container">
       <CRow>
         <CCol>
           <CCard className="shadow-sm">

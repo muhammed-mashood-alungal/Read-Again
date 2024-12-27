@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import { axiosBookInstance } from '../../redux/Constants/axiosConstants'
 import ProductList from '../../Components/User/ProductsList/ProductsList'
 import { toast } from 'react-toastify'
+import ProductLoading from '../../Components/LoadingComponents/ProductsLoading'
 
 function DetailsPage() {
   const {bookId} = useParams()
@@ -44,7 +45,7 @@ function DetailsPage() {
     <>
      <Header/>
      <ProductDetails bookData={bookData}/>
-     <Suspense fallback={<h1>loading...</h1>}>  
+     <Suspense fallback={<ProductLoading/>}>  
      <ProductList books={related} title={'Related Books'}/>
      </Suspense>    
      <Footer/>

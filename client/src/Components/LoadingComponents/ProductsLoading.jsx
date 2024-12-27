@@ -4,7 +4,7 @@ import { Container } from 'reactstrap';
 
 const ProductLoading = () => {
   return (
-    <Container>
+    <Container className='mt-5'>
     <CRow xs={{ cols: 1 }} md={{ cols: 2 }} xl={{ cols: 4 }} className="g-4">
       {[...Array(8)].map((_, index) => (
         <CCol key={index}>

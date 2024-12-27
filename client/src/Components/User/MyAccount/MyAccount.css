@@ -121,4 +121,10 @@
   .address-div::-webkit-scrollbar-thumb:hover {
     background: #088179;
   }
+  @media (max-width:768px){
+    .order-listing-card{
+      overflow: scroll;
+      width: 90% !important;
+    }
+  }
   

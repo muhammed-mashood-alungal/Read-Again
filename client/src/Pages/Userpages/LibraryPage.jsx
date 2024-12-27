@@ -11,16 +11,20 @@ function LibraryPage() {
   const [count, setCount] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
+  const [loading,setLoading]=useState(false)
   const limit = 8
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true)
         const response = await axiosBookInstance.get(`/list/filtered-books/${filterQuery}&limit=${limit}&page=${currentPage}`)
         let pages = Math.ceil(response?.data?.totalBooks / limit)
         setTotalPages(pages)
         setFilteredBooks(response.data.books)
       } catch (err) {
         console.log(err)
+      }finally{
+        setLoading(false)
       }
     }
     fetchProducts()
@@ -48,9 +52,13 @@ function LibraryPage() {
     <>
       <Header />
       <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} />
+      {
+        loading && <ProductLoading/>
+      }
       <Suspense fallback={<ProductLoading/>}>
+      
         {
-          filteredBooks.length > 0 ?
+          (filteredBooks.length > 0 &&  !loading) ?
             <>
               <ProductList books={filteredBooks} title={''} />
               <div className="text-center">

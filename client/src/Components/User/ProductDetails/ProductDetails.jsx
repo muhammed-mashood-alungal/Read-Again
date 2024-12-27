@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './ProductDetails.css'
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../../../redux/Actions/userActions";
+import { addToCart, addToWishlist } from "../../../redux/Actions/userActions";
 import { toast } from 'react-toastify';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
@@ -162,13 +162,19 @@ const ProductDetails = ({ bookData }) => {
 
   const handleAddToCart = (book) => {
     if (!userId) {
-      navigate('/login')
+     return navigate('/login')
     }
     const itemInfo = {
       productId: book._id,
       quantity: quantity
     }
     dispatch(addToCart(userId, itemInfo))
+  }
+  const handleAddToWishlist = ()=>{
+    if(!userId){
+      return navigate('/login')
+    }
+     dispatch(addToWishlist(userId, bookData?._id))
   }
 
 
@@ -305,10 +311,9 @@ const ProductDetails = ({ bookData }) => {
                 onChange={handleQuantityChange}
                 min={1}
                 max={bookData?.formats?.physical?.stock} />
-              <a href="#" className="details__action-btn"><i className="fi fi-rs-heart"></i></a>
+              <button onClick={handleAddToWishlist} className="details__action-btn"><i className="fi fi-rs-heart"></i></button>
               <button className="primary-btn" onClick={(e) => { handleAddToCart(bookData) }}>Add To Cart</button>
               <button className="primary-btn" onClick={buyNow}>Buy Now</button>
-              <button className="primary-btn">Borrow</button>
 
 
             </div>
