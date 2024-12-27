@@ -18,7 +18,7 @@ export const axiosCategoryInstance = axios.create({
     withCredentials: true
 })
 export const axiosAuthInstance = axios.create({
-    baseURL: `${BACKEND_BASE_URI}:5000/api/auth`,
+    baseURL: `${BACKEND_BASE_URI}/api/auth`,
     withCredentials: true
 })
 export const axiosCartInstance = axios.create({
