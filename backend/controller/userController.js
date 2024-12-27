@@ -86,7 +86,10 @@ module.exports = {
         const token = await generateToken({ id: response._id, role: userData.role })
         res.cookie('token', token, {
           httpOnly: true,
-          secure: true
+          secure: true,
+          sameSite: 'none',
+          path: '/',
+          maxAge: 24 * 60 * 60 * 1000
         })
         return res.status(200).json({ success: true, userData, token })
       } else {
@@ -135,7 +138,10 @@ module.exports = {
           const token = await generateToken({ id: doc._id, role: doc.role })
           res.cookie('token', token, {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: 'none',
+            path: '/',
+            maxAge: 24 * 60 * 60 * 1000
           })
           return res.status(200).json({ success: true, userInfo, token })
         }
@@ -158,7 +164,10 @@ module.exports = {
       const token = await generateToken({ id: userData._id, role: userData.role })
       res.cookie('token', token, {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'none',
+        path: '/',
+        maxAge: 24 * 60 * 60 * 1000
       })
       res.status(200).json({ success: true })
     } catch (err) {
@@ -380,10 +389,10 @@ module.exports = {
     try {
       const { userId } = req.params
       let wallet = await Wallet.findOne({ userId }).populate("userId")
-      if(!wallet){
-       return  res.status(200).json({ success: true, wallet: {balance:0 , transactions:[]} })
+      if (!wallet) {
+        return res.status(200).json({ success: true, wallet: { balance: 0, transactions: [] } })
       }
-      const transactions = await Transactions.find({ walletId: wallet._id }).populate("associatedOrder").sort({createdAt:-1})
+      const transactions = await Transactions.find({ walletId: wallet._id }).populate("associatedOrder").sort({ createdAt: -1 })
       const walletData = wallet.toObject()
       walletData.transactions = transactions
       res.status(200).json({ success: true, wallet: walletData })
@@ -401,14 +410,14 @@ module.exports = {
       res.status(400).json({ success: false, availableCoupons: [] })
     }
   },
-  async getUserWalletBalance(req,res){
+  async getUserWalletBalance(req, res) {
     try {
-      const {userId} =req.params
-      const wallet =await Wallet.findOne({userId})
-      res.status(200).json({success:true,balance:wallet?.balance || 0})
+      const { userId } = req.params
+      const wallet = await Wallet.findOne({ userId })
+      res.status(200).json({ success: true, balance: wallet?.balance || 0 })
     } catch (error) {
-      res.status(400).json({succes:false,message:error?.message})
+      res.status(400).json({ succes: false, message: error?.message })
     }
   }
- 
+
 }

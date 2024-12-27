@@ -63,7 +63,10 @@ module.exports = {
           const token = await generateToken({ id: Admin._id, role: Admin.role })
           res.cookie('token', token, {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: 'none',
+            path: '/', 
+            maxAge: 24 * 60 * 60 * 1000
           })
 
           return res.status(200).json({ success: true, token })

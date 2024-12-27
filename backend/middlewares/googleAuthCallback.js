@@ -8,18 +8,21 @@ const googleAuthCallback = (req, res, next) => {
       return res.redirect(`https://www.mashood.site/register?error=${errorMessage}`);
     }
     const { user, token } = data;
-    
+
     if (!user) {
       const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
       return res.redirect(`https://www.mashood.site/register?error=${errorMessage}`);
     }
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+      maxAge: 24 * 60 * 60 * 1000
     })
-    
+
     return res.redirect('https://www.mashood.site');
-    
+
   })(req, res, next);
 };
 
