@@ -106,7 +106,7 @@ const Register = () => {
             
             <Link to={'/login'} className='no-underline'>Already Have an Account ? </Link>
           </Form>
-          <Link to="http://52.95.227.24:5000/api/users/auth/google" className='no-underline'>
+          <Link to="https://52.95.227.24:5000/api/users/auth/google" className='no-underline'>
             <GoogleSignInButton/>
           </Link>
         </Col>

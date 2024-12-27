@@ -1,46 +1,46 @@
 import axios from 'axios'
-
+const BACKEND_BASE_URI = 'https://52.95.227.24:5000'
 export const axiosUserInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/users",
+    baseURL:`${BACKEND_BASE_URI}/api/users`,
     withCredentials: true
 })
 export const axiosAdminInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/admin",
+    baseURL:`${BACKEND_BASE_URI}/api/admin`,
     withCredentials: true
 })
 export const axiosBookInstance = axios.create({
-      baseURL:"http://52.95.227.24:5000/api/books",
+      baseURL:`${BACKEND_BASE_URI}/api/books`,
       withCredentials: true
 })
 export const axiosCategoryInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/categories",
+    baseURL:`${BACKEND_BASE_URI}/api/categories`,
     withCredentials: true
 })
 export const axiosAuthInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/auth",
+    baseURL:`${BACKEND_BASE_URI}:5000/api/auth`,
     withCredentials:true
 })
 export const axiosCartInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/cart",
+    baseURL:`${BACKEND_BASE_URI}/api/cart`,
     withCredentials: true
 })
 export const axiosOrderInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/orders",
+    baseURL:`${BACKEND_BASE_URI}/api/orders`,
     withCredentials: true
 })
 export const axiosCouponInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/coupons",
+    baseURL:`${BACKEND_BASE_URI}api/coupons`,
     withCredentials: true
 })
 export const axiosWishlistInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/wishlist",
+    baseURL:`${BACKEND_BASE_URI}/api/wishlist`,
     withCredentials: true
 })
 export const axiosOfferInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/offers",
+    baseURL:`${BACKEND_BASE_URI}/api/offers`,
     withCredentials: true
 })
 export const axiosRazorpayInstance = axios.create({
-    baseURL:"http://52.95.227.24:5000/api/razorpay",
+    baseURL:`${BACKEND_BASE_URI}/api/razorpay`,
     withCredentials: true
 })
