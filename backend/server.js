@@ -28,7 +28,7 @@ app.use('/public/images', express.static(path.join(__dirname, 'public/images')))
 connectDB()
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://www.mashood.site'],
+    origin: ['http://localhost:3000', 'https://www.mashood.site','https://mashood.site'],
     credentials: true
 }))
 app.use(passport.initialize());

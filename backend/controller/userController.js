@@ -75,12 +75,13 @@ module.exports = {
       } else {
         userData = {
           ...req.body.userData,
+          email:req.body.userData?.email?.toLowerCase(), 
           role: "USER",
           password: password
         }
         response = await User.create(userData)
       }
-
+    
       if (response) {
         delete userData.password
         const token = await generateToken({ id: response._id, role: userData.role })
@@ -91,11 +92,14 @@ module.exports = {
           path: '/',
           maxAge: 24 * 60 * 60 * 1000
         })
+        console.log(userData)
         return res.status(200).json({ success: true, userData, token })
       } else {
+      
         return res.status(400).json({ success: false, message: "something went wrong" })
       }
     } catch (err) {
+      console.log(err)
       return res.status(400).json({ success: false, message: err ? err : "Somthing went Wrong" })
     }
   },
@@ -127,7 +131,7 @@ module.exports = {
   async login(req, res) {
     try {
       const { email, password } = req.body.userData
-      const doc = await User.findOne({ email })
+      const doc = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } })
       if (doc.isBlocked) {
         return res.status(401).json({ success: false, message: "You are temporarily Banned " })
       }

@@ -15,7 +15,7 @@
   }
   @media (max-width: 768px) {
     .imageZoom  {
-      width: 365px; 
+      width: 200%; 
     }
   }
   

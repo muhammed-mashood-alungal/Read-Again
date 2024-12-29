@@ -18,8 +18,6 @@ module.exports = {
                     }
                     imagePaths.push(path)
                 }
-
-
             }
 
             formats = JSON.parse(formats)

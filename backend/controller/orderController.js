@@ -118,7 +118,8 @@ module.exports = {
                 return item
             })
             if (status == "Delivered") {
-                order.paymentStatus == "Success"
+                order.paymentStatus = "Success"
+                order.deliveryDate = Date().now
             }
             order.save()
             res.status(200).json({ success: true })
