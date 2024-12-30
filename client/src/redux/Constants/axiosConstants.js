@@ -29,7 +29,7 @@ export const axiosOrderInstance = axios.create({
     withCredentials: true
 })
 export const axiosCouponInstance = axios.create({
-    baseURL: `${BACKEND_BASE_URI}api/coupons`,
+    baseURL: `${BACKEND_BASE_URI}/api/coupons`,
     withCredentials: true
 })
 export const axiosWishlistInstance = axios.create({
