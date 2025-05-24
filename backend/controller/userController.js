@@ -92,7 +92,6 @@ module.exports = {
           path: '/',
           maxAge: 24 * 60 * 60 * 1000
         })
-        console.log(userData)
         return res.status(200).json({ success: true, userData, token })
       } else {
       
