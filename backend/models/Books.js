@@ -46,9 +46,6 @@ const BookSchema = mongoose.Schema({
         price:{
             type:Number
         },
-        offerPrice:{
-            type:Number
-        },
         stock:{
             type:Number
         }
@@ -56,9 +53,6 @@ const BookSchema = mongoose.Schema({
     ebook:{
         price:{
             type:Number
-        },
-        offerPrice:{
-           type:Number
         },
         fileUrl:{
             type:String
@@ -71,9 +65,6 @@ const BookSchema = mongoose.Schema({
         price:{
             type:Number
         },
-        offerPrice:{
-            type:Number
-         },
         duration:{
             Number
         },

@@ -108,12 +108,20 @@ const Checkout = () => {
     }
   }
 
+  // const getPrice = (book) => {
+  //   if ( book?.appliedOffer && book?.appliedOffer?.isActive ) {
+  //     return book.formats.physical.offerPrice
+  //   }
+  //   return book.formats.physical.price
+  // }
   const getPrice = (book) => {
-    if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
-      return book.formats.physical.offerPrice
+    if (book?.appliedOffer?.isActive) {
+      const originalPrice = book.formats?.physical?.price
+      const offerPrice = originalPrice - (originalPrice * (book.appliedOffer.discountValue / 100))
+      return offerPrice
     }
     return book.formats.physical.price
-  }
+  } 
 
 
   const handleOnlinePayment = (amount) => {
@@ -202,6 +210,7 @@ const Checkout = () => {
                   <th className="text-start">Index</th>
                   <th className="text-start">Book</th>
                   <th className='text-start'>Quantity</th>
+                  <th className='text-start'>Price</th>
                   <th className='text-start'>Total</th>
                 </tr>
                 {cart?.items?.map((item, i) => {
@@ -214,7 +223,8 @@ const Checkout = () => {
                       <strong>{item?.productId?.title}</strong>
                     </td>
                     <td className="text-start">{item.quantity}</td>
-                    <td className="text-start">₹{getPrice(item.productId)}</td>
+                     <td className="text-start">{getPrice(item.productId)}</td>
+                    <td className="text-start">₹{getPrice(item.productId) * item.quantity}</td>
                   </tr>
                 })}
 

@@ -86,6 +86,7 @@ const CategoryForm = () => {
 
   const handleUpdateCategory =async (e) => {
     try{
+      console.log('Updating')
       e.preventDefault()
       if(name.trim() ==""){
         toast.error("Enter a Category Name")
@@ -99,13 +100,15 @@ const CategoryForm = () => {
       }
       const token= localStorage.getItem("token")
       const response = await axiosCategoryInstance.put(`/${categoryData._id}/edit`,formData)
+      console.log(response)
       if(response.status ==200){
         navigate('/admin/category')
         toast.success("Category Saved Successfully")
         setIsCreateForm(true)
       }
     }catch(err){
-      toast.error(err?.respons?.data?.message)
+      console.log(err)
+      toast.error(err?.response?.data?.message)
     }
   };
 

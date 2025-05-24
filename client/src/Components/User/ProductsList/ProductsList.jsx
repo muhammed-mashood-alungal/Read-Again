@@ -36,9 +36,11 @@ const ProductList = ({ books, title }) => {
   }
   const renderProductPrice = (book) => {
     const formats = book.formats
-    if (formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive) {
+  
+    if (book.appliedOffer && book?.appliedOffer?.isActive) {
+      const offerPrice = formats?.physical?.price - (formats?.physical?.price * (book?.appliedOffer.discountValue / 100))
       return <>
-        <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
+        <span className='new__price'>₹{offerPrice}</span>
         <span className='old__price'>₹{formats?.physical?.price}</span>
       </>
     } else {

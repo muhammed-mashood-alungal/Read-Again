@@ -80,8 +80,8 @@ module.exports = {
 
                 }
                 book.formats.physical.stock = book?.formats?.physical?.stock - orderDetails.items[i].quantity
-                if (book.appliedOffer) {
-                    response.totalDiscount += book.formats.physical.price - book.formats.physical.offerPrice
+                if (book.appliedOffer && book.appliedOffer?.isActive) {
+                    response.totalDiscount += book.formats.physical.price - orderDetails.items[i].unitPrice
                     response.save()
                 }
                 if (book.formats.physical.stock == 0) {

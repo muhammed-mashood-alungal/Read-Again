@@ -108,11 +108,24 @@ const ProductDetails = ({ bookData }) => {
   }
 
 
+  // const renderProductPrice = (book) => {
+  //   const formats = book.formats
+  //   if (formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive) {
+  //     return <>
+  //       <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
+  //       <span className='old__price'>₹{formats?.physical?.price}</span>
+  //     </>
+  //   } else {
+  //     return <span className='new__price'>₹{formats?.physical?.price}</span>
+  //   }
+  // }
   const renderProductPrice = (book) => {
     const formats = book.formats
-    if (formats?.physical?.offerPrice != null && book?.appliedOffer?.isActive) {
+  
+    if (book.appliedOffer && book?.appliedOffer?.isActive) {
+      const offerPrice = formats?.physical?.price - (formats?.physical?.price * (book?.appliedOffer.discountValue / 100))
       return <>
-        <span className='new__price'>₹{formats?.physical?.offerPrice}</span>
+        <span className='new__price'>₹{offerPrice}</span>
         <span className='old__price'>₹{formats?.physical?.price}</span>
       </>
     } else {
@@ -179,11 +192,19 @@ const ProductDetails = ({ bookData }) => {
 
 
 
+  // const getPrice = (book) => {
+  //   if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
+  //     return book.formats.physical.offerPrice
+  //   }
+  //   return book?.formats.physical.price
+  // }
   const getPrice = (book) => {
-    if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
-      return book.formats.physical.offerPrice
+    if (book?.appliedOffer?.isActive) {
+      const originalPrice = book.formats?.physical?.price
+      const offerPrice = originalPrice - (originalPrice * (book.appliedOffer.discountValue / 100))
+      return offerPrice
     }
-    return book?.formats.physical.price
+    return book.formats.physical.price
   }
 
   const buyNow = () => {

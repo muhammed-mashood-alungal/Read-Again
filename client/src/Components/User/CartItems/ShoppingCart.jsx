@@ -128,8 +128,10 @@ const ShoppingCart = () => {
   }
 
   const getPrice = (book) => {
-    if (book?.appliedOffer?.isActive && book.formats.physical.offerPrice) {
-      return book.formats.physical.offerPrice
+    if (book?.appliedOffer?.isActive) {
+      const originalPrice = book.formats?.physical?.price
+      const offerPrice = originalPrice - (originalPrice * (book.appliedOffer.discountValue / 100))
+      return offerPrice
     }
     return book.formats.physical.price
   }

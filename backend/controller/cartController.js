@@ -11,8 +11,9 @@ module.exports = {
       }
       const cart = await Cart.findOne({ userId })
       const productData = await Book.findOne({ _id: itemInfo.productId, isDeleted: false }).populate("appliedOffer")
-      if (productData.appliedOffer?.isActive && productData.formats?.physical?.offerPrice) {
-        productData.price = productData.formats?.physical?.offerPrice
+      if (productData.appliedOffer?.isActive) {
+        const originalPrice = productData?.formats?.physical?.price
+        productData.price = originalPrice - (originalPrice * (productData.appliedOffer.discountValue / 100))
       } else {
         productData.price = productData.formats?.physical?.price
       }
@@ -73,13 +74,15 @@ module.exports = {
       const updatedItems = await Promise.all(
         cart.items.map(async (item) => {
           const offer = await Offer.findOne({ _id: item?.productId?.appliedOffer });
-          if (offer) {
+          if (offer && offer.isActive) {
             item.productId.appliedOffer = offer;
-            totalAmount += item.productId.formats.physical.offerPrice * item.quantity
+            const originalPrice = item?.productId?.formats?.physical?.price
+            const productPrice = originalPrice - (originalPrice * (item?.productId?.appliedOffer?.discountValue / 100))
+            totalAmount += productPrice * item.quantity
           } else {
             totalAmount += item.productId.formats.physical.price * item.quantity
           }
-          if (!item?.productId?.isDeleted) {
+          if (!item?.productId?.isDeleted && item?.productId?.formats?.physical?.stock != 0) {
             return item;
           }
           cart.totalQuantity -= item.quantity;
@@ -92,6 +95,7 @@ module.exports = {
 
       res.status(200).json({ success: true, cart });
     } catch (err) {
+      console.log(err)
       res.status(400).json({ success: false, message: "Something Went Wrong while fetching Cart" });
     }
   },

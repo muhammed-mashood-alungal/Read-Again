@@ -70,11 +70,24 @@ const WishlistItems = () => {
   const onCancel =()=>{
     setSelectedItemId(null)
   }
-  const getPrice=(book)=>{
-    if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
-      return book.formats.physical.offerPrice
+  // const getPrice=(book)=>{
+  //   if(book?.appliedOffer?.isActive && book.formats.physical.offerPrice){
+  //     return book.formats.physical.offerPrice
+  //   }
+  //   return book.formats.physical.price
+  // }
+  const renderProductPrice = (book) => {
+    const formats = book.formats
+  
+    if (book.appliedOffer && book?.appliedOffer?.isActive) {
+      const offerPrice = formats?.physical?.price - (formats?.physical?.price * (book?.appliedOffer.discountValue / 100))
+      return <>
+        <span className='new__price m-1'>₹{offerPrice}</span>
+        <span className='old__price'>₹{formats?.physical?.price}</span>
+      </>
+    } else {
+      return <span className='new__price'>₹{formats?.physical?.price}</span>
     }
-    return book.formats.physical.price
   }
 
   return (
@@ -115,7 +128,7 @@ const WishlistItems = () => {
                     <span className="table__price">{item.stockStatus}</span>
                   </td>
                   <td>
-                    <span className="table__stock">{getPrice(item)}</span>
+                    <span className="table__stock">{renderProductPrice(item)}</span>
                   </td>
                   <td>
                     <button className='primary-btn' onClick={(e)=>handleAddToCart(item._id)}>
