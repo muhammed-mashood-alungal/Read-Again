@@ -372,12 +372,12 @@ module.exports = {
       }).populate("category");
 
       const categories = ["Finance", "Self-Help", "Fiction", "Non-Fiction"];
-
-      const showcaseData = categories.map((categoryTitle) => {
+      console.log(categories)
+      const showcaseData = categories?.map((categoryTitle) => {
         const categoryBooks = books.filter(
-          (book) => book.category.name === categoryTitle
+          (book) => book?.category?.name === categoryTitle
         );
-
+      
         const products = categoryBooks.map((book) => ({
           _id: book._id,
           images: book.images,
@@ -385,12 +385,13 @@ module.exports = {
           formats: book.formats,
           appliedOffer: book.appliedOffer,
         }));
-
+      
         return {
           title: categoryTitle,
           products: products,
         };
       });
+      console.log(showcaseData)
       res.status(200).json({ showcaseData: showcaseData });
     } catch (error) {
       console.error(error);
