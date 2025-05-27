@@ -100,7 +100,7 @@ const Register = () => {
               />
             </FormGroup>
             
-            <button color="primary" block className="mt-3 mb-3 primary-btn" >
+            <button color="primary" block className="mt-3 mb-3  w-100 primary-btn" >
               Submit & Register
             </button><br />
             
