@@ -161,6 +161,8 @@ module.exports = {
         if (isMatched) {
           const { password, ...userInfo } = doc;
           const token = await generateToken({ id: doc._id, role: doc.role });
+          console.log(process.env.NODE_ENV)
+          console.log(process.env.NODE_ENV === "production")
           res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",

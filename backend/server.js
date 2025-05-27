@@ -71,6 +71,8 @@ app.use((err, req, res, next) => {
 });
 
 require("./utils/cronScheduler.js");
+
+
 app.listen(process.env.PORT, () => {
-  console.log("Server Started Succefully");
+  console.log("Server Started Succesfully");
 });
