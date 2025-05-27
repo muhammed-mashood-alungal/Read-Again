@@ -1,6 +1,6 @@
 const Book = require("../models/Books");
 const Offer = require("../models/Offer");
-
+const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 module.exports = {
   async createOffer(req, res) {
     try {
@@ -14,33 +14,18 @@ module.exports = {
           for (let book of books) {
             book.appliedOffer = newOffer._id;
             await book.save();
-            // const formatsKeys = Object.keys(book.formats)
-            // for (let key of formatsKeys) {
-            //   const format = book.formats[key]
-            //   const originalPrice = format.price || 0
-            //   const offerPrice = originalPrice - (originalPrice * (newOffer.discountValue / 100))
-            //   book.formats[key].offerPrice = offerPrice.toFixed()
-            //   await book.save()
-            // }
           }
         }
       } else if (offerData.applicableTo == "PRODUCT") {
         for (let productId of offerData.applicableProducts) {
           const book = await Book.findOne({ _id: productId });
           book.appliedOffer = newOffer._id;
-          // const formatsKeys = Object.keys(book.formats)
-          // for (let key of formatsKeys) {
-          //   const format = book.formats[key]
-          //   const originalPrice = format.price || 0
-          //   const offerPrice = Math.max(originalPrice - (originalPrice * (newOffer.discountValue / 100)), originalPrice - newOffer.maxDiscount)
-          //   book.formats[key].offerPrice = offerPrice.toFixed()
-          // }
           book.save();
         }
       }
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (error) {
-      res.status(400).json({ success: false, message: "Something Went Wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
   },
   async getAllOffers(req, res) {
@@ -60,9 +45,9 @@ module.exports = {
         .populate("applicableProducts")
         .populate("applicableCategories");
       const totalOffers = await Offer.countDocuments({});
-      res.status(200).json({ success: true, offers: offers, totalOffers });
+      res.status(StatusCodes.OK).json({ success: true, offers: offers, totalOffers });
     } catch (error) {
-      res.status(400).json({ success: false, message: "Something Went wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
   },
   async getOfferDetails(req, res) {
@@ -71,9 +56,9 @@ module.exports = {
       const offer = await Offer.findOne({ _id: offerId })
         .populate("applicableProducts")
         .populate("applicableCategories");
-      res.status(200).json({ success: true, offer: offer });
+      res.status(StatusCodes.OK).json({ success: true, offer: offer });
     } catch (error) {
-      res.status(400).json({ success: false, message: "Something Went wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
   },
   async handleOfferActivation(req, res) {
@@ -87,17 +72,15 @@ module.exports = {
         const offeredBooks = await Book.find({ appliedOffer: offer._id });
         for (let book of offeredBooks) {
           const formatsKeys = Object.keys(book.formats);
-
-          //  book.formats[key].offerPrice = null
           book.appliedOffer = null;
 
           book.save();
         }
       }
       await offer.save();
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (error) {
-      res.status(400).json({ message: "Something went Wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
   },
   async updateOffer(req, res) {
@@ -122,39 +105,18 @@ module.exports = {
           for (let book of books) {
             book.appliedOffer = offerId;
             await book.save();
-            // const formatsKeys = Object.keys(book.formats);
-            // for (let key of formatsKeys) {
-            //   const format = book.formats[key];
-            //   const originalPrice = format.price || 0;
-            //   const offerPrice = Math.max(
-            //     originalPrice -
-            //       originalPrice * (newOfferData.discountValue / 100),
-            //     originalPrice - newOfferData.maxDiscount
-            //   );
-            //   book.formats[key].offerPrice = offerPrice.toFixed();
-            //   await book.save();
-            // }
           }
         }
       } else if (newOfferData.applicableTo == "PRODUCT") {
         for (let productId of newOfferData.applicableProducts) {
           const book = await Book.findOne({ _id: productId });
           book.appliedOffer = offerId;
-          // const formatsKeys = Object.keys(book.formats);
-          // for (let key of formatsKeys) {
-          //   const format = book.formats[key];
-          //   const originalPrice = format.price || 0;
-          //   const offerPrice =
-          //     originalPrice -
-          //     originalPrice * (newOfferData.discountValue / 100);
-          //   book.formats[key].offerPrice = offerPrice.toFixed();
-          // }
           book.save();
         }
       }
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (error) {
-      res.status(400).json({ message: "Something Went Wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
 };

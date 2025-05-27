@@ -9,7 +9,7 @@ const Wallet = require("../models/Wallet");
 const Transactions = require("../models/WalletTransactions");
 const { getAddressString } = require("../services/userServices");
 const Coupon = require("../models/Coupon");
-
+const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 module.exports = {
   async sendOTP(req, res) {
     try {
@@ -35,12 +35,11 @@ module.exports = {
         html: `Hello your OTP for <b>Read Again</b> bookstore is <b>${otp}</b>.This will expires after 1 minute`,
       });
 
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      console.log(err)
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Something Went Wrong while creting OTP",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -51,19 +50,19 @@ module.exports = {
       const doc = await Otp.findOne({ email: email });
       if (!doc) {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "OTP verification failed" });
       }
       if (doc.otp == otp) {
-        return res.status(200).json({ success: true });
+        return res.status(StatusCodes.OK).json({ success: true });
       } else {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "OTP verification failed" });
       }
     } catch (err) {
       res
-        .status(400)
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: "OTP verification failed" });
     }
   },
@@ -105,20 +104,26 @@ module.exports = {
           secure: process.env.NODE_ENV === "production",
           sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           path: "/",
-          domain: process.env.NODE_ENV === "production" ? ".mashood.site" : undefined,
+          domain:
+            process.env.NODE_ENV === "production" ? ".mashood.site" : undefined,
           maxAge: 24 * 60 * 60 * 1000,
         });
-        return res.status(200).json({ success: true, userData, token });
+        return res
+          .status(StatusCodes.OK)
+          .json({ success: true, userData, token });
       } else {
         return res
-          .status(400)
-          .json({ success: false, message: "something went wrong" });
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ success: false, message: ReasonPhrases.BAD_REQUEST });
       }
     } catch (err) {
       console.log(err);
       return res
-        .status(400)
-        .json({ success: false, message: err ? err : "Somthing went Wrong" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          success: false,
+          message: err ? err : ReasonPhrases.INTERNAL_SERVER_ERROR,
+        });
     }
   },
   async isEmailExist(req, res) {
@@ -126,12 +131,14 @@ module.exports = {
       const { email } = req.params;
       const user = await User.findOne({ email });
       if (user && user?.password) {
-        return res.status(409).json({ exist: true, user });
+        return res.status(StatusCodes.CONFLICT).json({ exist: true, user });
       } else {
-        return res.status(200).json({ exist: false, user });
+        return res.status(StatusCodes.OK).json({ exist: false, user });
       }
     } catch (err) {
-      res.status(500).json({ exist: false, message: err });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ exist: false, message: err });
     }
   },
 
@@ -140,9 +147,9 @@ module.exports = {
     const user = await User.findOne({ email });
 
     if (user) {
-      return res.status(409).json({ exist: true });
+      return res.status(StatusCodes.CONFLICT).json({ exist: true });
     } else {
-      return res.status(200).json({ exist: false });
+      return res.status(StatusCodes.OK).json({ exist: false });
     }
   },
   async login(req, res) {
@@ -153,34 +160,37 @@ module.exports = {
       });
       if (doc.isBlocked) {
         return res
-          .status(401)
-          .json({ success: false, message: "You are temporarily Banned " });
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ success: false, message: "You are temporarily Banned" });
       }
       if (doc) {
         const isMatched = await bcrypt.compare(password, doc.password);
         if (isMatched) {
           const { password, ...userInfo } = doc;
           const token = await generateToken({ id: doc._id, role: doc.role });
-          console.log(process.env.NODE_ENV)
-          console.log(process.env.NODE_ENV === "production")
           res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
-            domain: process.env.NODE_ENV === "production" ? ".mashood.site" : undefined,
+            domain:
+              process.env.NODE_ENV === "production"
+                ? ".mashood.site"
+                : undefined,
             maxAge: 24 * 60 * 60 * 1000,
           });
-          return res.status(200).json({ success: true, userInfo, token });
+          return res
+            .status(StatusCodes.OK)
+            .json({ success: true, userInfo, token });
         }
       }
       return res
-        .status(401)
+        .status(StatusCodes.UNAUTHORIZED)
         .json({ success: false, message: "Invalid Credential" });
     } catch (err) {
       return res
-        .status(401)
-        .json({ success: false, message: "Invalid Credential" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async setNewPassword(req, res) {
@@ -206,14 +216,15 @@ module.exports = {
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
-        domain: process.env.NODE_ENV === "production" ? ".mashood.site" : undefined,
+        domain:
+          process.env.NODE_ENV === "production" ? ".mashood.site" : undefined,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
       res
-        .status(400)
-        .json({ success: false, message: "Something Went Wrong !" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async changePassword(req, res) {
@@ -226,16 +237,16 @@ module.exports = {
         const hashed = await hashPassword(newPass);
         userDoc.password = hashed;
         userDoc.save();
-        return res.status(200).json({ success: true });
+        return res.status(StatusCodes.OK).json({ success: true });
       } else {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "Current Password Doesn't Match" });
       }
     } catch (err) {
-      return res.status(400).json({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Something Went Wrong While changing Pass",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -271,7 +282,7 @@ module.exports = {
   async getUserData(req, res) {
     try {
       if (req.user) {
-        res.status(200).json({ success: true, userData: req.user });
+        res.status(StatusCodes.OK).json({ success: true, userData: req.user });
       }
       const { userId } = req.params;
       const userData = await User.findOne({ _id: userId });
@@ -282,9 +293,11 @@ module.exports = {
         addresses,
       };
 
-      res.status(200).json({ success: true, userData: data });
+      res.status(StatusCodes.OK).json({ success: true, userData: data });
     } catch (err) {
-      res.status(400).json({ success: false, error: "Something went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, error: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async blockUser(req, res) {
@@ -298,10 +311,10 @@ module.exports = {
           },
         }
       );
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(400);
-      throw new Error("Something Went Wrong While Blocking");
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+      throw new Error(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   },
   async unBlockUser(req, res) {
@@ -315,10 +328,10 @@ module.exports = {
           },
         }
       );
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(500);
-      throw new Error("Something Went Wrong While Blocking");
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+      throw new Error(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   },
   async verifyToken() {
@@ -326,15 +339,19 @@ module.exports = {
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({ message: "No token provided" });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: "No token provided" });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
-        return res.status(403).json({ message: "Token is invalid" });
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Token is invalid" });
       }
 
-      res.status(200).json({ message: "Token is valid" });
+      res.status(StatusCodes.OK).json({ message: "Token is valid" });
     });
   },
   logout(req, res) {
@@ -344,9 +361,13 @@ module.exports = {
         secure: false,
       });
 
-      return res.status(200).json({ message: "Logged out successfully" });
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: "Logged out successfully" });
     } catch (err) {
-      return res.status(400).json({ message: "Logged out Failed !" });
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Logged out Failed !" });
     }
   },
   async editProfile(req, res) {
@@ -366,11 +387,11 @@ module.exports = {
         { new: true }
       );
 
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Something Went Wrong While Updating User data",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -386,7 +407,7 @@ module.exports = {
           const newAdd = getAddressString(addressData);
           if (existingAddress == newAdd) {
             return res
-              .status(400)
+              .status(StatusCodes.BAD_REQUEST)
               .json({ success: false, message: "Address Should be Unique" });
           }
         }
@@ -400,11 +421,13 @@ module.exports = {
       } else {
         newAddress = await Address.create({ ...addressData, userId });
       }
-      res.status(200).json({ success: true, newAddress: newAddress });
+      res
+        .status(StatusCodes.OK)
+        .json({ success: true, newAddress: newAddress });
     } catch (err) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Something Went Wrong While adding Address",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -412,11 +435,11 @@ module.exports = {
     try {
       const { userId } = req.params;
       const addresses = Address.find({ userId: userId });
-      res.status(200).json({ addresses });
+      res.status(StatusCodes.OK).json({ addresses });
     } catch (err) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         succes: false,
-        message: "Something Went Wrong While Fetching Address",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -430,11 +453,11 @@ module.exports = {
           $set: address,
         }
       );
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         succes: false,
-        message: "Something went wrong while updating the Address ",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -442,11 +465,11 @@ module.exports = {
     try {
       const { addressId } = req.params;
       await Address.deleteOne({ _id: addressId });
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         succes: false,
-        message: "Somthing went Wrong While Deleting Address",
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -459,9 +482,11 @@ module.exports = {
         { isDefault: false }
       );
       await Address.findOneAndUpdate({ _id: addressId }, { isDefault: true });
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(400).json({ message: "Somthing Went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getUserWallet(req, res) {
@@ -470,7 +495,7 @@ module.exports = {
       let wallet = await Wallet.findOne({ userId }).populate("userId");
       if (!wallet) {
         return res
-          .status(200)
+          .status(StatusCodes.OK)
           .json({ success: true, wallet: { balance: 0, transactions: [] } });
       }
       const transactions = await Transactions.find({ walletId: wallet._id })
@@ -478,9 +503,11 @@ module.exports = {
         .sort({ createdAt: -1 });
       const walletData = wallet.toObject();
       walletData.transactions = transactions;
-      res.status(200).json({ success: true, wallet: walletData });
+      res.status(StatusCodes.OK).json({ success: true, wallet: walletData });
     } catch (err) {
-      res.status(400).json({ succes: false, message: "Something went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ succes: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getAvailableCoupons(req, res) {
@@ -491,18 +518,24 @@ module.exports = {
         _id: { $nin: [user.usedCoupons] },
         isActive: true,
       });
-      res.status(200).json({ success: true, availableCoupons });
+      res.status(StatusCodes.OK).json({ success: true, availableCoupons });
     } catch (err) {
-      res.status(400).json({ success: false, availableCoupons: [] });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, availableCoupons: [] });
     }
   },
   async getUserWalletBalance(req, res) {
     try {
       const { userId } = req.params;
       const wallet = await Wallet.findOne({ userId });
-      res.status(200).json({ success: true, balance: wallet?.balance || 0 });
+      res
+        .status(StatusCodes.OK)
+        .json({ success: true, balance: wallet?.balance || 0 });
     } catch (error) {
-      res.status(400).json({ succes: false, message: error?.message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ succes: false, message: error?.message });
     }
   },
 };

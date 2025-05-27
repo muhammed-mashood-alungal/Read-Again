@@ -1,7 +1,7 @@
 const Book = require("../models/Books");
 const Category = require("../models/Category");
 const { handleUpload, deleteImage } = require("../utils/cloudinary");
-
+const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 module.exports = {
   async addCategory(req, res) {
     try {
@@ -11,7 +11,9 @@ module.exports = {
       });
 
       if (isCategoryExist) {
-        return res.status(400).json({ message: "Category already exists." });
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ message: "Category already exists." });
       }
 
       const b64 = Buffer.from(req.file.buffer).toString("base64");
@@ -26,11 +28,11 @@ module.exports = {
         },
       });
       await newCategory.save();
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
       res
-        .status(400)
-        .json({ success: false, message: "Error while Creating category" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getAllCategories(req, res) {
@@ -49,17 +51,17 @@ module.exports = {
           updatedAt: new Date(category.updatedAt).toUTCString().slice(5, 16),
         };
       });
-      res.status(200).json({ categories: categories });
+      res.status(StatusCodes.OK).json({ categories: categories });
     } catch (err) {
-      res.status(400).json({ messsage: err });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err });
     }
   },
   async getListedCategories(req, res) {
     try {
       const categories = await Category.find({ listed: true });
-      res.status(200).json({ categories: categories });
+      res.status(StatusCodes.OK).json({ categories: categories });
     } catch (err) {
-      res.status(400).json({ messsage: err });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err });
     }
   },
   async getCategoryData(req, res) {
@@ -67,9 +69,9 @@ module.exports = {
       const categoryData = await Category.findOne({
         _id: req.params.categoryId,
       });
-      res.status(200).json({ categoryData: categoryData });
+      res.status(StatusCodes.OK).json({ categoryData: categoryData });
     } catch (err) {
-      res.status(400).json({ messsage: err });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err });
     }
   },
   async updateCategory(req, res) {
@@ -80,8 +82,9 @@ module.exports = {
       });
 
       if (isCategoryExist) {
-        console.log("Category Exists");
-        return res.status(400).json({ message: "Category already exists." });
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ message: "Category already exists." });
       }
 
       const { categoryId } = req.params;
@@ -104,12 +107,12 @@ module.exports = {
       }
 
       updatedCategory.save();
-      res.status(200).json({ success: true, updatedCategory });
+      res.status(StatusCodes.OK).json({ success: true, updatedCategory });
     } catch (err) {
       console.log(err);
       res
-        .status(400)
-        .json({ success: false, message: "Error while updating category" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async listOrUnlistCategory(req, res) {
@@ -117,7 +120,9 @@ module.exports = {
       const { categoryId } = req.params;
       const category = await Category.findOne({ _id: categoryId });
       if (!category) {
-        return res.status(404).json({ message: "No such Category Found" });
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: "No such Category Found" });
       }
       category.listed = !category.listed;
       await Book.updateMany(
@@ -129,9 +134,11 @@ module.exports = {
         }
       );
       await category.save();
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(500).json({ message: "Someething Went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
 };

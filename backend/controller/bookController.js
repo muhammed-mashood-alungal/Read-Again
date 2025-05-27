@@ -1,6 +1,7 @@
 const Book = require("../models/Books");
 const { handleUpload, deleteImage } = require("../utils/cloudinary");
 const Review = require("../models/Reviews");
+const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 module.exports = {
   async createBook(req, res) {
     try {
@@ -46,9 +47,13 @@ module.exports = {
       };
       const book = await Book.create(newBook);
 
-      res.status(201).json({ message: "Book created successfully", book });
+      res
+        .status(StatusCodes.CREATED)
+        .json({ message: ReasonPhrases.CREATED, book });
     } catch (err) {
-      res.status(500).json({ message: "Something went wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getAllBooks(req, res) {
@@ -69,9 +74,13 @@ module.exports = {
         .populate("appliedOffer");
       const totalBooks = await Book.countDocuments({});
 
-      res.status(200).json({ success: true, allBooks: allBooks, totalBooks });
+      res
+        .status(StatusCodes.OK)
+        .json({ success: true, allBooks: allBooks, totalBooks });
     } catch (err) {
-      res.status(500).json({ message: "Something went wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getBooksByFilter(req, res) {
@@ -103,9 +112,9 @@ module.exports = {
         .populate("category")
         .populate("appliedOffer")
         .sort(sort);
-        
+
       if (price != "{}") {
-         const priceRange = JSON.parse(price);
+        const priceRange = JSON.parse(price);
         allBooks = allBooks.filter((book, idx) => {
           const originalPrice = book?.formats?.physical?.price;
 
@@ -113,7 +122,7 @@ module.exports = {
             const offerPrice =
               originalPrice -
               originalPrice * (book.appliedOffer.discountValue / 100);
-           
+
             if (
               priceRange["$gte"] <= offerPrice &&
               priceRange["$lte"] >= offerPrice
@@ -143,9 +152,13 @@ module.exports = {
         totalBooks = allBooks.length;
       }
 
-      res.status(200).json({ success: true, books: allBooks, totalBooks });
+      res
+        .status(StatusCodes.OK)
+        .json({ success: true, books: allBooks, totalBooks });
     } catch (err) {
-      res.status(500).json({ message: "Something went wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async editBook(req, res) {
@@ -188,9 +201,13 @@ module.exports = {
         { $set: newBook },
         { new: true }
       );
-      res.status(200).json({ message: "Book updated successfully", book });
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "Book updated successfully", book });
     } catch (err) {
-      res.status(500).json({ message: "Somthing went wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getBookData(req, res) {
@@ -199,9 +216,11 @@ module.exports = {
       let book = await Book.findOne({ _id: bookId })
         .populate("category")
         .populate("appliedOffer");
-      res.status(200).json({ success: true, bookData: book });
+      res.status(StatusCodes.OK).json({ success: true, bookData: book });
     } catch (err) {
-      res.status(500).json({ message: "Somthing went wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async handleBookDelete(req, res) {
@@ -209,13 +228,17 @@ module.exports = {
       const { bookId } = req.params;
       const book = await Book.findOne({ _id: bookId });
       if (!book) {
-        return res.status(404).json({ message: "No such Book Found" });
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: "No such Book Found" });
       }
       book.isDeleted = !book.isDeleted;
       await book.save();
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(500).json({ message: "Something went wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getJustPublishedBooks(req, res) {
@@ -227,9 +250,11 @@ module.exports = {
         .populate("appliedOffer")
         .sort({ createdAt: -1 })
         .limit(8);
-      res.status(200).json({ books: books });
+      res.status(StatusCodes.OK).json({ books: books });
     } catch (err) {
-      res.status(500).json({ message: "Something Went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getRelatedBooks(req, res) {
@@ -244,11 +269,11 @@ module.exports = {
       })
         .populate("appliedOffer")
         .limit(8);
-      res.status(200).json({ books: books });
+      res.status(StatusCodes.OK).json({ books: books });
     } catch (err) {
       res
-        .status(404)
-        .json({ message: "Something went wrong while listing related Books" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async updateBookImage(req, res) {
@@ -280,9 +305,13 @@ module.exports = {
       updatingBook.images = newImages;
       await updatingBook.save();
 
-      res.status(200).json({ message: "Successfully Updated", newImages });
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "Successfully Updated", newImages });
     } catch (err) {
-      res.status(400).json("Something Went Wrong While Updating Image ");
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async searchProducts(req, res) {
@@ -294,9 +323,11 @@ module.exports = {
       const products = await Book.find({
         title: { $regex: title, $options: "i" },
       });
-      res.status(200).json({ products: products });
+      res.status(StatusCodes.OK).json({ products: products });
     } catch (error) {
-      res.status(400).json({ message: "Somthing went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async addReview(req, res) {
@@ -333,11 +364,11 @@ module.exports = {
         },
       });
 
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (error) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.messagem || "Something Went Wrong",
+        message: error.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -348,20 +379,24 @@ module.exports = {
       if (deletedReview && deletedReview?.image?.public_id) {
         deleteImage(deletedReview.image.public_id);
       }
-      res.status(200).json({ success: true });
+      res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res.status(400).json({ message: err?.message || "Something Went Wrong" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: err?.message || ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getBookReview(req, res) {
     try {
       const { bookId } = req.params;
       const reviews = await Review.find({ bookId }).populate("userId");
-      res.status(200).json({ success: true, reviews: reviews ? reviews : [] });
+      res
+        .status(StatusCodes.OK)
+        .json({ success: true, reviews: reviews ? reviews : [] });
     } catch (error) {
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something Went Wrong",
+        message: error.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
       });
     }
   },
@@ -372,12 +407,12 @@ module.exports = {
       }).populate("category");
 
       const categories = ["Finance", "Self-Help", "Fiction", "Non-Fiction"];
-      console.log(categories)
+      console.log(categories);
       const showcaseData = categories?.map((categoryTitle) => {
         const categoryBooks = books.filter(
           (book) => book?.category?.name === categoryTitle
         );
-      
+
         const products = categoryBooks.map((book) => ({
           _id: book._id,
           images: book.images,
@@ -385,17 +420,18 @@ module.exports = {
           formats: book.formats,
           appliedOffer: book.appliedOffer,
         }));
-      
+
         return {
           title: categoryTitle,
           products: products,
         };
       });
-      console.log(showcaseData)
-      res.status(200).json({ showcaseData: showcaseData });
+      res.status(StatusCodes.OK).json({ showcaseData: showcaseData });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error fetching showcase data" });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
 };

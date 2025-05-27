@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt");
 const jwt = require("jsonwebtoken");
 const Order = require("../models/Order");
+const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 module.exports = {
   async getAllUsers(req, res) {
     try {
@@ -31,30 +32,29 @@ module.exports = {
         .limit(limit);
       const totalUsers = await User.countDocuments({ role: "USER" });
 
-      res.status(200).json({ success: true, users, totalUsers: totalUsers });
+      res.status(StatusCodes.OK).json({ success: true, users, totalUsers: totalUsers });
     } catch (err) {
-      res.status(400);
-      throw new Error("Somthing went Wrong while fetching user data");
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+      throw new Error(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   },
 
   async checkAuth(req, res) {
     const token = req.cookies.token;
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message:ReasonPhrases.UNAUTHORIZED });
     }
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
       const user = await User.findOne({ _id: decoded.id });
       if (user.isBlocked) {
-        return res.status(403).json({ message: "Blocked" });
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: ReasonPhrases.UNAUTHORIZED });
       }
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ isLoggedIn: true, role: decoded.role, id: decoded.id });
     } catch (error) {
-      console.error(error);
-      res.status(403).json({ isLoggedIn: false, role: null });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ isLoggedIn: false, role: null });
     }
   },
   async adminLogin(req, res) {
@@ -62,7 +62,7 @@ module.exports = {
       const { email, password } = req.body;
       const Admin = await User.findOne({ role: "ADMIN" });
       if (!Admin)
-        return res.status(401).json({ message: "Invalid Credential" });
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: ReasonPhrases.UNAUTHORIZED});
       if (Admin?.email == email) {
         const isMatched = await bcrypt.compare(password, Admin.password);
         if (isMatched) {
@@ -72,20 +72,22 @@ module.exports = {
           });
           res.cookie("token", token, {
             httpOnly: true,
-            secure:  process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
-            domain: process.env.NODE_ENV === 'production' ? '.mashood.site' : undefined,
+            domain:
+              process.env.NODE_ENV === "production"
+                ? ".mashood.site"
+                : undefined,
             maxAge: 24 * 60 * 60 * 1000,
           });
-        
 
-          return res.status(200).json({ success: true, token });
+          return res.status(StatusCodes.OK).json({ success: true, token });
         }
       }
-      return res.status(401).json({ message: "Invalid Credential" });
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: ReasonPhrases.undefined});
     } catch (err) {
-      return res.status(401).json({ message: "Invalid Credential" });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getSalesReport(req, res) {
@@ -233,10 +235,10 @@ module.exports = {
         ordersChart,
       };
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ success: true, salesReport, chartData: chartData });
     } catch (error) {
-      res.status(400).json({ message: "Something Went Wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async getOverallStates(req, res) {
@@ -251,11 +253,11 @@ module.exports = {
         total += order.totalDiscount || 0;
         return total;
       }, 0);
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         overall: { orderCount, salesCount, userCount, totalDiscount },
       });
     } catch (err) {
-      res.status(400).json({ message: "Somthing Went Wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message:ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
   },
   async topSelling(req, res) {
@@ -355,9 +357,9 @@ module.exports = {
           },
         ]),
       ]);
-      res.status(200).json({ topBooks, topCategories, topAuthors });
+      res.status(StatusCodes.OK).json({ topBooks, topCategories, topAuthors });
     } catch (err) {
-      res.status(400).json({ message: "Somthing Went Wrong" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
 };
