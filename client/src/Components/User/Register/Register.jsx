@@ -106,7 +106,7 @@ const Register = () => {
             
             <Link to={'/login'} className='no-underline'>Already Have an Account ? </Link>
           </Form>
-          <Link to="https://api.mashood.site/api/users/auth/google" className='no-underline'>
+          <Link to="https://read-again-api.mashood.site/api/users/auth/google" className='no-underline'>
             <GoogleSignInButton/>
           </Link>
         </Col>
