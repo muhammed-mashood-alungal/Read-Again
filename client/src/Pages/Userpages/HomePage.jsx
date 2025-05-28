@@ -30,7 +30,7 @@ function HomePage() {
     const fetchProducts = async () => {
       try {
         const response = await axiosBookInstance.get('/list/just-published')
-        console.log(response.data.books)
+        
         setJustPublished(response.data.books)
       } catch (err) {
         console.log(err)
@@ -44,7 +44,6 @@ function HomePage() {
     const fecthShowCase = async () => {
       try {
         const response = await axiosBookInstance.get('/list/get-showcase-data')
-        console.log(response.data['showcaseData'])
         setShowCaseData(response.data['showcaseData'])
       } catch (err) {
         console.log(err)

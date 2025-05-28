@@ -407,7 +407,6 @@ module.exports = {
       }).populate("category");
 
       const categories = ["Finance", "Self-Help", "Fiction", "Non-Fiction"];
-      console.log(categories);
       const showcaseData = categories?.map((categoryTitle) => {
         const categoryBooks = books.filter(
           (book) => book?.category?.name === categoryTitle

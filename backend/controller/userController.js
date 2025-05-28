@@ -117,7 +117,6 @@ module.exports = {
           .json({ success: false, message: ReasonPhrases.BAD_REQUEST });
       }
     } catch (err) {
-      console.log(err);
       return res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({

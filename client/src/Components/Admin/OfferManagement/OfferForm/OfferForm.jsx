@@ -46,7 +46,6 @@ function OfferForm() {
     const navigate = useNavigate()
     useEffect(() => {
         if (offer) {
-            console.log(offer.applicableTo)
             setFormData({
                 name: offer.name || '',
                 description: offer.description || '',

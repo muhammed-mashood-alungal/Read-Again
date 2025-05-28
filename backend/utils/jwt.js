@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-
+const { ReasonPhrases } = require("http-status-codes");
 const generateToken = async (userInfo) => {
     try {
         const token = jwt.sign(userInfo, process.env.JWT_SECRET_KEY, {
@@ -7,7 +7,7 @@ const generateToken = async (userInfo) => {
         })
         return token
     } catch (err) {
-        throw new Error("Somthing Went Wrong While Creating Token")
+        throw new Error(ReasonPhrases.INTERNAL_SERVER_ERROR)
     }
 
 }
@@ -21,7 +21,7 @@ const verifyToken = async (token) => {
             return { success: false }
         }
     } catch (err) {
-        throw new Error("Something Went Wrong While verifying Token")
+        throw new Error(ReasonPhrases.INTERNAL_SERVER_ERROR)
     }
 
 }

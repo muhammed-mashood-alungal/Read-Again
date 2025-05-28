@@ -109,7 +109,6 @@ module.exports = {
       updatedCategory.save();
       res.status(StatusCodes.OK).json({ success: true, updatedCategory });
     } catch (err) {
-      console.log(err);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });

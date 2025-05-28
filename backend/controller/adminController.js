@@ -120,7 +120,6 @@ module.exports = {
         case "custom":
           const start = new Date(startDate);
           const end = new Date(endDate);
-          console.log(start, end, startDate, endDate);
           find = { orderDate: { $gte: start, $lte: end } };
           break;
         default:

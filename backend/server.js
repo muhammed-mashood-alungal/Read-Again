@@ -33,8 +33,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      `https://read-again.vercel.app`,
-      "https://mashood.site",
+      `${process.env.CLIENT_URL}`,
     ],
     credentials: true,
   })
