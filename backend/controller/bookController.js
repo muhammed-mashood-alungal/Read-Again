@@ -2,6 +2,7 @@ const Book = require("../models/Books");
 const { handleUpload, deleteImage } = require("../utils/cloudinary");
 const Review = require("../models/Reviews");
 const { StatusCodes, ReasonPhrases } = require("http-status-codes");
+const Category = require("../models/Category");
 module.exports = {
   async createBook(req, res) {
     try {
@@ -405,11 +406,12 @@ module.exports = {
       const books = await Book.find({
         "formats.physical.price": { $ne: 0 },
       }).populate("category");
-
-      const categories = ["Finance", "Self-Help", "Fiction", "Non-Fiction"];
-      const showcaseData = categories?.map((categoryTitle) => {
+      const categories = await Category.find({})
+        .sort({ createdAt: -1 })
+        .limit(4);
+      const showcaseData = categories?.map((category, idx) => {
         const categoryBooks = books.filter(
-          (book) => book?.category?.name === categoryTitle
+          (book) => book?.category?.name === category?.name
         );
 
         const products = categoryBooks.map((book) => ({
@@ -421,11 +423,15 @@ module.exports = {
         }));
 
         return {
-          title: categoryTitle,
+          title: category?.name,
           products: products,
         };
       });
-      res.status(StatusCodes.OK).json({ showcaseData: showcaseData });
+
+      const filteredShowcase = showcaseData.filter(
+        (categories) => categories?.products?.length > 2
+      );
+      res.status(StatusCodes.OK).json({ showcaseData: filteredShowcase });
     } catch (error) {
       console.error(error);
       res
