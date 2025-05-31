@@ -1,7 +1,5 @@
 import axios from 'axios'
-//const BACKEND_BASE_URI = 'https://api.mashood.site'
-//const BACKEND_BASE_URI = 'https://read-again-api.mashood.site'
-const BACKEND_BASE_URI = 'http://localhost:5000'
+const BACKEND_BASE_URI = process.env.REACT_APP_API_BASE_URL
 export const axiosUserInstance = axios.create({
     baseURL: `${BACKEND_BASE_URI}/api/users`,
     withCredentials: true
