@@ -87,7 +87,7 @@ const OrderInvoicePDF = ({ orderData }) => (
 
       <View style={styles.section}>
         <Text style={styles.label}>Order ID: </Text>
-        <Text style={styles.value}>{orderData._id}</Text>
+        <Text style={styles.value}>{orderData.orderId ? orderData.orderId : orderData._id}</Text>
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>Order Date: </Text>

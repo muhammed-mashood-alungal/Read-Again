@@ -71,7 +71,7 @@ module.exports = {
             role: Admin.role,
           });
           res.cookie("token", token, {
-            httpOnly: true,
+           httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
@@ -81,7 +81,7 @@ module.exports = {
                 : undefined,
             maxAge: 24 * 60 * 60 * 1000,
           });
-
+          console.log('Admin Login Ok')
           return res.status(StatusCodes.OK).json({ success: true, token });
         }
       }

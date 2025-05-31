@@ -212,7 +212,7 @@ function OrderDetails({ }) {
               <div className=" d-flex  justify-content-between">
                 <div  >
                   <strong>Order Number</strong>
-                  <p>{order._id}</p>
+                  <p>{order.orderId ? order.orderId : order._id}</p>
                 </div>
                 <div>
                   <strong>Order Date</strong>

@@ -96,12 +96,13 @@ const Checkout = () => {
         } catch (error) {
           toast.error("Payment failed, please try again.");
         } finally {
-          navigate('/order-success', { state: { orderId: data.orderId } })
+          navigate('/order-success', { state: { orderId: data.orderId },replace : true })
           setIsPlacingOrder(false)
         }
       }
-      navigate('/order-success', { state: { orderId: data.orderId } })
+      navigate('/order-success', { state: { orderId: data.orderId },replace : true} )
       setIsPlacingOrder(false)
+      cart = null
     } catch (err) {
       setIsPlacingOrder(false)
       toast.error(err?.response?.data?.message)

@@ -117,12 +117,10 @@ module.exports = {
           .json({ success: false, message: ReasonPhrases.BAD_REQUEST });
       }
     } catch (err) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          success: false,
-          message: err ? err : ReasonPhrases.INTERNAL_SERVER_ERROR,
-        });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: err ? err : ReasonPhrases.INTERNAL_SERVER_ERROR,
+      });
     }
   },
   async isEmailExist(req, res) {
@@ -357,7 +355,12 @@ module.exports = {
     try {
       res.clearCookie("token", {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        path: "/",
+        domain:
+          process.env.NODE_ENV === "production" ? ".mashood.site" : undefined,
+        maxAge: 24 * 60 * 60 * 1000,
       });
 
       return res

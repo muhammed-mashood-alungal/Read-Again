@@ -12,13 +12,7 @@ const AdminPage = () => {
   const dispatch = useDispatch()
   const {isLoggedIn , role} = useSelector(state=>state.auth)
   
-  useEffect(()=>{
-    if(isLoggedIn && role != "ADMIN"){
-      navigate('/')
-    }else if(!isLoggedIn){
-    navigate('/admin/login') 
-   }
-  },[role,isLoggedIn])
+  
   
 
   useEffect(() => {
@@ -34,6 +28,14 @@ const AdminPage = () => {
     checkAuth()
 }, [dispatch])
 
+useEffect(()=>{
+    console.log(isLoggedIn , role)
+    if(isLoggedIn && role != "ADMIN"){
+      navigate('/')
+    }else if(!isLoggedIn){
+    navigate('/admin/login') 
+   }
+  },[role,isLoggedIn])
 
   
 

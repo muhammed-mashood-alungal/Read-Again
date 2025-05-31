@@ -5,6 +5,7 @@ const Order = require("../models/Order");
 const User = require("../models/Users");
 const Coupon = require("../models/Coupon");
 const Wallet = require("../models/Wallet");
+const { v4: uuidv4 } = require("uuid");
 const Transaction = require("../models/WalletTransactions");
 const { getAddressString } = require("../services/userServices");
 const { StatusCodes, ReasonPhrases } = require("http-status-codes");
@@ -18,11 +19,9 @@ module.exports = {
         orderDetails.paymentMethod == "COD" &&
         orderDetails.payableAmount > 1000
       ) {
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({
-            message: "Cash On delivery Not Available for Order above Rs 1000",
-          });
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: "Cash On delivery Not Available for Order above Rs 1000",
+        });
       }
       const address = await Address.findOne({ userId, isDefault: true });
       if (!address) {
@@ -42,20 +41,16 @@ module.exports = {
           !couponData.isActive ||
           couponData.currentUsage >= couponData.maxUsage
         ) {
-          return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({
-              success: false,
-              message: `The ${orderDetails.coupon} Coupon No Longer Available.`,
-            });
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: `The ${orderDetails.coupon} Coupon No Longer Available.`,
+          });
         } else {
           if (user.usedCoupons.includes(couponData._id)) {
-            return res
-              .status(StatusCodes.BAD_REQUEST)
-              .json({
-                success: false,
-                message: `The ${orderDetails.coupon} coupon is Already Once Used.`,
-              });
+            return res.status(StatusCodes.BAD_REQUEST).json({
+              success: false,
+              message: `The ${orderDetails.coupon} coupon is Already Once Used.`,
+            });
           }
           user.usedCoupons = [...user.usedCoupons, couponData._id];
           couponData.currentUsage += 1;
@@ -67,7 +62,10 @@ module.exports = {
         delete orderDetails.coupon;
       }
 
+      const orderId = 'RDAG-ORDID-' + uuidv4().replace(/-/g, '').slice(0, 6).toUpperCase();
+
       const response = await Order.create({
+        orderId,
         userId,
         ...orderDetails,
         shippingAddress,
@@ -81,12 +79,10 @@ module.exports = {
             .json({ success: false, message: "No Wallet For this User" });
         }
         if (wallet.balance < orderDetails.payableAmount) {
-          return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({
-              success: false,
-              message: "Wallet Haven't Sufficient balance",
-            });
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: "Wallet Haven't Sufficient balance",
+          });
         }
         await Transaction.create({
           userId,
@@ -109,12 +105,10 @@ module.exports = {
         });
 
         if (!book) {
-          return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({
-              success: false,
-              message: `Some Books are No Longer Available.`,
-            });
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: `Some Books are No Longer Available.`,
+          });
         }
         if (
           cart &&
@@ -125,12 +119,10 @@ module.exports = {
             cart.totalQuantity -
             (orderDetails.items[i].quantity - book.formats.physical.stock);
           cart.save();
-          return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({
-              success: false,
-              message: `${book.title} Have not much Stock`,
-            });
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: `${book.title} Have not much Stock`,
+          });
         }
         book.formats.physical.stock =
           book?.formats?.physical?.stock - orderDetails.items[i].quantity;
@@ -152,21 +144,17 @@ module.exports = {
       if (cart) {
         await cart.deleteOne();
       }
-      res
-        .status(StatusCodes.OK)
-        .json({
-          success: true,
-          orderId: response._id,
-          user,
-          orderDetails: response,
-        });
+      res.status(StatusCodes.OK).json({
+        success: true,
+        orderId: response._id,
+        user,
+        orderDetails: response,
+      });
     } catch (err) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          success: false,
-          message: ReasonPhrases.INTERNAL_SERVER_ERROR,
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
+      });
     }
   },
   async changeStatus(req, res) {
@@ -382,7 +370,7 @@ module.exports = {
     } catch {
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR});
+        .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
   async rejectReturnRequest(req, res) {
@@ -478,20 +466,16 @@ module.exports = {
       }
       await order.save();
 
-      res
-        .status(StatusCodes.OK)
-        .json({
-          success: true,
-          isAllItemsCancelled,
-          newPayableAmount: order.payableAmount,
-        });
+      res.status(StatusCodes.OK).json({
+        success: true,
+        isAllItemsCancelled,
+        newPayableAmount: order.payableAmount,
+      });
     } catch (err) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          success: false,
-          message: ReasonPhrases.INTERNAL_SERVER_ERROR,
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
+      });
     }
   },
   async returnOrderItem(req, res) {
@@ -508,12 +492,10 @@ module.exports = {
       await order.save();
       res.status(StatusCodes.OK).json({ success: true });
     } catch (err) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          success: false,
-          message:ReasonPhrases.INTERNAL_SERVER_ERROR,
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
+      });
     }
   },
   async approveItemReturn(req, res) {
@@ -623,12 +605,10 @@ module.exports = {
         .populate("items.bookId");
       res.status(StatusCodes.OK).json({ success: true, orderData: orderData });
     } catch (err) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          success: false,
-          message: err?.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: err?.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
+      });
     }
   },
 };

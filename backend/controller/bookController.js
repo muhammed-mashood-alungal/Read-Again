@@ -84,79 +84,160 @@ module.exports = {
         .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
+  // async getBooksByFilter(req, res) {
+  //   try {
+  //     let { page, limit, sortBy, price, category } = req.query;
+  //     console.log(page, limit);
+  //     page = parseInt(page) || 1;
+  //     limit = parseInt(limit) || 10;
+  //     let skip = (page - 1) * limit;
+
+  //     let sort = {};
+  //     if (sortBy == "Newness") {
+  //       sort.createdAt = -1;
+  //     } else if (sortBy == "Average rating") {
+  //       sort.averageRating = -1;
+  //     } else if (sortBy == "Price: High to Low") {
+  //       sort = { "formats.physical.price": -1 };
+  //     } else if (sortBy == "Price: Low to High") {
+  //       sort = { "formats.physical.price": 1 };
+  //     } else if (sortBy == "A-Z") {
+  //       sort.title = 1;
+  //     } else if (sortBy == "Z-A") {
+  //       sort.title = -1;
+  //     }
+  //     let find = { isDeleted: false, "formats.physical.stock": { $gt: 0 } };
+
+  //     let allBooks = await Book.find(find)
+  //       .populate("category")
+  //       .populate("appliedOffer")
+  //       .sort(sort);
+
+  //     if (price != "{}") {
+  //       const priceRange = JSON.parse(price);
+  //       allBooks = allBooks.filter((book, idx) => {
+  //         const originalPrice = book?.formats?.physical?.price;
+
+  //         if (book.appliedOffer) {
+  //           const offerPrice =
+  //             originalPrice -
+  //             originalPrice * (book.appliedOffer.discountValue / 100);
+
+  //           if (
+  //             priceRange["$gte"] <= offerPrice &&
+  //             priceRange["$lte"] >= offerPrice
+  //           ) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         } else {
+  //           if (
+  //             priceRange["$gte"] <= originalPrice &&
+  //             priceRange["$lte"] >= originalPrice
+  //           ) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         }
+  //       });
+  //     }
+
+  //     let totalBooks = await Book.countDocuments({ ...find });
+  //     if (category != "All") {
+  //       allBooks = allBooks.filter((book) => {
+  //         return book?.category?.name == category;
+  //       });
+  //       totalBooks = allBooks.length;
+  //     }
+
+  //     allBooks = allBooks.filter((_, idx) => idx >= skip && idx < skip + limit);
+
+  //     res
+  //       .status(StatusCodes.OK)
+  //       .json({ success: true, books: allBooks, totalBooks });
+  //   } catch (err) {
+  //     console.log(err);
+  //     res
+  //       .status(StatusCodes.INTERNAL_SERVER_ERROR)
+  //       .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
+  //   }
+  // },
   async getBooksByFilter(req, res) {
     try {
       let { page, limit, sortBy, price, category } = req.query;
+
       page = parseInt(page) || 1;
       limit = parseInt(limit) || 10;
       let skip = (page - 1) * limit;
 
-      let sort = {};
-      if (sortBy == "Newness") {
-        sort.publicationDate = 1;
-      } else if (sortBy == "Average rating") {
-        sort.averageRating = -1;
-      } else if (sortBy == "Price: High to Low") {
-        sort = { "formats.physical.price": -1 };
-      } else if (sortBy == "Price: Low to High") {
-        sort = { "formats.physical.price": 1 };
-      } else if (sortBy == "A-Z") {
-        sort.title = 1;
-      } else if (sortBy == "Z-A") {
-        sort.title = -1;
-      }
       let find = { isDeleted: false, "formats.physical.stock": { $gt: 0 } };
 
+      
       let allBooks = await Book.find(find)
-        .skip(skip)
-        .limit(limit)
         .populate("category")
-        .populate("appliedOffer")
-        .sort(sort);
+        .populate("appliedOffer");
 
-      if (price != "{}") {
+      
+      if (price !== "{}") {
         const priceRange = JSON.parse(price);
-        allBooks = allBooks.filter((book, idx) => {
-          const originalPrice = book?.formats?.physical?.price;
-
-          if (book.appliedOffer) {
-            const offerPrice =
-              originalPrice -
-              originalPrice * (book.appliedOffer.discountValue / 100);
-
-            if (
-              priceRange["$gte"] <= offerPrice &&
-              priceRange["$lte"] >= offerPrice
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          } else {
-            if (
-              priceRange["$gte"] <= originalPrice &&
-              priceRange["$lte"] >= originalPrice
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        });
-      }
-
-      let totalBooks = await Book.countDocuments({ ...find });
-      if (category != "All") {
         allBooks = allBooks.filter((book) => {
-          return book.category.name == category;
+          const originalPrice = book?.formats?.physical?.price || 0;
+          const discount = book?.appliedOffer?.discountValue || 0;
+          const finalPrice = originalPrice - (originalPrice * discount) / 100;
+
+          return (
+            priceRange["$gte"] <= finalPrice && priceRange["$lte"] >= finalPrice
+          );
         });
-        totalBooks = allBooks.length;
       }
 
-      res
-        .status(StatusCodes.OK)
-        .json({ success: true, books: allBooks, totalBooks });
+      
+      if (category !== "All") {
+        allBooks = allBooks.filter((book) => {
+          return book?.category?.name === category;
+        });
+      }
+
+      
+      allBooks = allBooks.map((book) => {
+        const originalPrice = book?.formats?.physical?.price || 0;
+        const discount = book?.appliedOffer?.discountValue || 0;
+        const finalPrice = originalPrice - (originalPrice * discount) / 100;
+        return {
+          ...book._doc,
+          effectivePrice: finalPrice,
+        };
+      });
+
+     
+      if (sortBy === "Price: High to Low") {
+        allBooks.sort((a, b) => b.effectivePrice - a.effectivePrice);
+      } else if (sortBy === "Price: Low to High") {
+        allBooks.sort((a, b) => a.effectivePrice - b.effectivePrice);
+      } else if (sortBy === "Newness") {
+        allBooks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sortBy === "Average rating") {
+        allBooks.sort((a, b) => b.averageRating - a.averageRating);
+      } else if (sortBy === "A-Z") {
+        allBooks.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (sortBy === "Z-A") {
+        allBooks.sort((a, b) => b.title.localeCompare(a.title));
+      }
+
+      const totalBooks = allBooks.length;
+
+     
+      allBooks = allBooks.slice(skip, skip + limit);
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        books: allBooks,
+        totalBooks,
+      });
     } catch (err) {
+      console.log(err);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });

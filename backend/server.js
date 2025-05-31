@@ -19,6 +19,10 @@ const path = require("path");
 const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
+
+
+app.use(morgan("dev"));
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +32,8 @@ app.use(
   express.static(path.join(__dirname, "public/images"))
 );
 connectDB();
+
+
 
 app.use(
   cors({

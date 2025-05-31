@@ -317,7 +317,7 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
             <CRow className="mb-4">
               <CCol md={6}>
                 <strong>Order Number</strong>
-                <p>{selectedOrder._id}</p>
+                <p>{selectedOrder.orderId ? selectedOrder.orderId : selectedOrder._id}</p>
               </CCol>
               <CCol md={6} className="text-end">
                 <strong>Order Date</strong>

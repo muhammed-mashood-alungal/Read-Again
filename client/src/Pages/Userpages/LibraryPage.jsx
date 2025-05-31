@@ -20,6 +20,7 @@ function LibraryPage() {
         const response = await axiosBookInstance.get(`/list/filtered-books/${filterQuery}&limit=${limit}&page=${currentPage}`)
         let pages = Math.ceil(response?.data?.totalBooks / limit)
         setTotalPages(pages)
+        
         setFilteredBooks(response.data.books)
       } catch (err) {
         console.log(err)
@@ -45,13 +46,12 @@ function LibraryPage() {
     } else {
       setCount(count + 1)
     }
-
   }
   const ProductList = React.lazy(() => import('../../Components/User/ProductsList/ProductsList'))
   return (
     <>
       <Header />
-      <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} />
+      <ProductFilter onFilter={updateQuery} setSearchQuery={onSearch} setCurrentPage={setCurrentPage} />
       {
         loading && <ProductLoading/>
       }

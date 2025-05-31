@@ -4,13 +4,17 @@ const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 module.exports = {
   async isAdmin(req, res, next) {
     try {
+      console.log('Checking Is Admin')
       const token = req.cookies.token;
+      console.log('token is'+ token)
       if (!token) {
         return res
           .status(StatusCodes.FORBIDDEN)
           .json({ message: ReasonPhrases.FORBIDDEN });
       }
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      console.log('decoded =='+decoded)
+      
       if (decoded.role == "ADMIN") {
         next();
       } else {
@@ -28,6 +32,7 @@ module.exports = {
   },
   async protect(req, res, next) {
     try {
+        console.log('Checking Is User')
       const token = req.cookies.token;
       if (!token) {
         return res
