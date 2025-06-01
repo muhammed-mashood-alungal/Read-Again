@@ -53,12 +53,9 @@ const AdminHeader = () => {
       <CContainer className=" px-4" fluid>
         <CHeaderNav className="d-none d-md-flex p-3">
           <CNavItem>
-            <CNavLink to="/dashboard" as={NavLink}>
+            <CNavLink to="/admin/dashboard" as={NavLink}>
               Dashboard
             </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-auto">

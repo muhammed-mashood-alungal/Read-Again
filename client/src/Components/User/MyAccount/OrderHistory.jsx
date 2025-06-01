@@ -343,7 +343,6 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
                     {itemsCancelOrReturn(item.status, item?.bookId?._id)}
                     {item.status === "Canceled" && (
                       <CTableDataCell color='danger'>
-
                         Canceled: {item.reason}</CTableDataCell>
 
                     )}
@@ -358,8 +357,8 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
                         Returned: {item.reason}
                       </CTableDataCell>
                     )}
-                    {item.status === "Returned" && (
-                      <CTableDataCell color="success">
+                    {item.status === "Return Rejected" && (
+                      <CTableDataCell color="danger">
                         Returned: {item.reason}
                       </CTableDataCell>
                     )}
@@ -429,7 +428,8 @@ function OrderHistory({ orders, setCurrentOrderPage, currentOrderPage, totalPage
                 {isEligibleForReturn() && (
                   <CButton
                     color="danger"
-                    className="me-2"
+                    className="m-2"
+                    
                     onClick={() => setIsReturning(true)}
                   >
                     Request Return

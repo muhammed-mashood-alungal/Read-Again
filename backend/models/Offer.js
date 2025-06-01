@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const offerSchema = mongoose.Schema({
      name:{
         type:String,
-        required:true
+        required:true,
+        trim:true
      },
      description:{
         type:String

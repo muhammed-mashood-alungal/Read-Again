@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import './OrderDetails.css'
-import { axiosOrderInstance } from '../../../../redux/Constants/axiosConstants'
-import { toast } from 'react-toastify'
-import ReasonPopUp from '../../../CommonComponents/ReasonPopUp/ReasonPopUp'
+import React, { useState } from "react";
+import "./OrderDetails.css";
+import { axiosOrderInstance } from "../../../../redux/Constants/axiosConstants";
+import { toast } from "react-toastify";
+import ReasonPopUp from "../../../CommonComponents/ReasonPopUp/ReasonPopUp";
 import {
   CCard,
   CCardHeader,
@@ -17,178 +17,218 @@ import {
   CBadge,
   CRow,
   CCol,
-  CContainer
-} from '@coreui/react';
-import { useLocation, useNavigate } from 'react-router-dom'
-import { cilArrowThickFromRight } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+  CContainer,
+} from "@coreui/react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { cilArrowThickFromRight } from "@coreui/icons";
+import CIcon from "@coreui/icons-react";
 
-function OrderDetails({ }) {
-  const location = useLocation()
-  const selectedOrder = location.state.selectedOrder
-  const [order, setOrder] = useState(selectedOrder ? selectedOrder : {})
-  const [isCancelling, setIsCancelling] = useState(false)
-  const [selectedItemId, setSelectedItemId] = useState(null)
-  const navigate = useNavigate()
+function OrderDetails({}) {
+  const location = useLocation();
+  const selectedOrder = location.state.selectedOrder;
+  const [order, setOrder] = useState(selectedOrder ? selectedOrder : {});
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const navigate = useNavigate();
   const isEligibleForCancel = () => {
-    if (order.orderStatus == "Pending" ||
-      order.orderStatus == "Ordered"
-    ) {
-      return true
+    if (order.orderStatus == "Pending" || order.orderStatus == "Ordered") {
+      return true;
     }
-    return false
-  }
+    return false;
+  };
   const itemsCancelOrReturn = (status, itemId) => {
-    if (status == "Pending" ||
-      status == "Ordered") {
-      return <td><button className='cancel-order-btn'
-        onClick={() => {
-          setIsCancelling(true)
-          setSelectedItemId(itemId)
-        }}>Cancel Item</button>
-      </td>
+    if (status == "Pending" || status == "Ordered") {
+      return (
+        <td>
+          <button
+            className="cancel-order-btn"
+            onClick={() => {
+              setIsCancelling(true);
+              setSelectedItemId(itemId);
+            }}
+          >
+            Cancel Item
+          </button>
+        </td>
+      );
     } else if (status == "Return Requested") {
-      return <td>
-        <button className='reject-btn'
-          onClick={() => {
-            rejectItemReturn(itemId)
-          }}>Reject Request</button>
-        <button className='approve-btn'
-          onClick={() => {
-            approveItemReturn(itemId)
-          }}>Approve Item</button>
-      </td>
+      return (
+        <td>
+          <button
+            className="reject-btn"
+            onClick={() => {
+              rejectItemReturn(itemId);
+            }}
+          >
+            Reject Request
+          </button>
+          <button
+            className="approve-btn"
+            onClick={() => {
+              approveItemReturn(itemId);
+            }}
+          >
+            Approve Item
+          </button>
+        </td>
+      );
     } else {
-      return null
+      return null;
     }
-  }
+  };
 
   const isReturnRequested = () => {
     if (order.orderStatus == "Return Requested") {
-      return <div>
-        <button className='reject-btn' onClick={rejectRequest}>Reject </button>
-        <button className='approve-btn' onClick={approveRequest}>Approve</button>
-      </div>
-
+      return (
+        <div>
+          <button className="reject-btn" onClick={rejectRequest}>
+            Reject{" "}
+          </button>
+          <button className="approve-btn" onClick={approveRequest}>
+            Approve
+          </button>
+        </div>
+      );
     } else {
-      return null
+      return null;
     }
-  }
+  };
   const approveRequest = async () => {
     try {
-      await axiosOrderInstance.put(`/${order._id}/approve-return-request`)
-      setOrder({ ...order, orderStatus: "Returned" })
+      await axiosOrderInstance.put(`/${order._id}/approve-return-request`);
+      setOrder({ ...order, orderStatus: "Returned" });
     } catch (err) {
-      toast.error(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message);
     }
-  }
+  };
 
   const rejectRequest = async () => {
     try {
-      await axiosOrderInstance.put(`/${order._id}/reject-return-request`)
-      setOrder({ ...order, orderStatus: "Delivered" })
+      await axiosOrderInstance.put(`/${order._id}/reject-return-request`);
+      setOrder({ ...order, orderStatus: "Delivered" });
     } catch (err) {
-      toast.error(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message);
     }
-  }
+  };
   const showChangeOrderChange = () => {
-    const notChangableStatus = ["Returned", "Canceled", "Return Requested"]
+    const notChangableStatus = ["Returned", "Canceled", "Return Requested"];
     if (!notChangableStatus.includes(order.orderStatus)) {
-      return <div className='change-status-div'>
-        <select name="" id=""
-          className='form-control'
-          onChange={handleStatusChange}
-          value={order.orderStatus}
-        >
-          <option value="Ordered">Ordered</option>
-          <option value="Shipped">Shipped</option>
-          <option value="Delivered">Delivered</option>
-        </select>
-      </div>
+      return (
+        <div className="change-status-div">
+          <select
+            name=""
+            id=""
+            className="form-control"
+            onChange={handleStatusChange}
+            value={order.orderStatus}
+          >
+            <option value="Ordered">Ordered</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+        </div>
+      );
     }
-  }
+  };
   const handleStatusChange = async (e) => {
     try {
-      const value = e.target.value
-      await axiosOrderInstance.put(`/${order._id}/change-status/${value}`)
-      setOrder({ ...order, orderStatus: value })
-      toast.success(`Order ${value}`)
-    } catch (err) {
-
-    }
-
-
-  }
+      const value = e.target.value;
+      await axiosOrderInstance.put(`/${order._id}/change-status/${value}`);
+      setOrder({ ...order, orderStatus: value });
+      toast.success(`Order ${value}`);
+    } catch (err) {}
+  };
   const cancelOrder = async (cancellationReason) => {
     try {
       if (selectedItemId) {
-        return cancelOrderItem(cancellationReason)
+        return cancelOrderItem(cancellationReason);
       }
-      await axiosOrderInstance.put(`/${order._id}/cancel-order`, { cancellationReason })
-      const newOrderData = { ...selectedOrder }
-      newOrderData.stockStatus = "Canceled"
+      await axiosOrderInstance.put(`/${order._id}/cancel-order`, {
+        cancellationReason,
+      });
+      const newOrderData = { ...selectedOrder };
+      newOrderData.stockStatus = "Canceled";
       newOrderData.items = newOrderData.items.map((item) => {
-        item.status = "Cancelled"
-        return item
-      })
-      setOrder({ ...selectedOrder, orderStatus: "Canceled" })
-      toast.success("Order Cancelled")
+        item.status = "Cancelled";
+        return item;
+      });
+      setOrder({ ...selectedOrder, orderStatus: "Canceled" });
+      toast.success("Order Cancelled");
     } catch (err) {
-      toast.error(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message);
     }
-  }
+  };
   const cancelOrderItem = async (cancellationReason) => {
     try {
-      const { data } = await axiosOrderInstance.put(`/${selectedOrder._id}/items/${selectedItemId}/cancel`, { cancellationReason })
-      const newOrderData = { ...order }
+      const { data } = await axiosOrderInstance.put(
+        `/${selectedOrder._id}/items/${selectedItemId}/cancel`,
+        { cancellationReason }
+      );
+      const newOrderData = { ...order };
       newOrderData.items = newOrderData.items?.map((item) => {
-        return item.bookId._id == selectedItemId ? { ...item, status: "Canceled", reason: cancellationReason } : item
-      })
+        return item.bookId._id == selectedItemId
+          ? { ...item, status: "Canceled", reason: cancellationReason }
+          : item;
+      });
       if (data.isAllItemsCancelled) {
-        newOrderData.orderStatus = "Canceled"
-        newOrderData.cancellationReason = "All Items Cancelled"
+        newOrderData.orderStatus = "Canceled";
+        newOrderData.cancellationReason = "All Items Cancelled";
       }
-      setOrder(newOrderData)
-      toast.success("Item cancelled From Order")
-      setSelectedItemId(null)
+      setOrder(newOrderData);
+      toast.success("Item cancelled From Order");
+      setSelectedItemId(null);
     } catch (err) {
-      toast.error(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message);
     }
-  }
+  };
   const approveItemReturn = async (itemId) => {
     try {
-      const { data } = await axiosOrderInstance.put(`/${order._id}/items/${itemId}/approve-return`)
-      const orderData = { ...order }
+      const { data } = await axiosOrderInstance.put(
+        `/${order._id}/items/${itemId}/approve-return`
+      );
+      const orderData = { ...order };
       orderData.items = orderData.items.map((item) => {
-        return item.bookId._id == itemId ? { ...item, status: "Returned" } : item
-      })
-      toast.success("Item Return Approved")
+        return item.bookId._id == itemId
+          ? { ...item, status: "Returned" }
+          : item;
+      });
+      toast.success("Item Return Approved");
       if (data.isAllItemsReturned) {
-        orderData.orderStatus = "Returned"
-        orderData.returnReason = "All Items Returned"
+        orderData.orderStatus = "Returned";
+        orderData.returnReason = "All Items Returned";
       }
-
-      setOrder(orderData)
+      
+      setOrder(orderData);
+      navigate('/admin/orders')
     } catch (err) {
-      toast.error(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message);
     }
-  }
+  };
   const rejectItemReturn = async (itemId) => {
     try {
-      await axiosOrderInstance.put(`/${order._id}/items/${itemId}/reject-return`)
-      const orderData = { ...order }
+      await axiosOrderInstance.put(
+        `/${order._id}/items/${itemId}/reject-return`
+      );
+      const orderData = { ...order };
       orderData.items = orderData.items.map((item) => {
-        return item.bookId._id == itemId ? { ...item, status: "Rejected" } : item
-      })
-      toast.success("Item Return Rejected")
-      setOrder(orderData)
+        return item.bookId._id == itemId
+          ? { ...item, status: "Rejected" }
+          : item;
+      });
+      toast.success("Item Return Rejected");
+      setOrder(orderData);
+      navigate('/admin/orders')
     } catch (err) {
-      toast.error(err?.response?.data?.message)
+      toast.error(err?.response?.data?.message);
     }
-  }
+  };
   return (
-    <CContainer className='mt-5'>
-      <CButton onClick={() => { navigate('/admin/orders') }}>
+    <CContainer className="mt-5">
+      <CButton
+        onClick={() => {
+          navigate("/admin/orders");
+        }}
+      >
         <CIcon icon={cilArrowThickFromRight} /> Go Back
       </CButton>
       <CCard className="order-details-container">
@@ -197,7 +237,9 @@ function OrderDetails({ }) {
             isOpen={true}
             onConfirm={cancelOrder}
             type={"Cancel"}
-            onClose={() => { setIsCancelling(false) }}
+            onClose={() => {
+              setIsCancelling(false);
+            }}
           />
         )}
 
@@ -210,9 +252,9 @@ function OrderDetails({ }) {
           <CRow className="mb-4">
             <CCol md="6">
               <div className=" d-flex  justify-content-between">
-                <div  >
+                <div>
                   <strong>Order Number</strong>
-                  <p>{order.orderId ? order.orderId : order._id}</p>
+                  <p>{order.orderId ? order.orderId : "N/A"}</p>
                 </div>
                 <div>
                   <strong>Order Date</strong>
@@ -221,11 +263,8 @@ function OrderDetails({ }) {
               </div>
             </CCol>
             <CCol>
-              <div>
-                {showChangeOrderChange()}
-              </div>
+              <div>{showChangeOrderChange()}</div>
             </CCol>
-
           </CRow>
 
           <CTable striped hover responsive>
@@ -242,10 +281,15 @@ function OrderDetails({ }) {
                 <CTableRow key={item.bookId?._id}>
                   <CTableDataCell>{item?.bookId.title}</CTableDataCell>
                   <CTableDataCell>{item?.quantity}</CTableDataCell>
-                  <CTableDataCell>₹{(item?.quantity * item?.bookId?.formats?.physical?.price).toFixed(2)}</CTableDataCell>
+                  <CTableDataCell>
+                    ₹
+                    {(
+                      item?.quantity * item?.bookId?.formats?.physical?.price
+                    ).toFixed(2)}
+                  </CTableDataCell>
                   {itemsCancelOrReturn(item.status, item.bookId._id)}
                   {item.status === "Canceled" && (
-                    <CTableDataCell className='text-danger'>
+                    <CTableDataCell className="text-danger">
                       Item canceled <br />
                       Reason: {item.reason}
                     </CTableDataCell>
@@ -259,19 +303,29 @@ function OrderDetails({ }) {
             <CCol md={6}>
               <CCol className="text-end">
                 <h6>Total Amount</h6>
-                <p className="h4 text-primary">₹{selectedOrder.totalAmount.toFixed(2)}</p>
+                <p className="h4 text-primary">
+                  ₹{selectedOrder.totalAmount.toFixed(2)}
+                </p>
               </CCol>
-              {
-                selectedOrder.coupon && <CCol className="text-end">
+              {selectedOrder.coupon && (
+                <CCol className="text-end">
                   <h6>Discounted Amount</h6>
-                  <p className="h4 text-primary">₹{Math.round((selectedOrder.totalAmount * (selectedOrder?.coupon?.discountValue / 100)) * 100) / 100}</p>
+                  <p className="h4 text-primary">
+                    ₹
+                    {Math.round(
+                      selectedOrder.totalAmount *
+                        (selectedOrder?.coupon?.discountValue / 100) *
+                        100
+                    ) / 100}
+                  </p>
                 </CCol>
-              }
+              )}
               <hr />
               <CCol className="text-end">
                 <h5>Payable Amount</h5>
-                <p className="h4 text-primary">₹{selectedOrder.payableAmount?.toFixed()}</p>
-
+                <p className="h4 text-primary">
+                  ₹{selectedOrder.payableAmount?.toFixed()}
+                </p>
               </CCol>
             </CCol>
           </CRow>
@@ -312,7 +366,9 @@ function OrderDetails({ }) {
               {isEligibleForCancel() && (
                 <CButton
                   color="danger"
-                  onClick={() => { setIsCancelling(true) }}
+                  onClick={() => {
+                    setIsCancelling(true);
+                  }}
                 >
                   Cancel Order
                 </CButton>
@@ -333,7 +389,6 @@ function OrderDetails({ }) {
               )}
 
               {isReturnRequested()}
-
             </CCol>
           </CRow>
         </CCardBody>
@@ -342,4 +397,4 @@ function OrderDetails({ }) {
   );
 }
 
-export default OrderDetails
+export default OrderDetails;

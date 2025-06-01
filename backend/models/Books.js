@@ -1,94 +1,103 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const BookSchema = mongoose.Schema({
-   title: {
-    type: String,
-    required: true
-   },
-   author: {
-      type:String, 
-      required: true
-   },
-   category:{
-      type:mongoose.Types.ObjectId,
-      ref: 'Category',
-      required:true
-   },
-   language:{
-    type:String
-   },
-   description:{
-    type:String,
-    required:true
-   },
-   publicationDate:{
-    type : String,
-    required:true
-   },
-   ISBN:{
-    type:String,
-    required:true
-   },
-   images:[{
-    secure_url:{
-        type:String
+const BookSchema = mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    public_id:{
-        type:String
-    }
-   }],
-   averageRating:{
-    type:Number,
-    default:0
-   },
-   formats:{
-    physical:{
-        price:{
-            type:Number
-        },
-        stock:{
-            type:Number
-        }
+    author: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    ebook:{
-        price:{
-            type:Number
-        },
-        fileUrl:{
-            type:String
-        },
-        fileSize:{
-            type:Number
-        }
+    category: {
+      type: mongoose.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
-    audiobook:{
-        price:{
-            type:Number
+    language: {
+      type: String,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    publicationDate: {
+      type: String,
+      required: true,
+      
+    },
+    ISBN: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    images: [
+      {
+        secure_url: {
+          type: String,
         },
-        duration:{
-            Number
+        public_id: {
+          type: String,
         },
-        fileUrl:String
-    }
-   },
-   appliedOffer:{
-      type:mongoose.Types.ObjectId,
-      ref:'Offer'
-   },
-   isDeleted:{
-    type:Boolean,
-    default:false
-   },
-   stockStatus:{
-    type:String,
-    enum:["In Stock","Hurry Up","Out Of Stock"],
-    default:"In Stock"
-   }
+      },
+    ],
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    formats: {
+      physical: {
+        price: {
+          type: Number,
+        },
+        stock: {
+          type: Number,
+        },
+      },
+      ebook: {
+        price: {
+          type: Number,
+        },
+        fileUrl: {
+          type: String,
+        },
+        fileSize: {
+          type: Number,
+        },
+      },
+      audiobook: {
+        price: {
+          type: Number,
+        },
+        duration: {
+          Number,
+        },
+        fileUrl: String,
+      },
+    },
+    appliedOffer: {
+      type: mongoose.Types.ObjectId,
+      ref: "Offer",
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    stockStatus: {
+      type: String,
+      enum: ["In Stock", "Hurry Up", "Out Of Stock"],
+      default: "In Stock",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-},{
-   timestamps:true
-});
-
-
-const Book = mongoose.model('Book', BookSchema);
+const Book = mongoose.model("Book", BookSchema);
 module.exports = Book;

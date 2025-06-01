@@ -18,7 +18,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import { cilArrowThickFromRight } from '@coreui/icons';
-
+import LoadingComponent from '../../../LoadingSpinner/LoadingComponent';
 const CategoryForm = () => {
   const location = useLocation()
   const categoryData= location?.state?.categoryData
@@ -29,6 +29,7 @@ const CategoryForm = () => {
   const [success , setSuccess] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading , setLoading] = useState(false)
   const navigate = useNavigate()
   useEffect(()=>{
     if(categoryData?.name){
@@ -54,6 +55,7 @@ const CategoryForm = () => {
   const handleCreateCategory = async(e) => {
     try{
       e.preventDefault()
+      
       if(name.trim() == ""){
         toast.error("Enter a Category")
         return
@@ -62,6 +64,7 @@ const CategoryForm = () => {
         toast.error("Select  category Image")
         return 
       }
+      setLoading(true)
       const formData =new FormData()
       formData.append("type", "category")
       formData.append("image" ,image )
@@ -76,8 +79,8 @@ const CategoryForm = () => {
       if(response.status ==200){
         navigate('/admin/category')
         toast.success("Created Successfully")
-        
       }
+      setLoading(false)
     }catch(err){
       toast.error(err?.response?.data?.message)
     }
@@ -91,6 +94,7 @@ const CategoryForm = () => {
         toast.error("Enter a Category Name")
         return
       }
+      setLoading(true)
       const formData =new FormData()
       formData.append("type", "category")
       formData.append("name",name)
@@ -104,6 +108,7 @@ const CategoryForm = () => {
         toast.success("Category Saved Successfully")
         setIsCreateForm(true)
       }
+      setLoading(false)
     }catch(err){
       toast.error(err?.response?.data?.message)
     }
@@ -144,6 +149,7 @@ const CategoryForm = () => {
 
 return (
   <CContainer className='mt-5'>
+     {loading && <LoadingComponent />}
     <CButton onClick={()=>{navigate('/admin/category')}}>
         <CIcon icon={cilArrowThickFromRight} /> Go Back
     </CButton>
@@ -161,7 +167,7 @@ return (
         onClose={() => setIsModalOpen(false)}
         onCropComplete={handleCropComplete}
       />}
-      
+     
      
       <CForm onSubmit={isCreateForm ? handleCreateCategory : handleUpdateCategory} encType='multipart/form-data'>
         <div className="mb-3">

@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import { cilArrowThickFromRight, cilX } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import LoadingComponent from '../../../LoadingSpinner/LoadingComponent';
 
 function OfferForm() {
     const location = useLocation()
@@ -29,7 +30,7 @@ function OfferForm() {
         name: '',
         description: '',
         discountValue: '',
-        applicableTo: '',
+        applicableTo: 'CATEGORY',
         maxUsage: '',
         startDate: '',
         expirationDate: ''
@@ -42,6 +43,7 @@ function OfferForm() {
     const [searchedProducts, setSearchedProducts] = useState([])
     const [categories, setCategories] = useState([])
     const [isEditMode, setIsEditMode] = useState(false)
+    const [loading , setLoading] = useState(false)
 
     const navigate = useNavigate()
     useEffect(() => {
@@ -144,7 +146,9 @@ function OfferForm() {
             applicableTo: formData.applicableTo,
             applicableProducts: applicableProducts.map(prod => prod._id),
             applicableCategories: applicableCategories.map(cat => cat._id)
-        }
+        }     
+        console.log(offerData)
+        setLoading(true)
         if (isEditMode) {
             updateOffer(offerData)
         } else {
@@ -160,6 +164,8 @@ function OfferForm() {
         } catch (err) {
             console.error(err)
             toast.error(err.response?.data?.message || 'Failed to create offer')
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -171,6 +177,8 @@ function OfferForm() {
         } catch (err) {
             console.error(err)
             toast.error(err.response?.data?.message || 'Failed to update offer')
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -207,6 +215,7 @@ function OfferForm() {
         )
     }
     const handleTypeChange = (e) => {
+        console.log(e.target.value)
         setFormData(data => {
             return { ...data, applicableTo: e.target.value }
         })
@@ -215,6 +224,7 @@ function OfferForm() {
     return (
         <>
             <CContainer className='mt-5'>
+                 {loading && <LoadingComponent />}
                 <CButton onClick={() => { navigate('/admin/offers') }}>
                     <CIcon icon={cilArrowThickFromRight} /> Go Back
                 </CButton>
@@ -252,11 +262,11 @@ function OfferForm() {
                                         onChange={handleChange}
                                         required
                                         min="1"
-                                        max="100"
+                                        max="90"
                                         placeholder="Enter discount percentage"
                                     />
                                     <CFormFeedback invalid>
-                                        Discount must be between 1 and 100
+                                        Discount must be between 1 and 90
                                     </CFormFeedback>
                                 </CCol>
                             </CRow>
@@ -330,7 +340,7 @@ function OfferForm() {
                                         name="maxDiscount"
                                         value={formData.maxDiscount}
                                         onChange={handleChange}
-                                        max="500"
+                                    
                                         placeholder='Maximum discount Price'
                                         required
                                     />
@@ -343,7 +353,7 @@ function OfferForm() {
                                 <CCol md={6}>
                                     <CFormLabel>Offer Type</CFormLabel>
                                     <CFormSelect onChange={handleTypeChange}>
-                                        <option value="CATEGORY" >CATEGORY</option>
+                                        <option value="CATEGORY" selected={formData.applicableTo === "CATEGORY"} >CATEGORY</option>
                                         <option value="PRODUCT" selected={formData.applicableTo === "PRODUCT"} >PRODUCT</option>
                                     </CFormSelect>
                                     <CFormFeedback invalid>

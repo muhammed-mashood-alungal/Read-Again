@@ -31,7 +31,7 @@ function UserDetails({ }) {
                   <CTableRow>
                     <CTableHeaderCell>Email</CTableHeaderCell>
                     <CTableDataCell className="text-end">
-                      {user.email}%
+                      {user.email}
                     </CTableDataCell>
                   </CTableRow>
                   <CTableRow>

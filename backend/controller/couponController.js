@@ -98,7 +98,9 @@ module.exports = {
   async verifyCoupon(req, res) {
     try {
       const { coupon, amount } = req.body;
+      console.log(coupon)
       const couponData = await Coupon.findOne({ code: coupon });
+      console.log(couponData)
       if (!couponData) {
         return res
           .status(StatusCodes.BAD_REQUEST)

@@ -96,7 +96,7 @@ function ListOrders() {
                                 <CFormCheck
                                   type="radio"
                                   name="orderStatus"
-                                  id="orderStatusOrdered"
+                                  id="orderStatusCanceled"
                                   label="Canceled"
                                   checked={orderStatus === 'canceled'}
                                   onChange={() => setOrderStatus('canceled')}
@@ -104,7 +104,7 @@ function ListOrders() {
                                 <CFormCheck
                                   type="radio"
                                   name="orderStatus"
-                                  id="orderStatusShipped"
+                                  id="orderStatusReturned"
                                   label="Returned"
                                   checked={orderStatus === 'returned'}
                                   onChange={() => setOrderStatus('returned')}
@@ -112,7 +112,7 @@ function ListOrders() {
                                 <CFormCheck
                                   type="radio"
                                   name="orderStatus"
-                                  id="orderStatusDelivered"
+                                  id="orderStatusReturnRequested"
                                   label="Return Requested"
                                   checked={orderStatus === 'return requested'}
                                   onChange={() => setOrderStatus('return requested')}
@@ -120,7 +120,7 @@ function ListOrders() {
                                 <CFormCheck
                                   type="radio"
                                   name="orderStatus"
-                                  id="orderStatusDelivered"
+                                  id="orderStatusReturnRejected"
                                   label="Return Rejected"
                                   checked={orderStatus === 'return rejected'}
                                   onChange={() => setOrderStatus('return rejected')}

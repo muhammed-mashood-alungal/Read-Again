@@ -16,16 +16,17 @@ export function bookFormValidate(bookData,updating) {
     }
 
     if (formats.physical.isToggled) {
-        if (!formats.physical.price || formats.physical.price <= 0) {
+        if (!formats.physical.price || formats.physical.price < 0) {
             return { success: false, message: "Please provide a valid price for Physical Book format" };
         }
-        if (!formats.physical.stock || formats.physical.stock <= 0) {
+        console.log()
+        if (formats.physical.stock == undefined || formats.physical.stock < 0) {
             return { success: false, message: "Please provide a valid stock for Physical Book format" };
         }
     }
 
     if (formats.ebook.isToggled) {
-        if (!formats.ebook.price || formats.ebook.price <= 0) {
+        if (!formats.ebook.price || formats.ebook.price < 0) {
             return { success: false, message: "Please provide a valid price for eBook format" };
         }
         if (!formats.ebook.fileUrl || formats.ebook.fileUrl.trim() === "") {
@@ -37,7 +38,7 @@ export function bookFormValidate(bookData,updating) {
     }
 
     if (formats.audiobook.isToggled) {
-        if (!formats.audiobook.price || formats.audiobook.price <= 0) {
+        if (!formats.audiobook.price || formats.audiobook.price < 0) {
             return { success: false, message: "Please provide a valid price for Audiobook format" };
         }
         if (!formats.audiobook.duration || formats.audiobook.duration.trim() === "") {

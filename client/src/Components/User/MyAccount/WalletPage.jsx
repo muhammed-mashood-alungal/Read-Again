@@ -29,9 +29,6 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const WalletPage = ({}) => {
-  const [isAddMoneyModal, setIsAddMoneyModal] = useState(false);
-  const [isWithdrawModal, setIsWithdrawModal] = useState(false);
-  const [amount, setAmount] = useState('');
   const [wallet, setWallet] = useState({})
   const {userId} = useSelector(state=>state.auth)
 
@@ -110,8 +107,7 @@ const WalletPage = ({}) => {
                           {new Date(transaction.date).toLocaleDateString()}
                         </CTableDataCell>
                         <CTableDataCell>
-                          
-                            {transaction.associatedOrder._id}
+                            {transaction.associatedOrder.orderId ? transaction.associatedOrder.orderId :'N/A'}
                             </CTableDataCell>
                         <CTableDataCell>
                           <CBadge 

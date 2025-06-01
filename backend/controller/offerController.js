@@ -5,6 +5,7 @@ module.exports = {
   async createOffer(req, res) {
     try {
       const { offerData } = req.body;
+      console.log(offerData)
       const newOffer = await Offer.create({ ...offerData });
       if (offerData.applicableTo == "CATEGORY") {
         for (let categoryId of offerData.applicableCategories) {
@@ -25,6 +26,7 @@ module.exports = {
       }
       res.status(StatusCodes.OK).json({ success: true });
     } catch (error) {
+      console.log(error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
   },

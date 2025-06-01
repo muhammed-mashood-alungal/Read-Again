@@ -102,7 +102,7 @@ const OrderSuccess = ({}) => {
                   cursor: "pointer",
                   margin:'1px'
                 }}
-                onClick={navigate("/library")}
+                onClick={()=>navigate("/library")}
               >
                 Keep Shopping
               </button>

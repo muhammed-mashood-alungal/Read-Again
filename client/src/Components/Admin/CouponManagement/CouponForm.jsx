@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 import { cilArrowThickFromRight } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import LoadingComponent from '../../LoadingSpinner/LoadingComponent';
 
 
 function CouponForm() {
@@ -43,6 +44,7 @@ function CouponForm() {
     const [categories, setCategories] = useState([])
     const [isCreateForm, setIsCreateForm] = useState(true)
     const navigate = useNavigate()
+    const [loading , setLoading] = useState(false)
 
     useEffect(() => {
         if (coupon) {
@@ -116,12 +118,13 @@ function CouponForm() {
             maxUsage: formData.maxUsage,
             minimumPrice: formData.minimumPrice
         }
-
+        setLoading(true)
         if (isCreateForm) {
             createCoupon(couponData)
         } else {
             updateCoupon(couponData)
         }
+        
 
     };
 
@@ -134,21 +137,28 @@ function CouponForm() {
         } catch ({ response }) {
 
             toast.error(response?.data?.message)
+        }finally{
+            setLoading(false)
         }
     }
 
     const updateCoupon = async (newCouponData) => {
         try {
             await axiosCouponInstance.put(`/${coupon._id}`, { newCouponData })
+            navigate('/admin/coupons')
             toast.success('Saved Successfully')
+
         } catch ({ response }) {
             toast.error(response?.data?.message)
+        }finally{
+            setLoading(false)
         }
     }
 
     return (
         <>
             <CContainer className='mt-5'>
+                 {loading && <LoadingComponent />}
                 <CButton onClick={() => { navigate('/admin/coupons') }}>
                     <CIcon icon={cilArrowThickFromRight} /> Go Back
                 </CButton>
@@ -186,11 +196,11 @@ function CouponForm() {
                                         onChange={handleChange}
                                         required
                                         min="1"
-                                        max="100"
+                                        max="90"
                                         placeholder="Enter discount percentage"
                                     />
                                     <CFormFeedback invalid>
-                                        Discount must be between 1 and 100
+                                        Discount must be between 1 and 90
                                     </CFormFeedback>
                                 </CCol>
                             </CRow>
@@ -240,7 +250,7 @@ function CouponForm() {
                                     </CFormFeedback>
                                 </CCol>
                                 <CCol md={6}>
-                                    <CFormLabel>Minimum Price</CFormLabel>
+                                    <CFormLabel>Minimum Purchase</CFormLabel>
                                     <CFormInput
                                         type="number"
                                         name="minimumPrice"
@@ -248,10 +258,10 @@ function CouponForm() {
                                         onChange={handleChange}
                                         required
                                         min="500"
-                                        placeholder="Enter Minimum Purchase Price"
+                                        placeholder="Enter Minimum Purchase Price "
                                     />
                                     <CFormFeedback invalid>
-                                        Please provide a valid Minimum Price
+                                        Please provide a valid Minimum Price (greater than 500)
                                     </CFormFeedback>
                                 </CCol>
                             </CRow>
@@ -265,11 +275,10 @@ function CouponForm() {
                                         onChange={handleChange}
                                         required
                                         min="1"
-                                        max={"500"}
                                         placeholder="Enter maximum Discount Price"
                                     />
                                     <CFormFeedback invalid>
-                                        Please provide a valid Maximum Discount
+                                        Please provide a valid Maximum Discount 
                                     </CFormFeedback>
                                 </CCol>
                             </CRow>

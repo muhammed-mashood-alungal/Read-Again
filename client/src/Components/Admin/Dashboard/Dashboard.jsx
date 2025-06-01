@@ -13,7 +13,8 @@ import {
   cilDollar,
   cilChartLine
 } from '@coreui/icons';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons';
 import { axiosAdminInstance } from '../../../redux/Constants/axiosConstants';
 import SalesReport from './SalesReport';
 import { toast } from 'react-toastify';
@@ -58,7 +59,7 @@ const Dashboard = () => {
         <CCol sm={3}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
-              <CIcon icon={cilDollar} size="xl" className="me-3 text-success" />
+              <FontAwesomeIcon icon={faIndianRupeeSign} className="me-3 text-success" size="xl" />
               <div>
                 <div className="text-medium-emphasis">Total Orders</div>
                 <div className="fs-4 fw-semibold">{overall.orderCount}</div>
@@ -69,7 +70,7 @@ const Dashboard = () => {
         <CCol sm={3}>
           <CCard>
             <CCardBody className="d-flex align-items-center">
-              <CIcon icon={cilDollar} size="xl" className="me-3 text-success" />
+              <FontAwesomeIcon icon={faIndianRupeeSign} className="me-3 text-success" size="xl" />
               <div>
                 <div className="text-medium-emphasis">Total Discount</div>
                 <div className="fs-4 fw-semibold">{overall.totalDiscount}</div>

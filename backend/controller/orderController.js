@@ -62,7 +62,8 @@ module.exports = {
         delete orderDetails.coupon;
       }
 
-      const orderId = 'RDAG-ORDID-' + uuidv4().replace(/-/g, '').slice(0, 6).toUpperCase();
+      const orderId =
+        "RDAG-ORDID-" + uuidv4().replace(/-/g, "").slice(0, 6).toUpperCase();
 
       const response = await Order.create({
         orderId,
@@ -331,6 +332,7 @@ module.exports = {
   },
   async approveReturnRequest(req, res) {
     try {
+      console.log("HIT");
       const { orderId } = req.params;
       const order = await Order.findOneAndUpdate(
         { _id: orderId },
@@ -367,7 +369,8 @@ module.exports = {
       }
       order.paymentStatus = "Refunded";
       res.status(StatusCodes.OK).json({ success: true });
-    } catch {
+    } catch (err) {
+      console.log(err);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
@@ -514,15 +517,19 @@ module.exports = {
             const itemTotal = order.items[i].totalPrice;
             const coupon = order.coupon;
             let amount = itemTotal;
+            
             if (coupon) {
               const couponData = await Coupon.findOne({ _id: coupon });
+             
               const percentage = couponData.discountValue;
-              let orderTotalWithoutDiscount =
-                orderTotal / (1 - percentage / 100);
+              let orderTotalWithoutDiscount =   orderTotal / (1 - percentage / 100);
+              
               orderTotalWithoutDiscount = orderTotalWithoutDiscount.toFixed();
+              
               const totalOrderDiscount = orderTotalWithoutDiscount - orderTotal;
-              const proptionalDiscount =
-                (itemTotal / orderTotalWithoutDiscount) * totalOrderDiscount;
+             
+              const proptionalDiscount =   (itemTotal / orderTotalWithoutDiscount) * totalOrderDiscount;
+              
               amount = itemTotal - proptionalDiscount.toFixed();
             }
             const userWallet = await Wallet.findOneAndUpdate(
@@ -557,6 +564,7 @@ module.exports = {
       await order.save();
       res.status(StatusCodes.OK).json({ success: true, isAllItemsReturned });
     } catch (err) {
+      console.log(err)
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: ReasonPhrases.INTERNAL_SERVER_ERROR });

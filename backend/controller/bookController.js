@@ -35,9 +35,9 @@ module.exports = {
       const stockStatus =
         formats?.physical?.stock < 10 ? "Hurry Up" : "In Stock";
       const newBook = {
-        ISBN,
-        title,
-        author,
+        ISBN ,
+        title ,
+        author ,
         category,
         language,
         description,
@@ -84,86 +84,6 @@ module.exports = {
         .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
     }
   },
-  // async getBooksByFilter(req, res) {
-  //   try {
-  //     let { page, limit, sortBy, price, category } = req.query;
-  //     console.log(page, limit);
-  //     page = parseInt(page) || 1;
-  //     limit = parseInt(limit) || 10;
-  //     let skip = (page - 1) * limit;
-
-  //     let sort = {};
-  //     if (sortBy == "Newness") {
-  //       sort.createdAt = -1;
-  //     } else if (sortBy == "Average rating") {
-  //       sort.averageRating = -1;
-  //     } else if (sortBy == "Price: High to Low") {
-  //       sort = { "formats.physical.price": -1 };
-  //     } else if (sortBy == "Price: Low to High") {
-  //       sort = { "formats.physical.price": 1 };
-  //     } else if (sortBy == "A-Z") {
-  //       sort.title = 1;
-  //     } else if (sortBy == "Z-A") {
-  //       sort.title = -1;
-  //     }
-  //     let find = { isDeleted: false, "formats.physical.stock": { $gt: 0 } };
-
-  //     let allBooks = await Book.find(find)
-  //       .populate("category")
-  //       .populate("appliedOffer")
-  //       .sort(sort);
-
-  //     if (price != "{}") {
-  //       const priceRange = JSON.parse(price);
-  //       allBooks = allBooks.filter((book, idx) => {
-  //         const originalPrice = book?.formats?.physical?.price;
-
-  //         if (book.appliedOffer) {
-  //           const offerPrice =
-  //             originalPrice -
-  //             originalPrice * (book.appliedOffer.discountValue / 100);
-
-  //           if (
-  //             priceRange["$gte"] <= offerPrice &&
-  //             priceRange["$lte"] >= offerPrice
-  //           ) {
-  //             return true;
-  //           } else {
-  //             return false;
-  //           }
-  //         } else {
-  //           if (
-  //             priceRange["$gte"] <= originalPrice &&
-  //             priceRange["$lte"] >= originalPrice
-  //           ) {
-  //             return true;
-  //           } else {
-  //             return false;
-  //           }
-  //         }
-  //       });
-  //     }
-
-  //     let totalBooks = await Book.countDocuments({ ...find });
-  //     if (category != "All") {
-  //       allBooks = allBooks.filter((book) => {
-  //         return book?.category?.name == category;
-  //       });
-  //       totalBooks = allBooks.length;
-  //     }
-
-  //     allBooks = allBooks.filter((_, idx) => idx >= skip && idx < skip + limit);
-
-  //     res
-  //       .status(StatusCodes.OK)
-  //       .json({ success: true, books: allBooks, totalBooks });
-  //   } catch (err) {
-  //     console.log(err);
-  //     res
-  //       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-  //       .json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR });
-  //   }
-  // },
   async getBooksByFilter(req, res) {
     try {
       let { page, limit, sortBy, price, category } = req.query;
