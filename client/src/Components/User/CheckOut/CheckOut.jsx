@@ -27,6 +27,11 @@ const Checkout = () => {
       toast.error("Login to access Checkout")
     }
   }, [isLoggedIn])
+  useEffect(()=>{
+    if(!cart){
+      navigate('/cart')
+    }
+  },[cart])
 
   useEffect(() => {
     const getProfileData = async () => {
