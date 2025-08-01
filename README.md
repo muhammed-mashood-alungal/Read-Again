@@ -1,6 +1,6 @@
 # 📚 Read-Again — Book Ecommerce Platform
 
-A full-stack ecommerce web application for buying and selling books. Built using **Next.js**, **Node.js**, **Express**, and **MongoDB**, with payment integration via **Razorpay**, image uploads via **Cloudinary**, and authentication using **JWT + Google OAuth**.
+A full-stack ecommerce web application for buying and selling books. Built using **React.j**, **Node.js**, **Express**, and **MongoDB**, with payment integration via **Razorpay**, image uploads via **Cloudinary**, and authentication using **JWT + Google OAuth**.
 
 ---
 
@@ -10,7 +10,7 @@ read-again/
 
 ├── backend/ # Node.js + Express REST API
 
-└── client/ # Next.js (React) frontend
+└── client/ # React.js (React) frontend
 
 ---
 
